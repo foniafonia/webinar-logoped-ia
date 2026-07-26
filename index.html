@@ -1,65 +1,825 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Logoped-IA · Webinar</title>
-<style>
-:root{--ink:#0b1729;--navy:#081323;--panel:#112239;--paper:#f7f8f4;--muted:#66737b;--mint:#78e0c1;--yellow:#ffc76b;--blue:#a8c9ff;--rose:#ff9a8c;--line:#dbe5df}*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;background:var(--navy);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.deck{height:100vh;width:100vw;display:grid;place-items:center}.stage{width:min(100vw,177.7778vh);aspect-ratio:16/9;position:relative;overflow:hidden;box-shadow:0 25px 80px #0008}.slide{position:absolute;inset:0;padding:clamp(32px,5vw,72px);opacity:0;pointer-events:none;transform:translateX(3%);transition:.35s ease;overflow:hidden}.slide.active{opacity:1;pointer-events:auto;transform:none}.dark{background:var(--navy);color:white}.light{background:var(--paper);color:var(--ink)}h1,h2,h3,p{margin:0}h1{font-size:clamp(39px,5vw,72px);line-height:.97;letter-spacing:-.065em}h2{font-size:clamp(30px,4.2vw,59px);line-height:.98;letter-spacing:-.06em}h3{font-size:clamp(17px,1.7vw,25px);line-height:1.05}p{font-size:clamp(14px,1.4vw,19px);line-height:1.34}.eyebrow{display:inline-flex;padding:7px 13px;border-radius:999px;background:var(--mint);color:var(--ink);font-size:10px;font-weight:950;letter-spacing:.08em;text-transform:uppercase}.dark .eyebrow{background:#18364b;color:var(--mint)}.lead{max-width:780px;margin-top:18px}.muted{color:var(--muted)}.soft{color:#b8c8d0}.mint{color:var(--mint)}.yellow{color:var(--yellow)}.blue{color:var(--blue)}.foot{position:absolute;bottom:19px;left:clamp(32px,5vw,72px);right:clamp(32px,5vw,72px);display:flex;justify-content:space-between;font-size:10px;font-weight:850;letter-spacing:.08em;text-transform:uppercase;color:#78919b}.light .foot{color:#718087}.grid{display:grid;gap:16px}.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;height:100%;align-items:center}.hero img{width:100%;height:100%;max-height:575px;object-fit:cover;border-radius:26px;filter:saturate(.9)}.hero h1{margin-top:28px}.hero p{margin-top:25px;max-width:560px;color:#c8ddd9}.hero .line{width:330px;height:3px;background:var(--yellow);margin-top:36px}.stat{font-size:clamp(32px,4vw,60px);font-weight:950;line-height:.9;letter-spacing:-.06em}.mini{font-size:12px;color:#a9bbc1;line-height:1.3}.panel{padding:21px;border-radius:18px;background:white;border:1px solid var(--line);box-shadow:0 12px 30px #0813230b}.dark .panel{background:var(--panel);border-color:#1c3a50;box-shadow:none}.panel strong{display:block;font-size:17px}.panel span{display:block;margin-top:7px;font-size:13px;line-height:1.35;color:var(--muted)}.dark .panel span{color:#b9cbd0}.shot{border-radius:17px;overflow:hidden;background:#fff;border:1px solid #ffffff35}.shot img{display:block;width:100%;height:190px;object-fit:cover}.shot.tall img{height:270px}.shot.contain img{object-fit:contain;background:#eef3f1}.shot .caption{padding:15px 17px 18px;color:var(--ink)}.dark .shot .caption{background:var(--panel);color:white}.caption p{margin-top:7px;font-size:13px;color:var(--muted)}.dark .caption p{color:#b8c8d0}.number{font-size:12px;font-weight:950;color:var(--yellow);letter-spacing:.08em}.flow{display:flex;align-items:stretch;gap:0;margin-top:42px}.flow .node{position:relative;flex:1;padding:20px 18px 22px;background:var(--panel);border:1px solid #214158}.flow .node:not(:last-child):after{content:"→";position:absolute;right:-21px;top:35px;color:var(--yellow);font-size:27px;z-index:2}.flow .node:first-child{border-radius:17px 0 0 17px}.flow .node:last-child{border-radius:0 17px 17px 0}.flow strong{display:block;color:white;font-size:17px}.flow span{display:block;margin-top:8px;color:#b6c9ce;font-size:13px;line-height:1.3}.bigquote{font-size:clamp(24px,3vw,43px);font-weight:900;letter-spacing:-.05em;line-height:1.02}.two-up{display:grid;grid-template-columns:1.1fr .9fr;gap:28px;align-items:center}.collage{position:relative;height:360px}.collage img{position:absolute;border:5px solid white;border-radius:18px;box-shadow:0 17px 45px #0005;object-fit:cover}.collage .a{width:55%;height:67%;right:2%;top:0}.collage .b{width:48%;height:54%;left:0;bottom:0}.collage .c{width:34%;height:40%;right:25%;bottom:4%}.module{padding:25px;border-radius:20px;min-height:220px}.module.one{background:var(--mint);color:var(--ink)}.module.two{background:var(--yellow);color:var(--ink)}.module h3{font-size:26px}.module small{font-size:10px;font-weight:950;letter-spacing:.09em;text-transform:uppercase}.module ul{margin:18px 0 0;padding-left:20px;font-size:14px;line-height:1.55}.quote{padding:22px 26px;border-left:5px solid var(--yellow);border-radius:0 16px 16px 0;background:var(--panel);color:white;font-size:clamp(19px,2.2vw,30px);font-weight:850;line-height:1.1}.nav{position:fixed;z-index:5;left:50%;bottom:17px;transform:translateX(-50%);display:flex;gap:12px;align-items:center;padding:9px 12px;background:#081323dd;border:1px solid #ffffff25;border-radius:999px;backdrop-filter:blur(12px)}button{border:0;background:transparent;color:#fff;width:30px;height:30px;border-radius:50%;font-size:20px;cursor:pointer}button:hover{background:#ffffff20}.counter{min-width:58px;text-align:center;color:#d8e8e1;font-size:12px;font-weight:800;letter-spacing:.08em}.progress{position:fixed;top:0;left:0;height:4px;width:0;background:var(--mint);z-index:6;transition:.3s}.help{position:fixed;top:17px;right:18px;z-index:5;color:#fff;padding:8px 11px;border:1px solid #ffffff25;border-radius:999px;background:#08132399;font-size:11px;cursor:pointer}.hint{position:fixed;right:20px;bottom:21px;color:#ffffff88;font-size:10px}.portrait{height:420px!important;object-position:center 25%}.timeline{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:50px;position:relative}.timeline:before{content:"";position:absolute;left:7%;right:7%;top:25px;height:3px;background:#c9d7d0}.tstep{position:relative;text-align:center}.dot{margin:0 auto 17px;display:grid;place-items:center;width:52px;height:52px;border:7px solid var(--paper);border-radius:50%;background:var(--ink);color:var(--mint);font-weight:950;position:relative;z-index:1}.tstep strong{font-size:18px}.tstep p{margin:8px auto 0;max-width:160px;font-size:13px;color:var(--muted)}@media(max-width:800px){.slide{padding:28px}.hero{grid-template-columns:1fr;gap:18px}.hero img{position:absolute;inset:0;width:100%;height:100%;opacity:.23;border-radius:0}.hero>div{position:relative;z-index:1}.hero .portrait{display:none}.g4{grid-template-columns:repeat(2,1fr)}.shot img{height:115px}.shot.tall img{height:180px}.two-up{grid-template-columns:1fr}.collage{height:230px}.module{padding:16px;min-height:175px}.module ul{font-size:11px}.flow .node{padding:13px 10px}.flow .node:not(:last-child):after{right:-14px;font-size:18px}.flow span{font-size:10px}.flow strong{font-size:12px}.hint{display:none}}
-.promise{display:flex;gap:9px;flex-wrap:wrap;margin-top:28px}.promise span{padding:8px 11px;border:1px solid #ffffff28;border-radius:999px;color:#d8ebe4;font-size:11px;font-weight:800;letter-spacing:.02em}.promise span b{color:var(--yellow)}.clarity{display:grid;grid-template-columns:1.1fr .9fr;gap:20px;align-items:stretch;margin-top:31px}.clarity .panel{min-height:128px}.clarity .panel strong{font-size:19px}.clarity .panel span{font-size:14px}.label{display:inline-block;margin-top:10px;color:var(--yellow);font-size:11px;font-weight:900;letter-spacing:.04em;text-transform:uppercase}.link-card{display:block;text-decoration:none;color:inherit;padding:22px;border-radius:18px;background:var(--panel);border:1px solid #214158;transition:.2s ease}.link-card:hover{transform:translateY(-3px);border-color:var(--mint);background:#17304a}.link-card strong{display:block;color:white;font-size:18px}.link-card span{display:block;margin-top:9px;color:#b8cbd0;font-size:13px;line-height:1.35}.link-card em{display:block;margin-top:16px;color:var(--yellow);font-size:11px;font-style:normal;font-weight:900;letter-spacing:.08em;text-transform:uppercase}</style></head>
-<style>
-.demo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-top:28px}.demo-card{position:relative;display:block;min-height:128px;padding:17px 18px 16px;border-radius:17px;background:var(--panel);border:1px solid #24445c;color:white;text-decoration:none;transition:transform .18s,border-color .18s,background .18s}.demo-card:hover{transform:translateY(-3px);border-color:var(--mint);background:#17314b}.demo-card small{display:block;color:var(--mint);font-size:9px;font-weight:950;letter-spacing:.1em;text-transform:uppercase}.demo-card strong{display:block;margin-top:9px;font-size:17px;line-height:1.05}.demo-card span{display:block;margin-top:7px;color:#b8cbd0;font-size:11px;line-height:1.3}.demo-card em{display:block;margin-top:10px;color:var(--yellow);font-size:10px;font-style:normal;font-weight:900;text-transform:uppercase}.demo-note{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-top:17px;padding:12px 15px;border:1px solid #ffffff24;border-radius:14px;color:#c6d8dc;font-size:12px}.demo-note b{color:var(--yellow)}@media(max-width:800px){.demo-grid{grid-template-columns:repeat(2,1fr);gap:8px;margin-top:16px}.demo-card{min-height:104px;padding:12px}.demo-card strong{font-size:13px}.demo-card span{font-size:9px}.demo-card em{margin-top:6px}.demo-note{display:none}}
-</style>
-<style>
-@media(max-width:800px) and (orientation:portrait){
-  html,body,.deck{height:100svh}
-  .stage{width:100vw;height:100svh;aspect-ratio:auto}
-  .slide{padding:50px 20px 66px}
-  h1{font-size:clamp(38px,11vw,54px)}
-  h2{font-size:clamp(28px,8.2vw,42px)}
-  p{font-size:13px}
-  .lead{margin-top:12px}
-  .foot{left:20px;right:20px;bottom:51px}
-  .nav{bottom:9px}
-  .help{top:10px;right:10px}
-  .grid{gap:9px}
-  .g3,.g4{grid-template-columns:repeat(2,1fr)}
-  .panel{padding:13px}
-  .panel strong{font-size:13px}
-  .panel span{font-size:10px}
-  .stat{font-size:28px}
-  .quote{padding:14px 16px;font-size:18px}
-  .timeline{margin-top:24px;grid-template-columns:repeat(2,1fr);row-gap:18px}
-  .timeline:before{display:none}
-  .dot{width:38px;height:38px;border-width:4px;margin-bottom:7px}
-  .tstep strong{font-size:13px}
-  .tstep p{font-size:10px}
-}
-</style>
-<body><main class="deck"><div class="progress" id="progress"></div><button class="help" id="fullscreen">Pantalla completa</button><section class="stage" id="stage">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#091727">
+  <title>Logoped-IA · Webinar en directo</title>
+  <style>
+    :root {
+      --ink: #102032;
+      --navy: #091727;
+      --navy-2: #13283d;
+      --cream: #f5f1e8;
+      --paper: #fffdf8;
+      --mint: #6fe0b4;
+      --lime: #d8ef6f;
+      --coral: #ff947d;
+      --sky: #9fc9ff;
+      --yellow: #ffcb66;
+      --muted: #69767e;
+      --line: #d8dfdb;
+    }
 
-<article class="slide dark active"><div class="hero"><div><span class="eyebrow">WEBINAR · LOGOPED-IA</span><h1>De una idea a un recurso clínico que <span class="mint">se puede usar.</span></h1><p>Esto no va de aprender una aplicación. Va de descubrir qué puedes crear cuando combinas criterio logopédico, diseño y herramientas de IA.</p><div class="line"></div><p class="soft" style="font-size:14px">José Aserraf Cohén · Formación para el Colegio de Logopedas de Extremadura</p><div class="promise"><span><b>VER</b> ejemplos reales</span><span><b>ENTENDER</b> el método</span><span><b>SALIR</b> con ideas claras</span></div></div><img class="portrait" src="assets/fresh/portrait.png" alt="José Aserraf Cohén"></div><div class="foot"><span>LOGOPED-IA · 30 MINUTOS</span><span>01</span></div></article>
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--navy);
+      font-family: "Avenir Next", "Helvetica Neue", Helvetica, sans-serif;
+    }
+    button, a { font: inherit; }
+    .deck {
+      width: 100vw;
+      height: 100svh;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 10% 10%, #1c4055 0, transparent 28%),
+        radial-gradient(circle at 90% 90%, #173d36 0, transparent 30%),
+        var(--navy);
+    }
+    .stage {
+      position: relative;
+      width: min(100vw, 177.7778vh);
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background: var(--navy);
+      box-shadow: 0 24px 90px #0008;
+    }
+    .slide {
+      position: absolute;
+      inset: 0;
+      padding: clamp(38px, 5vw, 74px);
+      opacity: 0;
+      transform: translateX(4%);
+      pointer-events: none;
+      overflow: hidden;
+      transition: opacity .32s ease, transform .38s ease;
+    }
+    .slide.active {
+      opacity: 1;
+      transform: none;
+      pointer-events: auto;
+    }
+    .dark { color: white; background: var(--navy); }
+    .light { color: var(--ink); background: var(--cream); }
+    .paper { color: var(--ink); background: var(--paper); }
+    .warm {
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 82% 20%, #e1f6c8 0, transparent 27%),
+        var(--cream);
+    }
+    h1, h2, h3, p { margin: 0; }
+    h1, h2 {
+      letter-spacing: -.06em;
+      line-height: .96;
+    }
+    h1 { font-size: clamp(43px, 5.5vw, 78px); }
+    h2 { font-size: clamp(34px, 4.5vw, 62px); }
+    h3 { font-size: clamp(18px, 1.75vw, 25px); line-height: 1.06; }
+    p { font-size: clamp(14px, 1.35vw, 19px); line-height: 1.38; }
+    .serif {
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 400;
+      font-style: italic;
+      letter-spacing: -.045em;
+    }
+    .mint { color: var(--mint); }
+    .coral { color: var(--coral); }
+    .yellow { color: var(--yellow); }
+    .soft { color: #bfd0d4; }
+    .muted { color: var(--muted); }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: #ffffff0f;
+      border: 1px solid #ffffff1e;
+      color: var(--mint);
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    .light .eyebrow, .paper .eyebrow, .warm .eyebrow {
+      color: #1b6b58;
+      background: #dff2e9;
+      border-color: #c7e7da;
+    }
+    .lead { max-width: 770px; margin-top: 18px; }
+    .foot {
+      position: absolute;
+      left: clamp(38px, 5vw, 74px);
+      right: clamp(38px, 5vw, 74px);
+      bottom: 19px;
+      display: flex;
+      justify-content: space-between;
+      color: #78929b;
+      font-size: 9px;
+      font-weight: 850;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    .light .foot, .paper .foot, .warm .foot { color: #76847f; }
 
-<article class="slide light"><span class="eyebrow">01 · LA PROMESA DE ESTA WEBINAR</span><h2 style="margin-top:25px">En 30 minutos vas a ver<br><span style="color:#4ab795">tres cambios posibles.</span></h2><p class="lead muted">No necesitas saber programar, diseñar ni hablar “en técnico”. Solo traer una situación real de tu trabajo y mirar cómo se puede ampliar.</p><div class="grid g3" style="margin-top:38px"><div class="panel"><div class="stat" style="color:#4ab795">01</div><strong style="margin-top:18px">Más ideas</strong><span>Pasar de una hoja en blanco a varias actividades, variantes y apoyos en poco tiempo.</span><span class="label">imaginar mejor</span></div><div class="panel"><div class="stat" style="color:#e6a34c">02</div><strong style="margin-top:18px">Más recursos</strong><span>Convertir un objetivo de lenguaje, comunicación o aprendizaje en algo que se puede usar.</span><span class="label">crear mejor</span></div><div class="panel"><div class="stat" style="color:#6e9fe9">03</div><strong style="margin-top:18px">Más criterio</strong><span>Detectar errores, poner límites y decidir cuándo una respuesta merece confianza.</span><span class="label">decidir mejor</span></div></div><div class="quote" style="margin-top:38px;color:var(--ink);background:#e4f1eb;border-left-color:#4ab795">La IA no sustituye tu mirada profesional.<br><span style="color:#287d69">Te da más espacio para usarla.</span></div><div class="foot"><span>LOGOPED-IA · LA EXPERIENCIA</span><span>02</span></div></article>
+    .hero {
+      height: 100%;
+      display: grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 42px;
+      align-items: center;
+    }
+    .hero-copy { position: relative; z-index: 2; }
+    .hero h1 { margin-top: 24px; }
+    .hero .intro {
+      max-width: 610px;
+      margin-top: 24px;
+      color: #c8d7d9;
+    }
+    .portrait-wrap {
+      position: relative;
+      height: 78%;
+      min-height: 390px;
+    }
+    .portrait-wrap:before {
+      content: "";
+      position: absolute;
+      inset: 8% -5% -3% 8%;
+      border-radius: 34px;
+      background: var(--mint);
+      transform: rotate(3deg);
+    }
+    .portrait-wrap img {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 28px;
+      object-fit: cover;
+      object-position: center 24%;
+      filter: saturate(.88);
+    }
+    .promise-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 28px;
+    }
+    .promise-row span {
+      padding: 8px 11px;
+      border-radius: 999px;
+      background: #ffffff0b;
+      border: 1px solid #ffffff22;
+      color: #d6e5e5;
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .promise-row b { color: var(--yellow); }
 
-<article class="slide light"><span class="eyebrow">02 · EL CAMBIO DE ESCALA</span><h2 style="margin-top:25px">No es una herramienta.<br>Es una nueva <span style="color:#4ab795">caja de herramientas.</span></h2><p class="lead muted">En la formación veremos ejemplos sencillos y aprenderemos a repetir el proceso con tus propios objetivos y materiales.</p><div class="grid g4" style="margin-top:42px"><div class="panel"><div class="stat">01</div><strong style="margin-top:18px">Entender</strong><span>Decidir qué quieres conseguir antes de abrir ninguna herramienta.</span></div><div class="panel"><div class="stat" style="color:#4ab795">02</div><strong style="margin-top:18px">Crear</strong><span>Pasar de una idea a una actividad, un cuento, un apoyo o un asistente.</span></div><div class="panel"><div class="stat" style="color:#e6a34c">03</div><strong style="margin-top:18px">Revisar</strong><span>Detectar errores y ajustar el resultado a cada persona y situación.</span></div><div class="panel"><div class="stat" style="color:#6e9fe9">04</div><strong style="margin-top:18px">Usar</strong><span>Llevarlo a consulta, aula, familias y trabajo diario.</span></div></div><div class="foot"><span>LOGOPED-IA · EL MAPA</span><span>03</span></div></article>
+    .familiar-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-top: 34px;
+      max-width: 950px;
+    }
+    .familiar {
+      padding: 20px 22px;
+      border-radius: 18px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      box-shadow: 0 12px 30px #1523320b;
+    }
+    .familiar small {
+      color: #4b8b78;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .08em;
+    }
+    .familiar strong {
+      display: block;
+      margin-top: 9px;
+      font-size: 18px;
+      line-height: 1.15;
+    }
+    .human-quote {
+      margin-top: 28px;
+      padding: 17px 21px;
+      border-left: 5px solid var(--coral);
+      background: #ffe6df;
+      border-radius: 0 15px 15px 0;
+      font-size: clamp(19px, 2vw, 28px);
+      font-weight: 850;
+      line-height: 1.12;
+    }
 
-<article class="slide dark"><span class="eyebrow">03 · MESA DE DEMOSTRACIÓN</span><h2 style="margin-top:22px">Hoy no solo hablamos.<br><span class="mint">Lo abrimos y lo probamos.</span></h2><p class="lead soft">Seis demostraciones cortas. Cada una enseña una capacidad distinta y termina en 60–90 segundos.</p><div class="demo-grid"><a class="demo-card" href="https://chatgpt.com/g/g-697fc28509e0819199179bfb0352b6e6-visualizador-narrativo-simbolico" target="_blank" rel="noopener" onclick="event.stopPropagation()"><small>GPT personalizado</small><strong>Visualizador narrativo</strong><span>De una experiencia o un caso a una propuesta visual.</span><em>90 s · Abrir GPT ↗</em></a><a class="demo-card" href="https://sonica-runner.vercel.app" target="_blank" rel="noopener" onclick="event.stopPropagation()"><small>Videojuego</small><strong>Sónica Runner</strong><span>Escucha, decisión y feedback dentro de una mecánica jugable.</span><em>90 s · Jugar ↗</em></a><a class="demo-card" href="https://foniafonia.github.io/logoped-ia-tools/evaluacion-comunicacion-adultos-pc.html" target="_blank" rel="noopener" onclick="event.stopPropagation()"><small>Evaluación</small><strong>Cribado de comunicación</strong><span>Preguntas, observación y resultado organizado en pantalla.</span><em>90 s · Evaluar ↗</em></a><a class="demo-card" href="demos/etica-60-segundos.html" target="_blank" rel="noopener" onclick="event.stopPropagation()"><small>Ética aplicada</small><strong>Semáforo ético</strong><span>Tres preguntas antes de usar una salida con un paciente.</span><em>60 s · Practicar ↗</em></a><a class="demo-card" href="https://foniafonia.github.io/logoped-ia-tools/codex-assets/saac/secuenciador-visual.html" target="_blank" rel="noopener" onclick="event.stopPropagation()"><small>Herramienta visual</small><strong>Secuenciador SAAC</strong><span>Ordenar pasos y hacer visible una secuencia funcional.</span><em>60 s · Construir ↗</em></a><a class="demo-card" href="https://chatgpt.com/g/g-6a097a4c73548191aa0e4d5d027bc4dc-radar-de-materiales-terapeuticos-y-educativos" target="_blank" rel="noopener" onclick="event.stopPropagation()"><small>GPT con criterio</small><strong>Radar de materiales</strong><span>Analizar si un recurso es útil antes de llevarlo a sesión.</span><em>90 s · Abrir radar ↗</em></a></div><div class="demo-note"><span><b>Ruta recomendada:</b> GPT → juego → evaluación → ética.</span><span>Las otras dos quedan como reserva.</span></div><div class="foot"><span>LOGOPED-IA · DEMOS EN DIRECTO</span><span>04</span></div></article>
+    .showroom {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 13px;
+      margin-top: 28px;
+    }
+    .show-card {
+      position: relative;
+      display: block;
+      min-height: 137px;
+      padding: 17px 18px;
+      border-radius: 18px;
+      color: white;
+      text-decoration: none;
+      background: var(--navy-2);
+      border: 1px solid #29465d;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+    }
+    .show-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--mint);
+      background: #19334b;
+    }
+    .show-card small {
+      display: block;
+      color: var(--mint);
+      font-size: 9px;
+      font-weight: 950;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    .show-card strong {
+      display: block;
+      margin-top: 9px;
+      font-size: 18px;
+      line-height: 1.06;
+    }
+    .show-card span {
+      display: block;
+      margin-top: 7px;
+      color: #b9cbd0;
+      font-size: 11px;
+      line-height: 1.28;
+    }
+    .show-card em {
+      display: block;
+      margin-top: 11px;
+      color: var(--yellow);
+      font-size: 10px;
+      font-weight: 900;
+      font-style: normal;
+      text-transform: uppercase;
+    }
+    .route {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin-top: 16px;
+      color: #c5d6d9;
+      font-size: 12px;
+    }
+    .route b { color: var(--yellow); }
 
-<article class="slide dark"><span class="eyebrow">03 · LO QUE PUEDES LLEGAR A CREAR</span><h2 style="margin-top:25px">Cuatro formas de llevar<br>una idea <span class="yellow">a la práctica.</span></h2><p class="lead soft">No aprenderás a repetir ejemplos ajenos. Aprenderás a construir propuestas propias a partir de objetivos reales.</p><div class="flow"><div class="node"><span class="number">01</span><strong style="margin-top:15px">Asistentes</strong><span>Te ordena ideas, prepara borradores y te hace preguntas útiles.</span></div><div class="node"><span class="number">02</span><strong style="margin-top:15px">Materiales</strong><span>Una actividad, ficha, cuento o apoyo adaptado a tu objetivo.</span></div><div class="node"><span class="number">03</span><strong style="margin-top:15px">Experiencias</strong><span>Un juego, una historia o una pantalla que invita a participar.</span></div><div class="node"><span class="number">04</span><strong style="margin-top:15px">Sistemas</strong><span>Un proceso que puedes repetir, revisar y mejorar con el tiempo.</span></div></div><div class="quote" style="margin-top:46px">La pregunta no es “¿qué herramienta uso?”.<br><span class="yellow">La pregunta es “¿qué quiero hacer posible?”</span></div><div class="foot"><span>LOGOPED-IA · CAPACIDADES</span><span>04</span></div></article>
+    .split {
+      height: 100%;
+      display: grid;
+      grid-template-columns: .92fr 1.08fr;
+      gap: 34px;
+      align-items: center;
+    }
+    .split.reverse { grid-template-columns: 1.08fr .92fr; }
+    .screen {
+      overflow: hidden;
+      border-radius: 22px;
+      background: white;
+      border: 5px solid white;
+      box-shadow: 0 24px 55px #0713212b;
+    }
+    .screen img {
+      display: block;
+      width: 100%;
+      height: 365px;
+      object-fit: cover;
+      object-position: top center;
+    }
+    .dark .screen { border-color: #1a3348; box-shadow: 0 24px 55px #0006; }
+    .caption {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      align-items: center;
+      padding: 12px 15px;
+      background: white;
+      color: var(--ink);
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .demo-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      margin-top: 23px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      color: var(--ink);
+      background: var(--lime);
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 950;
+      box-shadow: 0 8px 22px #0817271e;
+      transition: transform .18s ease;
+    }
+    .demo-button:hover { transform: translateY(-2px); }
+    .demo-button.secondary { background: var(--mint); }
+    .micro-list {
+      display: grid;
+      gap: 9px;
+      margin-top: 24px;
+    }
+    .micro-list span {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 750;
+    }
+    .dark .micro-list span { color: #c4d3d6; }
+    .micro-list i {
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--mint);
+      color: var(--ink);
+      font-size: 11px;
+      font-style: normal;
+      font-weight: 950;
+    }
 
-<article class="slide light"><span class="eyebrow">04 · CLÍNICA Y CRITERIO</span><h2 style="margin-top:25px">La IA puede escribir rápido.<br><span style="color:#4ab795">Tú decides si sirve.</span></h2><p class="lead muted">La formación no consiste en copiar una respuesta. Consiste en aprender a pedirla mejor, detectar lo que falta y ajustarla a una persona concreta.</p><div class="grid g2" style="margin-top:32px"><div class="shot tall"><img src="assets/fresh/radar-clinico.jpeg" alt="Radar clínico"><div class="caption"><h3>Antes de crear</h3><p>Definir objetivo, perfil, dificultad, contexto y qué queremos observar.</p></div></div><div class="shot tall"><img src="assets/fresh/control-consistencia.jpeg" alt="Control de consistencia clínica"><div class="caption"><h3>Antes de usar</h3><p>Comprobar lenguaje, instrucciones, seguridad, coherencia y posibilidades de adaptación.</p></div></div></div><div class="foot"><span>LOGOPED-IA · CALIDAD Y RESPONSABILIDAD</span><span>05</span></div></article>
+    .prompt-box {
+      margin-top: 26px;
+      padding: 19px 21px;
+      border-radius: 17px;
+      background: var(--navy-2);
+      border: 1px solid #2b4a60;
+      color: #d7e5e6;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .prompt-box b { color: var(--mint); }
 
-<article class="slide dark"><span class="eyebrow">05 · MATERIALES QUE RESPONDEN A UN OBJETIVO</span><h2 style="margin-top:25px">Del “hazme una actividad”<br>a <span class="mint">una experiencia diseñada.</span></h2><p class="lead soft">Vamos a trabajar cómo elegir el formato, graduar la dificultad, introducir feedback y hacer que la actividad sea útil antes de hacerla bonita.</p><div class="grid g3" style="margin-top:32px"><div class="shot"><img src="assets/fresh/golosinas-linguisticas.png" alt="Juego Golosinas lingüísticas"><div class="caption"><h3>Vocabulario con juego</h3><p>Una mecánica sencilla para activar palabras y decisiones.</p></div></div><div class="shot"><img src="assets/fresh/sapo-golosinas.png" alt="Actividad Sapo"><div class="caption"><h3>Consignas claras</h3><p>Imagen, palabra, pista y acción en una misma pantalla.</p></div></div><div class="shot"><img src="assets/fresh/discriminacion-auditiva-prompt-resultado.jpg" alt="Discriminación auditiva con IA"><div class="caption"><h3>Prompt con criterio</h3><p>El valor no está solo en la lista: está en cómo se plantea y se revisa.</p></div></div></div><div class="foot"><span>LOGOPED-IA · DISEÑO DE RECURSOS</span><span>06</span></div></article>
+    .ethics-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-top: 34px;
+    }
+    .ethics-card {
+      padding: 22px;
+      border-radius: 19px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+    }
+    .ethics-card .signal {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      margin-bottom: 18px;
+    }
+    .signal.red { background: #ec7469; box-shadow: 0 0 0 8px #fbe0dd; }
+    .signal.amber { background: #eeb64a; box-shadow: 0 0 0 8px #fdf0ce; }
+    .signal.green { background: #50c58a; box-shadow: 0 0 0 8px #daf2e5; }
+    .ethics-card p { margin-top: 8px; color: var(--muted); font-size: 13px; }
 
-<article class="slide light"><span class="eyebrow">06 · EXPERIENCIAS QUE ENSEÑAN</span><h2 style="margin-top:25px">Podemos crear materiales<br>que <span style="color:#4ab795">invitan a participar.</span></h2><p class="lead muted">Juegos, cuentos interactivos, narrativas visuales y propuestas que sirven para practicar, explicar y mantener la motivación.</p><div class="two-up" style="margin-top:30px"><div class="collage"><img class="a" src="assets/fresh/canva-storywizard-cuento.jpeg" alt="Cuento interactivo"><img class="b" src="assets/fresh/visualizador-narrativo-simbolico-portada.png" alt="Visualizador narrativo"><img class="c" src="assets/fresh/afasia-ia.jpeg" alt="Afasia e IA"></div><div><div class="bigquote">No es “hacer un juego”.<br><span style="color:#4ab795">Es diseñar una situación de aprendizaje.</span></div><p class="muted" style="margin-top:25px">Con un objetivo, un público, una secuencia, una respuesta y una forma de comprobar si ha funcionado.</p></div></div><div class="foot"><span>LOGOPED-IA · MULTIMODALIDAD</span><span>07</span></div></article>
+    .modules {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+      margin-top: 32px;
+    }
+    .module {
+      padding: 24px;
+      border-radius: 22px;
+      color: var(--ink);
+    }
+    .module:first-child { background: var(--mint); }
+    .module:last-child { background: var(--yellow); }
+    .module small {
+      font-size: 10px;
+      font-weight: 950;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    .module h3 { margin-top: 9px; font-size: 27px; }
+    .module ul {
+      margin: 17px 0 0;
+      padding-left: 19px;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+    .method-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin-top: 18px;
+    }
+    .method-row span {
+      padding: 10px 8px;
+      border-radius: 10px;
+      background: #ffffff0d;
+      border: 1px solid #ffffff1c;
+      color: #d1dfe0;
+      text-align: center;
+      font-size: 10px;
+      font-weight: 850;
+    }
 
-<article class="slide dark"><span class="eyebrow">07 · LA HERRAMIENTA IMPORTA MENOS QUE EL PROCESO</span><div class="two-up" style="margin-top:34px"><div><div class="stat mint">OBJETIVO<br>→ DISEÑO<br>→ PRUEBA</div><p class="soft" style="margin-top:26px;max-width:440px">La formación enseña el recorrido completo: desde la intención clínica hasta el recurso que puedes enseñar, probar y mejorar.</p></div><div class="shot contain"><img src="assets/fresh/ingenieria-prompts.jpeg" alt="Ingeniería de prompts aplicada a la logopedia"><div class="caption"><h3>Aprender a dirigir la IA</h3><p>Instrucciones, contexto, límites, formato de salida y control de calidad.</p></div></div></div><div class="grid g3" style="margin-top:38px"><div class="panel"><strong>Sin empezar de cero</strong><span>Plantillas y estructuras para acelerar el primer borrador.</span></div><div class="panel"><strong>Sin aceptar cualquier cosa</strong><span>Revisión profesional y control de consistencia.</span></div><div class="panel"><strong>Sin depender de una sola app</strong><span>Principios transferibles entre herramientas y proyectos.</span></div></div><div class="foot"><span>LOGOPED-IA · MÉTODO</span><span>08</span></div></article>
+    .closing-link {
+      display: inline-flex;
+      margin-top: 25px;
+      padding: 13px 18px;
+      border-radius: 12px;
+      color: var(--ink);
+      background: var(--mint);
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 950;
+    }
+    .nav {
+      position: fixed;
+      z-index: 10;
+      left: 50%;
+      bottom: 14px;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 9px;
+      align-items: center;
+      padding: 8px 11px;
+      border-radius: 999px;
+      background: #071321e8;
+      border: 1px solid #ffffff24;
+      backdrop-filter: blur(12px);
+    }
+    .nav button {
+      width: 32px;
+      height: 32px;
+      border: 0;
+      border-radius: 50%;
+      color: white;
+      background: transparent;
+      cursor: pointer;
+      font-size: 18px;
+    }
+    .nav button:hover { background: #ffffff19; }
+    .nav .demo-jump {
+      width: auto;
+      padding: 0 10px;
+      border-radius: 999px;
+      color: var(--mint);
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+    .counter {
+      min-width: 58px;
+      color: #d5e4e3;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 850;
+      letter-spacing: .08em;
+    }
+    .progress {
+      position: fixed;
+      z-index: 12;
+      top: 0;
+      left: 0;
+      width: 10%;
+      height: 4px;
+      background: var(--mint);
+      transition: width .3s ease;
+    }
+    .fullscreen {
+      position: fixed;
+      z-index: 10;
+      top: 14px;
+      right: 15px;
+      padding: 8px 11px;
+      border: 1px solid #ffffff22;
+      border-radius: 999px;
+      background: #071321a8;
+      color: white;
+      cursor: pointer;
+      font-size: 10px;
+      font-weight: 800;
+    }
 
-<article class="slide light"><span class="eyebrow">08 · EL RECORRIDO FORMATIVO</span><h2 style="margin-top:25px">Esto es lo que vamos<br>a aprender juntos.</h2><p class="lead muted">Cada bloque combina explicación, tutoriales, práctica y revisión. La meta no es mirar: es salir con algo que ya sea tuyo.</p><div class="timeline"><div class="tstep"><div class="dot">01</div><strong>Entender</strong><p>Qué puede hacer cada herramienta.</p></div><div class="tstep"><div class="dot" style="background:var(--mint)">02</div><strong>Diseñar</strong><p>Cómo traducir un objetivo a un recurso.</p></div><div class="tstep"><div class="dot" style="background:var(--yellow)">03</div><strong>Revisar</strong><p>Cómo comprobar si el resultado sirve.</p></div><div class="tstep"><div class="dot" style="background:var(--blue)">04</div><strong>Transferir</strong><p>Cómo llevarlo a consulta y aula.</p></div></div><div class="grid g3" style="margin-top:48px"><div class="panel"><strong>Tutoriales previos</strong><span>Una base común para llegar al directo preparados.</span></div><div class="panel"><strong>Tareas con tus proyectos</strong><span>Ejemplos, materiales y objetivos propios.</span></div><div class="panel"><strong>Revisión en directo</strong><span>Corrección, mejora y aprendizaje compartido.</span></div></div><div class="foot"><span>LOGOPED-IA · APRENDER HACIENDO</span><span>09</span></div></article>
+    @media (max-width: 800px) {
+      .deck, .stage { width: 100vw; height: 100svh; }
+      .stage { aspect-ratio: auto; }
+      .slide { padding: 49px 20px 68px; }
+      h1 { font-size: clamp(39px, 11vw, 55px); }
+      h2 { font-size: clamp(31px, 8.5vw, 43px); }
+      p { font-size: 13px; }
+      .lead { margin-top: 12px; }
+      .foot { left: 20px; right: 20px; bottom: 53px; }
+      .hero { grid-template-columns: 1fr; }
+      .portrait-wrap { display: none; }
+      .familiar-grid { gap: 8px; margin-top: 20px; }
+      .familiar { padding: 13px; }
+      .familiar strong { font-size: 13px; }
+      .human-quote { margin-top: 14px; padding: 12px 14px; font-size: 17px; }
+      .showroom { grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 16px; }
+      .show-card { min-height: 112px; padding: 12px; }
+      .show-card strong { font-size: 13px; }
+      .show-card span { font-size: 9px; }
+      .show-card em { margin-top: 6px; font-size: 8px; }
+      .route { display: none; }
+      .split, .split.reverse { grid-template-columns: 1fr; gap: 16px; align-content: center; }
+      .screen img { height: 210px; }
+      .split-copy h2 { font-size: 33px; }
+      .micro-list { margin-top: 13px; gap: 5px; }
+      .micro-list span { font-size: 10px; }
+      .demo-button { margin-top: 14px; }
+      .prompt-box { margin-top: 14px; padding: 13px; font-size: 10px; }
+      .ethics-grid { gap: 8px; margin-top: 20px; }
+      .ethics-card { padding: 13px; }
+      .ethics-card .signal { width: 27px; height: 27px; margin-bottom: 10px; }
+      .ethics-card h3 { font-size: 13px; }
+      .ethics-card p { font-size: 9px; }
+      .modules { gap: 9px; margin-top: 18px; }
+      .module { padding: 14px; }
+      .module h3 { font-size: 18px; }
+      .module ul { margin-top: 9px; font-size: 10px; }
+      .method-row { grid-template-columns: repeat(3, 1fr); }
+      .nav { bottom: 8px; }
+      .fullscreen { top: 9px; right: 9px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="deck">
+    <div class="progress" id="progress"></div>
+    <button class="fullscreen" id="fullscreen">Pantalla completa</button>
 
-<article class="slide dark"><span class="eyebrow">09 · DOS MÓDULOS, UN RECORRIDO</span><h2 style="margin-top:25px">Primero ampliar.<br>Después <span class="yellow">integrar.</span></h2><p class="lead soft">La propuesta para Extremadura está pensada para que el aprendizaje tenga continuidad y no se quede en una sesión inspiradora.</p><div class="grid g2" style="margin-top:35px"><div class="module one"><small>MÓDULO 1 · CONSTRUIR</small><h3>De la idea al recurso</h3><ul><li>Asistentes y peticiones claras</li><li>Materiales terapéuticos y educativos</li><li>Juegos, cuentos y recursos visuales</li><li>Primeros proyectos propios</li></ul></div><div class="module two"><small>MÓDULO 2 · INTEGRAR</small><h3>Del recurso al sistema</h3><ul><li>Casos y transferencia real</li><li>Adaptación y toma de decisiones</li><li>Privacidad, límites y revisión</li><li>Un flujo de trabajo sostenible</li></ul></div></div><p class="bigquote" style="margin-top:34px;color:white;font-size:clamp(19px,2.4vw,32px)">Directos con interacción · tutoriales · tareas · ejemplos del grupo · revisión · diferido</p><div class="foot"><span>LOGOPED-IA · EXTREMADURA</span><span>10</span></div></article>
+    <section class="stage" id="stage">
+      <article class="slide dark active">
+        <div class="hero">
+          <div class="hero-copy">
+            <span class="eyebrow">Webinar · Colegio de Logopedas de Extremadura</span>
+            <h1>No vengo a hablarte de IA.<br><span class="serif mint">Vengo a enseñártela.</span></h1>
+            <p class="intro">En 30 minutos vamos a abrir proyectos reales: un GPT, un videojuego, un cuaderno terapéutico, una herramienta de rehabilitación y una práctica de ética.</p>
+            <div class="promise-row">
+              <span><b>5</b> demos reales</span>
+              <span><b>30</b> minutos</span>
+              <span><b>0</b> tecnicismos innecesarios</span>
+            </div>
+            <p class="soft" style="margin-top:25px;font-size:12px">José Aserraf Cohén · Logoped-IA · Colmenia</p>
+          </div>
+          <div class="portrait-wrap"><img src="assets/fresh/portrait.png" alt="José Aserraf Cohén"></div>
+        </div>
+        <div class="foot"><span>LOGOPED-IA · EMPEZAMOS</span><span>01</span></div>
+      </article>
 
-<article class="slide light"><div class="hero" style="grid-template-columns:1.35fr .65fr;gap:30px"><div><span class="eyebrow">09 · CIERRE</span><h1 style="margin-top:30px">No necesitas saberlo todo.<br><span style="color:#4ab795">Necesitas aprender a construir.</span></h1><p style="margin-top:28px;max-width:600px;color:var(--muted)">La webinar es una ventana a lo que ya es posible. La formación es el espacio para hacerlo con tus objetivos, tus materiales y tu criterio profesional.</p><div class="quote" style="margin-top:35px;color:white">La IA no es el curso.<br><span class="yellow">El curso es aprender a trabajar mejor con ella.</span></div><p style="margin-top:28px;font-weight:850">Colegio de Logopedas de Extremadura · Logoped-IA · Colmenia</p></div><img class="portrait" src="assets/fresh/portrait.png" alt="José Aserraf Cohén"></div><div class="foot"><span>LOGOPED-IA · GRACIAS</span><span>12</span></div></article>
+      <article class="slide warm">
+        <span class="eyebrow">01 · ENTRE COMPAÑEROS</span>
+        <h2 style="margin-top:24px">Seguro que alguna vez<br><span class="serif">te ha pasado esto.</span></h2>
+        <div class="familiar-grid">
+          <div class="familiar"><small>IDEA</small><strong>“Sé lo que quiero trabajar, pero no tengo tiempo para crear el material.”</strong></div>
+          <div class="familiar"><small>CHATGPT</small><strong>“Le pido algo y me devuelve una actividad genérica que no usaría.”</strong></div>
+          <div class="familiar"><small>TECNOLOGÍA</small><strong>“Veo cosas increíbles, pero no sabría construirlas ni adaptarlas.”</strong></div>
+          <div class="familiar"><small>RESPONSABILIDAD</small><strong>“Me interesa la IA, pero no quiero meter la pata con un paciente.”</strong></div>
+        </div>
+        <div class="human-quote">La formación empieza justo ahí: <span class="coral">con lo que ya sabes como logopeda.</span></div>
+        <div class="foot"><span>LOGOPED-IA · PUNTO DE PARTIDA</span><span>02</span></div>
+      </article>
 
-</section><nav class="nav"><button id="prev">‹</button><span class="counter" id="counter">01 / 12</span><button id="next">›</button></nav><div class="hint">← → · espacio · clic · F pantalla completa</div></main>
-<script>const slides=[...document.querySelectorAll('.slide')],stage=document.getElementById('stage'),counter=document.getElementById('counter'),progress=document.getElementById('progress');let current=0;function show(i){current=(i+slides.length)%slides.length;slides.forEach((s,n)=>{s.classList.toggle('active',n===current);const f=s.querySelector('.foot span:last-child');if(f)f.textContent=String(n+1).padStart(2,'0')});counter.textContent=`${String(current+1).padStart(2,'0')} / ${String(slides.length).padStart(2,'0')}`;progress.style.width=`${(current+1)/slides.length*100}%`}prev.onclick=()=>show(current-1);next.onclick=()=>show(current+1);fullscreen.onclick=()=>document.documentElement.requestFullscreen?.();document.addEventListener('keydown',e=>{if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();show(current+1)}if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();show(current-1)}if(e.key.toLowerCase()==='f')document.documentElement.requestFullscreen?.();if(e.key==='Home')show(0);if(e.key==='End')show(slides.length-1)});stage.addEventListener('click',e=>{const x=e.clientX/innerWidth;if(x<.35)show(current-1);else if(x>.65)show(current+1)});let sx=null;stage.addEventListener('touchstart',e=>sx=e.changedTouches[0].clientX,{passive:true});stage.addEventListener('touchend',e=>{if(sx===null)return;const d=e.changedTouches[0].clientX-sx;if(Math.abs(d)>40)show(current+(d<0?1:-1));sx=null},{passive:true});show(0);</script>
-</body></html>
+      <article class="slide dark">
+        <span class="eyebrow">02 · MESA DE DEMOSTRACIÓN</span>
+        <h2 style="margin-top:22px">Estas son las cosas<br>que vamos a <span class="mint">abrir.</span></h2>
+        <p class="lead soft">Pulsa cualquier tarjeta. Cada demostración está pensada para entenderse en 60–90 segundos.</p>
+        <div class="showroom">
+          <a class="show-card" href="https://chatgpt.com/g/g-6a2e5e110d68819199696427cf36bee0-logoped-ia-evidence-pubmed-research-assistant" target="_blank" rel="noopener" onclick="event.stopPropagation()"><small>GPT personalizado</small><strong>Evidencia PubMed</strong><span>Buscar, ordenar y traducir evidencia a preguntas clínicas.</span><em>Abrir GPT ↗</em></a>
+          <a class="show-card" href="https://foniafonia.github.io/logoped-ia-tools/codex-assets/rubi-ia/index.html" target="_blank" rel="noopener" onclick="event.stopPropagation()"><small>Material terapéutico</small><strong>Cuaderno Rub-IA</strong><span>Crear y personalizar un cuaderno listo para imprimir.</span><em>Abrir cuaderno ↗</em></a>
+          <a class="show-card" href="https://fonomundos.vercel.app" target="_blank" rel="noopener" onclick="event.stopPropagation()"><small>Videojuego</small><strong>FonoMundos</strong><span>Jugar, adaptar y recoger feedback de uso real.</span><em>Entrar como invitado ↗</em></a>
+          <a class="show-card" href="https://foniawatch-rehab-demo.vercel.app" target="_blank" rel="noopener" onclick="event.stopPropagation()"><small>Rehabilitación</small><strong>FoniaWatch Rehab</strong><span>Voz, ritmo, afasia, lectura, movimiento y resultados.</span><em>Tocar el reloj ↗</em></a>
+          <a class="show-card" href="demos/etica-60-segundos.html" target="_blank" rel="noopener" onclick="event.stopPropagation()"><small>Ética aplicada</small><strong>Semáforo ético</strong><span>Tres preguntas antes de utilizar una salida con un paciente.</span><em>Practicar 60 s ↗</em></a>
+          <a class="show-card" href="https://academia-logoped-ia.vercel.app" target="_blank" rel="noopener" onclick="event.stopPropagation()"><small>El ecosistema</small><strong>Colmenia / Academia</strong><span>Formación, herramientas y comunidad en un mismo lugar.</span><em>Ver proyecto ↗</em></a>
+        </div>
+        <div class="route"><span><b>Ruta principal:</b> GPT → Rub-IA → FonoMundos → ética.</span><span>FoniaWatch y Colmenia quedan como golpe final.</span></div>
+        <div class="foot"><span>LOGOPED-IA · PULSA PARA ABRIR</span><span>03</span></div>
+      </article>
+
+      <article class="slide dark">
+        <div class="split">
+          <div class="split-copy">
+            <span class="eyebrow">03 · GPT PERSONALIZADO</span>
+            <h2 style="margin-top:22px">No se trata de preguntar más.<br><span class="serif mint">Se trata de preguntar mejor.</span></h2>
+            <p class="lead soft">Un GPT especializado puede ayudarte a buscar evidencia, comparar opciones y convertir artículos en preguntas que sí tienen sentido para tu práctica.</p>
+            <div class="prompt-box"><b>Ejemplo:</b> “Quiero revisar qué sabemos sobre intervención en conciencia fonológica en escolares. Separa evidencia, límites y preguntas pendientes.”</div>
+            <a class="demo-button" href="https://chatgpt.com/g/g-6a2e5e110d68819199696427cf36bee0-logoped-ia-evidence-pubmed-research-assistant" target="_blank" rel="noopener" onclick="event.stopPropagation()">Abrir Logoped-IA Evidence ↗</a>
+          </div>
+          <div class="screen">
+            <img src="assets/fresh/ingenieria-prompts.jpeg" alt="Ingeniería de prompts aplicada a la logopedia">
+            <div class="caption"><span>La herramienta busca. Tú formulas, contrastas y decides.</span><span>90 s</span></div>
+          </div>
+        </div>
+        <div class="foot"><span>LOGOPED-IA · EVIDENCIA Y PREGUNTAS</span><span>04</span></div>
+      </article>
+
+      <article class="slide paper">
+        <div class="split reverse">
+          <div class="screen">
+            <img src="assets/showcase/rubia.png" alt="Cuaderno terapéutico Rub-IA">
+            <div class="caption"><span>18 páginas y opciones de personalización profesional.</span><span>90 s</span></div>
+          </div>
+          <div class="split-copy">
+            <span class="eyebrow">04 · CREAR MATERIALES</span>
+            <h2 style="margin-top:22px">Un material que<br><span class="serif" style="color:#267461">no existía esta mañana.</span></h2>
+            <p class="lead muted">No hablamos de pedir una ficha al azar. Hablamos de decidir objetivo, nivel, pauta, progresión y formato hasta conseguir algo que puedas imprimir y adaptar.</p>
+            <div class="micro-list">
+              <span><i>1</i> Elegir qué queremos entrenar.</span>
+              <span><i>2</i> Graduar dificultad y tipo de ayuda.</span>
+              <span><i>3</i> Revisar y personalizar antes de usar.</span>
+            </div>
+            <a class="demo-button secondary" href="https://foniafonia.github.io/logoped-ia-tools/codex-assets/rubi-ia/index.html" target="_blank" rel="noopener" onclick="event.stopPropagation()">Abrir Cuaderno Rub-IA ↗</a>
+          </div>
+        </div>
+        <div class="foot"><span>LOGOPED-IA · DEL OBJETIVO AL MATERIAL</span><span>05</span></div>
+      </article>
+
+      <article class="slide light">
+        <div class="split">
+          <div class="split-copy">
+            <span class="eyebrow">05 · VIDEOJUEGOS CON PROPÓSITO</span>
+            <h2 style="margin-top:22px">Y sí: también podemos<br><span class="serif" style="color:#267461">hacer videojuegos.</span></h2>
+            <p class="lead muted">Pero el juego no es el objetivo. El objetivo es que una persona practique más, entienda qué tiene que hacer y reciba una respuesta clara.</p>
+            <div class="micro-list">
+              <span><i>✓</i> Conciencia fonológica y silábica.</span>
+              <span><i>✓</i> Diferentes niveles y perfiles.</span>
+              <span><i>✓</i> Uso como invitado y feedback real.</span>
+            </div>
+            <a class="demo-button" href="https://fonomundos.vercel.app" target="_blank" rel="noopener" onclick="event.stopPropagation()">Entrar en FonoMundos ↗</a>
+          </div>
+          <div class="screen">
+            <img src="assets/showcase/fonomundos.png" alt="FonoMundos">
+            <div class="caption"><span>Entra como invitado y elige “Empieza aquí”.</span><span>90 s</span></div>
+          </div>
+        </div>
+        <div class="foot"><span>LOGOPED-IA · JUGAR PARA PRACTICAR</span><span>06</span></div>
+      </article>
+
+      <article class="slide dark">
+        <div class="split reverse">
+          <div class="screen">
+            <img src="assets/showcase/foniawatch.png" alt="FoniaWatch Rehab">
+            <div class="caption"><span>Una maqueta interactiva: los botones funcionan.</span><span>90 s</span></div>
+          </div>
+          <div class="split-copy">
+            <span class="eyebrow">06 · EVALUAR Y ACOMPAÑAR</span>
+            <h2 style="margin-top:22px">La sesión puede continuar<br><span class="serif mint">fuera de la mesa.</span></h2>
+            <p class="lead soft">FoniaWatch reúne voz, ritmo, afasia, lectura, escritura, movimiento y resultados. Sirve para imaginar seguimiento, biofeedback y práctica entre sesiones.</p>
+            <div class="micro-list">
+              <span><i>1</i> Registrar ejecución y tiempos.</span>
+              <span><i>2</i> Dar una señal visual o háptica.</span>
+              <span><i>3</i> Revisar resultados con el profesional.</span>
+            </div>
+            <a class="demo-button" href="https://foniawatch-rehab-demo.vercel.app" target="_blank" rel="noopener" onclick="event.stopPropagation()">Tocar FoniaWatch ↗</a>
+          </div>
+        </div>
+        <div class="foot"><span>LOGOPED-IA · SEGUIMIENTO Y BIOFEEDBACK</span><span>07</span></div>
+      </article>
+
+      <article class="slide warm">
+        <span class="eyebrow">07 · LA PARTE MÁS IMPORTANTE</span>
+        <h2 style="margin-top:24px">Aprender IA también es<br><span class="serif">saber cuándo parar.</span></h2>
+        <p class="lead muted">Una respuesta bonita puede estar equivocada. Por eso la ética no irá al final del curso: estará dentro de cada práctica.</p>
+        <div class="ethics-grid">
+          <div class="ethics-card"><div class="signal red"></div><h3>No compartimos datos identificables</h3><p>Nombres, imágenes, historias clínicas o información que pueda reconocer a una persona.</p></div>
+          <div class="ethics-card"><div class="signal amber"></div><h3>No aceptamos una respuesta sin revisarla</h3><p>La IA puede inventar, simplificar o sonar segura cuando no debería.</p></div>
+          <div class="ethics-card"><div class="signal green"></div><h3>La decisión profesional sigue siendo nuestra</h3><p>La herramienta ayuda a pensar y construir. No diagnostica ni decide por nosotros.</p></div>
+        </div>
+        <a class="demo-button" href="demos/etica-60-segundos.html" target="_blank" rel="noopener" onclick="event.stopPropagation()">Hacer el semáforo ético ↗</a>
+        <div class="foot"><span>LOGOPED-IA · PRIVACIDAD, REVISIÓN Y RESPONSABILIDAD</span><span>08</span></div>
+      </article>
+
+      <article class="slide dark">
+        <span class="eyebrow">08 · LA FORMACIÓN DE EXTREMADURA</span>
+        <h2 style="margin-top:23px">Verlo impresiona.<br><span class="serif yellow">Aprender a hacerlo transforma.</span></h2>
+        <p class="lead soft">Dos módulos potentes para pasar de “yo no sé de IA” a construir, revisar y aplicar proyectos propios.</p>
+        <div class="modules">
+          <div class="module">
+            <small>MÓDULO 1 · CONSTRUIR</small>
+            <h3>De la idea al primer recurso</h3>
+            <ul>
+              <li>Usar ChatGPT y GPTs sin hablar en técnico.</li>
+              <li>Crear materiales y variantes con un objetivo claro.</li>
+              <li>Diseñar un primer recurso interactivo.</li>
+              <li>Aprender a revisar lo que devuelve la IA.</li>
+            </ul>
+          </div>
+          <div class="module">
+            <small>MÓDULO 2 · INTEGRAR</small>
+            <h3>Del recurso a tu forma de trabajar</h3>
+            <ul>
+              <li>Adaptar herramientas a casos y contextos reales.</li>
+              <li>Crear juegos, apoyos y sistemas de seguimiento.</li>
+              <li>Trabajar privacidad, límites y criterio.</li>
+              <li>Construir un flujo sostenible para consulta y aula.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="method-row">
+          <span>Directos con interacción</span>
+          <span>Disponible en diferido</span>
+          <span>Tutoriales breves</span>
+          <span>Tareas propias</span>
+          <span>Revisión en grupo</span>
+        </div>
+        <div class="foot"><span>LOGOPED-IA · APRENDER HACIENDO</span><span>09</span></div>
+      </article>
+
+      <article class="slide dark">
+        <div class="hero">
+          <div class="hero-copy">
+            <span class="eyebrow">09 · CIERRE</span>
+            <h1>No quiero que salgas pensando:<br><span class="serif yellow">“qué bonito”.</span></h1>
+            <p class="intro" style="font-size:clamp(20px,2.1vw,31px);font-weight:800;line-height:1.16">Quiero que salgas pensando:<br><span class="mint">“yo puedo aprender a hacer esto”.</span></p>
+            <p class="soft" style="margin-top:24px;max-width:610px">La webinar enseña lo que ya es posible. La formación te acompaña para construirlo con tus objetivos, tus materiales y tu criterio profesional.</p>
+            <a class="closing-link" href="https://academia-logoped-ia.vercel.app" target="_blank" rel="noopener" onclick="event.stopPropagation()">Conocer Colmenia / Logoped-IA ↗</a>
+            <p class="soft" style="margin-top:20px;font-size:12px">Colegio de Logopedas de Extremadura · José Aserraf Cohén</p>
+          </div>
+          <div class="portrait-wrap"><img src="assets/fresh/portrait.png" alt="José Aserraf Cohén"></div>
+        </div>
+        <div class="foot"><span>LOGOPED-IA · GRACIAS</span><span>10</span></div>
+      </article>
+    </section>
+
+    <nav class="nav" aria-label="Navegación de la presentación">
+      <button id="prev" aria-label="Slide anterior">‹</button>
+      <button class="demo-jump" id="demoJump" aria-label="Ir a la mesa de demostración">Demos</button>
+      <span class="counter" id="counter">01 / 10</span>
+      <button id="next" aria-label="Slide siguiente">›</button>
+    </nav>
+  </main>
+
+  <script>
+    const slides = [...document.querySelectorAll('.slide')];
+    const counter = document.getElementById('counter');
+    const progress = document.getElementById('progress');
+    const stage = document.getElementById('stage');
+    let current = 0;
+
+    function show(index) {
+      current = (index + slides.length) % slides.length;
+      slides.forEach((slide, number) => slide.classList.toggle('active', number === current));
+      counter.textContent = `${String(current + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`;
+      progress.style.width = `${((current + 1) / slides.length) * 100}%`;
+    }
+
+    document.getElementById('prev').onclick = () => show(current - 1);
+    document.getElementById('next').onclick = () => show(current + 1);
+    document.getElementById('demoJump').onclick = () => show(2);
+    document.getElementById('fullscreen').onclick = () => document.documentElement.requestFullscreen?.();
+
+    document.addEventListener('keydown', (event) => {
+      if (['ArrowRight', 'PageDown', ' '].includes(event.key)) {
+        event.preventDefault();
+        show(current + 1);
+      }
+      if (['ArrowLeft', 'PageUp'].includes(event.key)) {
+        event.preventDefault();
+        show(current - 1);
+      }
+      if (event.key.toLowerCase() === 'd') show(2);
+      if (event.key.toLowerCase() === 'f') document.documentElement.requestFullscreen?.();
+      if (event.key === 'Home') show(0);
+      if (event.key === 'End') show(slides.length - 1);
+    });
+
+    stage.addEventListener('click', (event) => {
+      const ratio = event.clientX / innerWidth;
+      if (ratio < .32) show(current - 1);
+      if (ratio > .68) show(current + 1);
+    });
+
+    let touchStart = null;
+    stage.addEventListener('touchstart', (event) => {
+      touchStart = event.changedTouches[0].clientX;
+    }, { passive: true });
+    stage.addEventListener('touchend', (event) => {
+      if (touchStart === null) return;
+      const distance = event.changedTouches[0].clientX - touchStart;
+      if (Math.abs(distance) > 40) show(current + (distance < 0 ? 1 : -1));
+      touchStart = null;
+    }, { passive: true });
+
+    show(0);
+  </script>
+</body>
+</html>
