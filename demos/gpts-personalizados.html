@@ -137,7 +137,7 @@
     .chooser p { margin: 0; color: #aebfc4; font-size: 11px; }
     .choice-row {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       gap: 9px;
     }
     .choice {
@@ -193,6 +193,8 @@
     }
     .gpt-card.dimmed { opacity: .38; }
     .gpt-card.selected { outline: 3px solid var(--accent); outline-offset: 2px; }
+    .artifact-feature.selected { outline: 3px solid var(--coral); outline-offset: 3px; }
+    .artifact-feature.dimmed { opacity: .38; }
     .icon {
       display: grid;
       place-items: center;
@@ -246,6 +248,95 @@
       font-weight: 900;
       text-transform: uppercase;
     }
+    .artifact-feature {
+      display: grid;
+      grid-template-columns: .78fr 1.22fr;
+      gap: 0;
+      margin-top: 18px;
+      overflow: hidden;
+      border: 1px solid #c9bdb3;
+      border-radius: 26px;
+      background: #fffaf4;
+      box-shadow: 0 18px 48px #442a1d12;
+      transition: opacity .22s ease, outline .22s ease;
+    }
+    .artifact-copy {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 30px;
+      background:
+        radial-gradient(circle at 0 100%, #f08a7235 0, transparent 18rem),
+        #fffaf4;
+    }
+    .artifact-copy small {
+      color: #9a594a;
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    .artifact-copy h2 {
+      margin: 9px 0 10px;
+      color: var(--navy);
+      font-family: "Fraunces", serif;
+      font-size: clamp(32px, 3.3vw, 48px);
+      line-height: 1;
+    }
+    .artifact-copy > p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .artifact-list {
+      display: grid;
+      gap: 8px;
+      margin: 18px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    .artifact-list li {
+      display: flex;
+      gap: 8px;
+      color: #45565d;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .artifact-list li::before {
+      color: #b96550;
+      content: "●";
+    }
+    .artifact-copy .open {
+      align-self: flex-start;
+      color: white;
+      background: #b7654f;
+    }
+    .artifact-screen {
+      position: relative;
+      min-height: 390px;
+      overflow: hidden;
+      background: #e8e4dc;
+    }
+    .artifact-screen img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+    }
+    .artifact-badge {
+      position: absolute;
+      right: 14px;
+      bottom: 14px;
+      padding: 9px 11px;
+      border: 1px solid #ffffff66;
+      border-radius: 10px;
+      color: white;
+      background: #17242de8;
+      font-size: 9px;
+      font-weight: 800;
+      backdrop-filter: blur(8px);
+    }
     .safety {
       display: flex;
       align-items: center;
@@ -271,10 +362,14 @@
       .chooser-head { display: block; }
       .chooser p { margin-top: 4px; }
       .choice-row { grid-template-columns: repeat(2, 1fr); }
+      .choice:last-child { grid-column: 1 / -1; }
       .grid { grid-template-columns: 1fr; }
       .gpt-card { min-height: auto; padding: 19px; }
       .card-copy h2 { font-size: 22px; }
       .back { font-size: 9px; }
+      .artifact-feature { grid-template-columns: 1fr; }
+      .artifact-copy { padding: 22px; }
+      .artifact-screen { min-height: 260px; }
     }
   </style>
 </head>
@@ -303,6 +398,7 @@
         <button class="choice" data-target="shield">Revisar privacidad</button>
         <button class="choice" data-target="evidence">Buscar evidencia</button>
         <button class="choice" data-target="cuadernillos">Crear un cuadernillo</button>
+        <button class="choice" data-target="antes">Preparar una consulta</button>
       </div>
     </section>
 
@@ -352,12 +448,31 @@
       </article>
     </section>
 
+    <section class="artifact-feature selectable" id="antes">
+      <div class="artifact-copy">
+        <small>Herramienta interactiva · No es un GPT</small>
+        <h2>Antes de consultar</h2>
+        <p>Una experiencia para que la persona o su familia pueda explicar mejor qué le preocupa y llegar a la primera consulta con sus ideas más ordenadas.</p>
+        <ul class="artifact-list">
+          <li>Explica qué es la logopedia con palabras sencillas.</li>
+          <li>Ayuda a describir la preocupación sin poner etiquetas.</li>
+          <li>Adapta las preguntas al área que la persona señala.</li>
+          <li>No diagnostica ni sustituye una valoración profesional.</li>
+        </ul>
+        <a class="open" href="https://claude.ai/code/artifact/7ca48a01-2f56-4e21-a9d2-1c3343747d29" target="_blank" rel="noopener">Probar la experiencia ↗</a>
+      </div>
+      <div class="artifact-screen">
+        <img src="../assets/showcase/antes-de-consultar.png" alt="Herramienta Antes de consultar">
+        <span class="artifact-badge">Demo anónima · datos solo en el navegador</span>
+      </div>
+    </section>
+
     <div class="safety">● Antes de abrirlos: no introduzcas nombres, imágenes, informes ni datos que permitan identificar a una persona.</div>
   </main>
 
   <script>
     const choices = [...document.querySelectorAll(".choice")];
-    const cards = [...document.querySelectorAll(".gpt-card")];
+    const cards = [...document.querySelectorAll(".gpt-card, .artifact-feature")];
 
     choices.forEach((choice) => {
       choice.addEventListener("click", () => {
