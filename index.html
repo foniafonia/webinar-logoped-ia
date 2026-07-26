@@ -396,6 +396,105 @@
     .signal.green { background: #50c58a; box-shadow: 0 0 0 8px #daf2e5; }
     .ethics-card p { margin-top: 8px; color: var(--muted); font-size: 13px; }
 
+    .colmenia-layout {
+      display: grid;
+      grid-template-columns: .72fr 1.28fr;
+      gap: 28px;
+      height: 100%;
+      align-items: center;
+    }
+    .colmenia-copy h2 { max-width: 500px; }
+    .colmenia-copy .lead { max-width: 430px; }
+    .colmenia-points {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-top: 23px;
+    }
+    .colmenia-points span {
+      padding: 10px 11px;
+      border: 1px solid #ffffff19;
+      border-radius: 11px;
+      background: #ffffff0b;
+      color: #d8e5e4;
+      font-size: 10px;
+      font-weight: 850;
+    }
+    .colmenia-points b {
+      display: block;
+      margin-bottom: 3px;
+      color: var(--yellow);
+      font-size: 12px;
+    }
+    .colmenia-viewer {
+      overflow: hidden;
+      border: 1px solid #ffffff20;
+      border-radius: 24px;
+      background: #0b1721;
+      box-shadow: 0 28px 70px #0007;
+    }
+    .colmenia-tabs {
+      display: flex;
+      gap: 8px;
+      padding: 12px;
+      background: #0b1721;
+    }
+    .colmenia-tab {
+      flex: 1;
+      padding: 10px 12px;
+      border: 1px solid #ffffff1d;
+      border-radius: 10px;
+      background: transparent;
+      color: #9fb4b9;
+      cursor: pointer;
+      text-align: left;
+      font-size: 10px;
+      font-weight: 900;
+    }
+    .colmenia-tab small {
+      display: block;
+      margin-top: 3px;
+      color: inherit;
+      font-size: 8px;
+      font-weight: 650;
+    }
+    .colmenia-tab.active {
+      border-color: var(--yellow);
+      background: var(--yellow);
+      color: var(--ink);
+    }
+    .colmenia-shot {
+      position: relative;
+      height: 390px;
+      background: #eee8da;
+    }
+    .colmenia-shot img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      animation: colmeniaReveal .45s ease both;
+    }
+    .colmenia-note {
+      position: absolute;
+      right: 14px;
+      bottom: 14px;
+      max-width: 250px;
+      padding: 10px 12px;
+      border: 1px solid #ffffff28;
+      border-radius: 12px;
+      background: #071321e8;
+      color: white;
+      font-size: 9px;
+      font-weight: 800;
+      backdrop-filter: blur(10px);
+    }
+    @keyframes colmeniaReveal {
+      from { opacity: .2; transform: scale(1.015); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
     .modules {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -552,6 +651,16 @@
       .ethics-card .signal { width: 27px; height: 27px; margin-bottom: 10px; }
       .ethics-card h3 { font-size: 13px; }
       .ethics-card p { font-size: 9px; }
+      .colmenia-layout { grid-template-columns: 1fr; gap: 13px; align-content: center; }
+      .colmenia-copy h2 { font-size: 29px; }
+      .colmenia-copy .lead { font-size: 11px; }
+      .colmenia-points { margin-top: 12px; }
+      .colmenia-points span { padding: 7px 8px; font-size: 8px; }
+      .colmenia-points b { font-size: 9px; }
+      .colmenia-tabs { padding: 7px; }
+      .colmenia-tab { padding: 7px 8px; font-size: 8px; }
+      .colmenia-shot { height: 235px; }
+      .colmenia-note { right: 8px; bottom: 8px; max-width: 180px; padding: 7px 9px; font-size: 7px; }
       .modules { gap: 9px; margin-top: 18px; }
       .module { padding: 14px; }
       .module h3 { font-size: 18px; }
@@ -573,9 +682,9 @@
           <div class="hero-copy">
             <span class="eyebrow">Webinar · Colegio de Logopedas de Extremadura</span>
             <h1>No vengo a hablarte de IA.<br><span class="serif mint">Vengo a enseñártela.</span></h1>
-            <p class="intro">En 30 minutos vamos a abrir proyectos reales: un GPT, un videojuego, un cuaderno terapéutico, una herramienta de rehabilitación y una práctica de ética.</p>
+            <p class="intro">En 30 minutos vamos a abrir proyectos reales: un GPT, materiales, videojuegos, rehabilitación, ética y una comunidad profesional que sigue trabajando cuando termina la clase.</p>
             <div class="promise-row">
-              <span><b>5</b> demos reales</span>
+              <span><b>6</b> demos reales</span>
               <span><b>30</b> minutos</span>
               <span><b>0</b> tecnicismos innecesarios</span>
             </div>
@@ -609,9 +718,9 @@
           <a class="show-card" href="https://fonomundos.vercel.app" target="_blank" rel="noopener" onclick="event.stopPropagation()"><small>Videojuego</small><strong>FonoMundos</strong><span>Jugar, adaptar y recoger feedback de uso real.</span><em>Entrar como invitado ↗</em></a>
           <a class="show-card" href="https://foniawatch-rehab-demo.vercel.app" target="_blank" rel="noopener" onclick="event.stopPropagation()"><small>Rehabilitación</small><strong>FoniaWatch Rehab</strong><span>Voz, ritmo, afasia, lectura, movimiento y resultados.</span><em>Tocar el reloj ↗</em></a>
           <a class="show-card" href="demos/etica-60-segundos.html" target="_blank" rel="noopener" onclick="event.stopPropagation()"><small>Ética aplicada</small><strong>Semáforo ético</strong><span>Tres preguntas antes de utilizar una salida con un paciente.</span><em>Practicar 60 s ↗</em></a>
-          <a class="show-card" href="https://academia-logoped-ia.vercel.app" target="_blank" rel="noopener" onclick="event.stopPropagation()"><small>El ecosistema</small><strong>Colmenia / Academia</strong><span>Formación, herramientas y comunidad en un mismo lugar.</span><em>Ver proyecto ↗</em></a>
+          <a class="show-card" href="#colmenia" onclick="event.preventDefault();event.stopPropagation();show(8)"><small>El ecosistema vivo</small><strong>Colmenia</strong><span>Personas, casos, laboratorios, proyectos e IA conectados.</span><em>Ver Nexo y Enjambre →</em></a>
         </div>
-        <div class="route"><span><b>Ruta principal:</b> GPT → Rub-IA → FonoMundos → ética.</span><span>FoniaWatch y Colmenia quedan como golpe final.</span></div>
+        <div class="route"><span><b>La lógica:</b> preguntar → crear → probar → evaluar → revisar.</span><span>Y después, seguir aprendiendo juntos en Colmenia.</span></div>
         <div class="foot"><span>LOGOPED-IA · PULSA PARA ABRIR</span><span>03</span></div>
       </article>
 
@@ -708,8 +817,35 @@
         <div class="foot"><span>LOGOPED-IA · PRIVACIDAD, REVISIÓN Y RESPONSABILIDAD</span><span>08</span></div>
       </article>
 
+      <article class="slide dark" id="colmenia">
+        <div class="colmenia-layout">
+          <div class="colmenia-copy">
+            <span class="eyebrow">08 · COLMENIA, POR DENTRO</span>
+            <h2 style="margin-top:22px">La formación termina.<br><span class="serif yellow">La colmena sigue despierta.</span></h2>
+            <p class="lead soft">No es una carpeta llena de vídeos. Es un lugar para entrar con una duda, construir algo útil, enseñarlo, recibir ayuda y volver a mejorarlo.</p>
+            <div class="colmenia-points">
+              <span><b>Aprender</b>Formación breve y práctica</span>
+              <span><b>Construir</b>Laboratorios y prototipos</span>
+              <span><b>Compartir</b>Casos y comunidad</span>
+              <span><b>Mejorar</b>IA Colmenia y revisión</span>
+            </div>
+          </div>
+          <div class="colmenia-viewer">
+            <div class="colmenia-tabs">
+              <button class="colmenia-tab" data-colmenia-src="assets/showcase/colmenia-vivo.png" data-colmenia-note="El Nexo ordena lo que tienes: laboratorios, casos, recursos, prototipos y personas.">EL NEXO<small>Todo conectado, nada perdido</small></button>
+              <button class="colmenia-tab active" data-colmenia-src="assets/showcase/colmenia-vivo-b.png" data-colmenia-note="El Enjambre muestra lo que está vivo ahora: profesionales dentro, proyectos activos y conocimiento en movimiento.">EL ENJAMBRE EN VIVO<small>La comunidad está trabajando</small></button>
+            </div>
+            <div class="colmenia-shot">
+              <img id="colmeniaShot" src="assets/showcase/colmenia-vivo-b.png" alt="Nueva Colmenia: el Enjambre en vivo">
+              <div class="colmenia-note" id="colmeniaNote">El Enjambre muestra lo que está vivo ahora: profesionales dentro, proyectos activos y conocimiento en movimiento.</div>
+            </div>
+          </div>
+        </div>
+        <div class="foot"><span>LOGOPED-IA · SISTEMA OPERATIVO PROFESIONAL</span><span>09</span></div>
+      </article>
+
       <article class="slide dark">
-        <span class="eyebrow">08 · LA FORMACIÓN DE EXTREMADURA</span>
+        <span class="eyebrow">09 · LA FORMACIÓN DE EXTREMADURA</span>
         <h2 style="margin-top:23px">Verlo impresiona.<br><span class="serif yellow">Aprender a hacerlo transforma.</span></h2>
         <p class="lead soft">Dos módulos potentes para pasar de “yo no sé de IA” a construir, revisar y aplicar proyectos propios.</p>
         <div class="modules">
@@ -741,29 +877,29 @@
           <span>Tareas propias</span>
           <span>Revisión en grupo</span>
         </div>
-        <div class="foot"><span>LOGOPED-IA · APRENDER HACIENDO</span><span>09</span></div>
+        <div class="foot"><span>LOGOPED-IA · APRENDER HACIENDO</span><span>10</span></div>
       </article>
 
       <article class="slide dark">
         <div class="hero">
           <div class="hero-copy">
-            <span class="eyebrow">09 · CIERRE</span>
+            <span class="eyebrow">10 · CIERRE</span>
             <h1>No quiero que salgas pensando:<br><span class="serif yellow">“qué bonito”.</span></h1>
             <p class="intro" style="font-size:clamp(20px,2.1vw,31px);font-weight:800;line-height:1.16">Quiero que salgas pensando:<br><span class="mint">“yo puedo aprender a hacer esto”.</span></p>
             <p class="soft" style="margin-top:24px;max-width:610px">La webinar enseña lo que ya es posible. La formación te acompaña para construirlo con tus objetivos, tus materiales y tu criterio profesional.</p>
-            <a class="closing-link" href="https://academia-logoped-ia.vercel.app" target="_blank" rel="noopener" onclick="event.stopPropagation()">Conocer Colmenia / Logoped-IA ↗</a>
+            <a class="closing-link" href="https://colmenia-logoped-ia.fonia.chatgpt.site" target="_blank" rel="noopener" onclick="event.stopPropagation()">Conocer la nueva Colmenia ↗</a>
             <p class="soft" style="margin-top:20px;font-size:12px">Colegio de Logopedas de Extremadura · José Aserraf Cohén</p>
           </div>
           <div class="portrait-wrap"><img src="assets/fresh/portrait.png" alt="José Aserraf Cohén"></div>
         </div>
-        <div class="foot"><span>LOGOPED-IA · GRACIAS</span><span>10</span></div>
+        <div class="foot"><span>LOGOPED-IA · GRACIAS</span><span>11</span></div>
       </article>
     </section>
 
     <nav class="nav" aria-label="Navegación de la presentación">
       <button id="prev" aria-label="Slide anterior">‹</button>
       <button class="demo-jump" id="demoJump" aria-label="Ir a la mesa de demostración">Demos</button>
-      <span class="counter" id="counter">01 / 10</span>
+      <span class="counter" id="counter">01 / 11</span>
       <button id="next" aria-label="Slide siguiente">›</button>
     </nav>
   </main>
@@ -786,6 +922,19 @@
     document.getElementById('next').onclick = () => show(current + 1);
     document.getElementById('demoJump').onclick = () => show(2);
     document.getElementById('fullscreen').onclick = () => document.documentElement.requestFullscreen?.();
+    document.querySelectorAll('.colmenia-tab').forEach((button) => {
+      button.addEventListener('click', (event) => {
+        event.stopPropagation();
+        document.querySelectorAll('.colmenia-tab').forEach((tab) => tab.classList.remove('active'));
+        button.classList.add('active');
+        const shot = document.getElementById('colmeniaShot');
+        shot.src = button.dataset.colmeniaSrc;
+        shot.alt = `Nueva Colmenia: ${button.firstChild.textContent.trim()}`;
+        shot.style.animation = 'none';
+        requestAnimationFrame(() => { shot.style.animation = ''; });
+        document.getElementById('colmeniaNote').textContent = button.dataset.colmeniaNote;
+      });
+    });
 
     document.addEventListener('keydown', (event) => {
       if (['ArrowRight', 'PageDown', ' '].includes(event.key)) {
