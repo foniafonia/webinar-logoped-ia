@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Las silabas en mis manos</title>
+  <link rel="icon" href="data:," />
+  <link rel="stylesheet" href="./styles.css?v=syllable-hands-v16" />
+</head>
+<body>
+  <main class="app">
+    <section id="stage" class="stage" aria-label="Silabas con dedos desplegados">
+      <video id="camera" class="camera-feed" playsinline muted></video>
+      <div id="syllableTargets" class="syllable-targets"></div>
+      <button id="joinCircle" class="join-circle" type="button" aria-label="Juntar silabas">
+        <span id="joinText">+</span>
+      </button>
+      <canvas id="handsLayer" class="hands-layer"></canvas>
+      <button id="cameraButton" class="camera-button" type="button">Activar camara y sonido</button>
+      <div class="target-word" aria-label="Palabra objetivo">
+        <span>Objetivo</span>
+        <strong id="targetWord">BALA</strong>
+      </div>
+    </section>
+  </main>
+
+  <script src="./app.js?v=syllable-hands-v16"></script>
+</body>
+</html>
