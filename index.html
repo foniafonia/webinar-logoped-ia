@@ -516,16 +516,19 @@
 
     .modules {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 18px;
-      margin-top: 32px;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-top: 28px;
     }
     .module {
-      padding: 24px;
+      padding: 21px;
       border-radius: 22px;
       color: var(--ink);
+      background: #fff7;
+      border: 1px solid #ffffff24;
     }
     .module:first-child { background: var(--mint); }
+    .module:nth-child(2) { background: #e8f0ff; }
     .module:last-child { background: var(--yellow); }
     .module small {
       font-size: 11.5px;
@@ -533,7 +536,7 @@
       letter-spacing: .1em;
       text-transform: uppercase;
     }
-    .module h3 { margin-top: 9px; font-size: 30px; }
+    .module h3 { margin-top: 9px; font-size: clamp(22px, 2vw, 30px); }
     .module ul {
       margin: 17px 0 0;
       padding-left: 19px;
@@ -542,7 +545,7 @@
     }
     .method-row {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
       gap: 8px;
       margin-top: 18px;
     }
@@ -907,74 +910,73 @@
         <div class="foot"><span>LOGOPED-IA · EVIDENCIA Y PREGUNTAS</span><span>04</span></div>
       </article>
 
-      <!-- 05 · CREAR MATERIALES -->
+      <!-- 05 · EL PATRÓN -->
       <article class="slide paper">
         <div class="split reverse">
           <div class="screen">
             <img src="assets/showcase/rubia.png" alt="Cuaderno terapéutico Rub-IA">
-            <div class="caption"><span>Un cuaderno completo, personalizable y listo para imprimir.</span><span>90 s</span></div>
+            <div class="caption"><span>No enseñamos un cuaderno. Enseñamos una forma de pensar.</span><span>patrón</span></div>
           </div>
           <div class="split-copy">
-            <span class="eyebrow reveal">04 · CREAR MATERIAL A MEDIDA</span>
-            <h2 class="reveal" style="margin-top:22px">Un cuaderno que<br><span class="serif" style="color:#267461">no existía esta mañana.</span></h2>
-            <p class="lead muted reveal">No es pedir “una ficha” al azar. Es decidir objetivo, nivel, tipo de ayuda y progresión hasta tener algo que puedes imprimir, revisar y adaptar a tu paciente.</p>
+            <span class="eyebrow reveal">04 · LO QUE HAY DEBAJO</span>
+            <h2 class="reveal" style="margin-top:22px">La IA no sustituye<br><span class="serif" style="color:#267461">tu criterio.</span></h2>
+            <p class="lead muted reveal">Lo potente no es que salga “algo bonito”. Lo potente es aprender a convertir una necesidad clínica en instrucciones claras, revisar el resultado y dejarlo listo para una persona concreta.</p>
             <div class="micro-list reveal">
-              <span><i>1</i> Eliges qué quieres entrenar y con quién.</span>
-              <span><i>2</i> Gradúas la dificultad y el tipo de ayuda.</span>
-              <span><i>3</i> Revisas y personalizas antes de usarlo.</span>
+              <span><i>1</i> Definir objetivo: qué quiero trabajar y por qué.</span>
+              <span><i>2</i> Dar contexto: edad, nivel, apoyos, límites y ejemplos.</span>
+              <span><i>3</i> Revisar: quitar paja, ajustar dificultad y proteger datos.</span>
             </div>
-            <a class="demo-button secondary reveal" href="demos/rubi-ia/" target="_blank" rel="noopener" onclick="event.stopPropagation()">Abrir Cuaderno Rub-IA ↗</a>
+            <a class="demo-button secondary reveal" href="demos/rubi-ia/" target="_blank" rel="noopener" onclick="event.stopPropagation()">Ver ejemplo: Cuaderno Rub-IA ↗</a>
           </div>
         </div>
-        <div class="foot"><span>LOGOPED-IA · DEL OBJETIVO AL MATERIAL</span><span>05</span></div>
+        <div class="foot"><span>LOGOPED-IA · OBJETIVO, CONTEXTO Y REVISIÓN</span><span>05</span></div>
       </article>
 
-      <!-- 06 · VIDEOJUEGOS CON PROPÓSITO -->
+      <!-- 06 · DEL JUEGO AL DATO -->
       <article class="slide light">
         <div class="split">
           <div class="split-copy">
-            <span class="eyebrow reveal">05 · JUGAR CON UN OBJETIVO</span>
-            <h2 class="reveal" style="margin-top:22px">Y sí: también<br><span class="serif" style="color:#267461">se hacen juegos.</span></h2>
-            <p class="lead muted reveal">Pero el juego no es el premio. El objetivo es que una persona practique más, entienda qué tiene que hacer y reciba una respuesta clara.</p>
+            <span class="eyebrow reveal">05 · DEL JUEGO A LA PRÁCTICA</span>
+            <h2 class="reveal" style="margin-top:22px">No queremos juegos.<br><span class="serif" style="color:#267461">Queremos práctica.</span></h2>
+            <p class="lead muted reveal">Un videojuego sirve si aumenta repeticiones, mantiene motivación, permite graduar dificultad y nos ayuda a mirar qué está pasando. Si solo entretiene, se queda corto.</p>
             <div class="micro-list reveal">
-              <span><i>✓</i> <b style="color:inherit">FonoSuika:</b> fonemas, sílabas y palabras que caen y se combinan.</span>
-              <span><i>✓</i> <b style="color:inherit">Detective de Palabras:</b> eliges fonema, sílaba o campo semántico.</span>
-              <span><i>✓</i> Distintos niveles, uso como invitado y feedback inmediato.</span>
+              <span><i>✓</i> Más intentos sin que parezca una ficha eterna.</span>
+              <span><i>✓</i> Dificultad ajustable: fonema, sílaba, palabra, frase o caso.</span>
+              <span><i>✓</i> Seguimiento: qué practica, dónde falla y qué toca revisar.</span>
             </div>
             <div class="demo-row reveal">
-              <a class="demo-button" href="https://orange-valley-262.higgsfield.gg/" target="_blank" rel="noopener" onclick="event.stopPropagation()">Jugar a FonoSuika ↗</a>
-              <a class="demo-button secondary" href="demos/detective-palabras/" target="_blank" rel="noopener" onclick="event.stopPropagation()">Detective de Palabras ↗</a>
+              <a class="demo-button" href="https://fonomundos.vercel.app/monitor.html" target="_blank" rel="noopener" onclick="event.stopPropagation()">Monitor FonoMundos ↗</a>
               <a class="demo-button secondary" href="demos/de-esto-a-esto-silabas.html" target="_blank" rel="noopener" onclick="event.stopPropagation()">De ficha a juego ↗</a>
             </div>
           </div>
           <div class="screen">
             <img src="assets/showcase/fonosuika.png" alt="FonoSuika: fonemas, sílabas y palabras">
-            <div class="caption"><span>Entra como invitado. En 60 segundos ya se está jugando.</span><span>60 s</span></div>
+            <div class="caption"><span>La pregunta no es “qué juego hago”, sino qué práctica necesito provocar.</span><span>criterio</span></div>
           </div>
         </div>
-        <div class="foot"><span>LOGOPED-IA · JUGAR PARA PRACTICAR</span><span>06</span></div>
+        <div class="foot"><span>LOGOPED-IA · REPETICIÓN, MOTIVACIÓN Y SEGUIMIENTO</span><span>06</span></div>
       </article>
 
-      <!-- 07 · ANTES DE CONSULTAR (experiencia para familias) -->
+      <!-- 07 · TRANSFERENCIA -->
       <article class="slide warm">
         <div class="split reverse">
           <div class="screen">
             <img src="assets/showcase/antes-de-consultar.png" alt="Antes de consultar: experiencia para familias">
-            <div class="caption"><span>Datos solo en su navegador. No diagnostica.</span><span>60 s</span></div>
+            <div class="caption"><span>La IA también puede ordenar familia, aula y continuidad.</span><span>transferencia</span></div>
           </div>
           <div class="split-copy">
-            <span class="eyebrow reveal">06 · ANTES DE LA PRIMERA CONSULTA</span>
-            <h2 class="reveal" style="margin-top:22px">Cuando una familia<br><span class="serif" style="color:#b25a44">no sabe ni cómo empezar.</span></h2>
-            <p class="lead muted reveal">Una experiencia que ayuda a una familia a ordenar su preocupación antes de sentarse contigo. Le enseña a observar y a explicar. No diagnostica y no sustituye tu valoración.</p>
+            <span class="eyebrow reveal">06 · SALIR DE LA SESIÓN</span>
+            <h2 class="reveal" style="margin-top:22px">Si todo depende de ti,<br><span class="serif" style="color:#b25a44">el sistema se rompe.</span></h2>
+            <p class="lead muted reveal">La logopedia es profundamente humana, pero no puede vivir solo de horas invisibles del profesional. Hay que enseñar a familias, preparar apoyos claros y hacer que la intervención continúe fuera de la consulta.</p>
             <div class="micro-list reveal">
-              <span><i>1</i> La familia cuenta lo que le preocupa, con sus palabras.</span>
-              <span><i>2</i> La experiencia le ayuda a ordenarlo y a poner nombre.</span>
-              <span><i>3</i> Llega a tu consulta con la información que necesitas.</span>
+              <span><i>1</i> Familias que observan mejor y preguntan mejor.</span>
+              <span><i>2</i> Actividades sencillas para casa sin perder rigor.</span>
+              <span><i>3</i> Materiales adaptados al paciente, no al promedio.</span>
             </div>
-            <a class="demo-button reveal" href="https://claude.ai/code/artifact/7ca48a01-2f56-4e21-a9d2-1c3343747d29" target="_blank" rel="noopener" onclick="event.stopPropagation()">Abrir “Antes de consultar” ↗</a>
+            <a class="demo-button reveal" href="https://claude.ai/code/artifact/7ca48a01-2f56-4e21-a9d2-1c3343747d29" target="_blank" rel="noopener" onclick="event.stopPropagation()">Ver ejemplo: Antes de consultar ↗</a>
           </div>
         </div>
-        <div class="foot"><span>LOGOPED-IA · ACOMPAÑAR A LAS FAMILIAS</span><span>07</span></div>
+        <div class="foot"><span>LOGOPED-IA · FAMILIA, AULA Y CONTINUIDAD</span><span>07</span></div>
       </article>
 
       <!-- 08 · ÉTICA Y PRIVACIDAD -->
@@ -1057,27 +1059,51 @@
         <div class="foot"><span>LOGOPED-IA · APRENDER HACIENDO</span><span>10</span></div>
       </article>
 
-      <!-- 11 · CIERRE -->
+      <!-- 11 · CÓMO LO APRENDEMOS -->
       <article class="slide dark">
-        <div class="hero">
-          <div class="hero-copy">
-            <span class="eyebrow reveal">10 · CIERRE</span>
-            <h1 class="reveal">No quiero que salgas pensando:<br><span class="serif yellow">“qué bonito”.</span></h1>
-            <p class="intro reveal" style="font-size:clamp(20px,2.1vw,31px);font-weight:800;line-height:1.16">Quiero que salgas pensando:<br><span class="mint">“yo puedo aprender a hacer esto”.</span></p>
-            <p class="soft reveal" style="margin-top:24px;max-width:610px">La webinar te enseña lo que ya es posible. La formación te acompaña para construirlo con tus objetivos, tus materiales y tu criterio profesional.</p>
-            <a class="closing-link reveal" href="https://raw.githack.com/foniafonia/webinar-logoped-ia/main/demos/recursos-clinicos.html" target="_blank" rel="noopener" onclick="event.stopPropagation()">Abrir vitrina útil de recursos ↗</a>
-            <p class="soft reveal" style="margin-top:20px;font-size:12px">Colegio de Logopedas de Extremadura · José Aserraf Cohén</p>
+        <span class="eyebrow reveal">10 · CÓMO LO APRENDEMOS JUNTOS</span>
+        <h2 class="reveal" style="margin-top:23px">La IA no se aprende mirando.<br><span class="serif yellow">Se aprende probando con alguien al lado.</span></h2>
+        <p class="lead soft reveal">El curso de Extremadura no va de memorizar herramientas. Va de construir criterio paso a paso, con ejemplos reales, tareas pequeñas, revisión y calma.</p>
+        <div class="modules reveal">
+          <div class="module">
+            <small>ANTES DEL DIRECTO</small>
+            <h3>Tutorial breve y primer intento</h3>
+            <ul>
+              <li>Ves un vídeo corto cuando puedas.</li>
+              <li>Copias un prompt de partida.</li>
+              <li>Traes una necesidad real de consulta, aula o familia.</li>
+            </ul>
           </div>
-          <div class="join-card">
-            <img class="jc-logo" src="assets/brand/cologex.png" alt="Colegio Profesional de Logopedas de Extremadura">
-            <div class="jc-qr"><img src="assets/brand/telegram-qr.png" alt="Código QR de Telegram @LOGOPED_IA"></div>
-            <div class="jc-cta">
-              <strong>Únete a la comunidad</strong>
-              <span>Escanea y entra en Telegram · <b>@LOGOPED_IA</b></span>
-            </div>
+          <div class="module">
+            <small>EN DIRECTO</small>
+            <h3>Construimos y pensamos en voz alta</h3>
+            <ul>
+              <li>Directo con interacción y preguntas del grupo.</li>
+              <li>Disponible en diferido si no puedes entrar.</li>
+              <li>Vemos errores, límites, protección de datos y mejoras.</li>
+            </ul>
+          </div>
+          <div class="module">
+            <small>DESPUÉS</small>
+            <h3>Tarea, revisión y transferencia</h3>
+            <ul>
+              <li>Subes tu ejemplo a Moodle.</li>
+              <li>Revisamos materiales, prompts y decisiones.</li>
+              <li>Sales con algo propio para usar y mejorar.</li>
+            </ul>
           </div>
         </div>
-        <div class="foot"><span>LOGOPED-IA · GRACIAS</span><span>11</span></div>
+        <div class="method-row reveal">
+          <span>Vídeos cortos</span>
+          <span>Directos con interacción</span>
+          <span>Diferido</span>
+          <span>Tareas en Moodle</span>
+          <span>Revisión en grupo</span>
+          <span>Casos reales</span>
+        </div>
+        <p class="takeaway reveal">No venimos a deslumbrarnos con la IA. Venimos a aprender a usarla sin perder lo que nos hace logopedas: mirada clínica, humanidad, prudencia y capacidad de acompañar.</p>
+        <p class="soft reveal" style="margin-top:18px;font-size:12px">Colegio de Logopedas de Extremadura · José Aserraf Cohén</p>
+        <div class="foot"><span>LOGOPED-IA · APRENDER HACIENDO, REVISANDO Y COMPARTIENDO</span><span>11</span></div>
       </article>
     </section>
 
@@ -1115,20 +1141,20 @@
         say: 'Es el menú de la sesión. Di el orden: primero un asistente, luego juegos, luego una experiencia para familias, un material, y una mesa auxiliar por especialidades. La vitrina útil queda de respaldo si preguntan por miofuncional, prompts, juegos, secuencias, radar o interacción con cámara. <b>Suelta el gancho fuerte y deja que cale 2 segundos: todo esto lo ha construido una logopeda, sin escribir una línea de código.</b> Anuncia: cada cosa, menos de 90 segundos.' },
       { t: '4:30 – 8:30', title: 'Asistente con criterio (GPT)', demo: 'ABRIR: Adapta con criterio o Evidence PubMed · 90 s.',
         say: 'Pega la pregunta del ejemplo en directo. Mientras responde, explica la idea fuerza: no es preguntar más, es preguntar mejor. Señala que separa evidencia, límites y preguntas. Remata: la herramienta busca, tú contrastas y decides. Si falla la red: enseña la captura y cuéntalo.' },
-      { t: '8:30 – 11:30', title: 'Crear material (Rub-IA)', demo: 'ABRIR: Cuaderno Rub-IA · 60–90 s.',
-        say: 'Muestra que es un cuaderno completo, no una ficha suelta. Recorre objetivo → nivel → tipo de ayuda → progresión. Insiste: esto se revisa y se adapta antes de usarlo. Frase: un material que no existía esta mañana.' },
-      { t: '11:30 – 15:30', title: 'Juegos con propósito', demo: 'ABRIR: FonoSuika (60 s) y Detective de Palabras (60 s).',
-        say: 'Entra como invitado en FonoSuika, juega 20 s: fonemas y sílabas que caen. Luego Detective: enseña que eliges fonema/sílaba/campo semántico y nivel. Idea fuerza: el juego no es el premio; el objetivo clínico manda.' },
-      { t: '15:30 – 18:30', title: 'Antes de consultar (familias)', demo: 'ABRIR: “Antes de consultar” · 60 s.',
-        say: 'Cambia el foco: hasta ahora, herramientas para ti; esto es para la familia. Enseña la barra: “no diagnostica, no sustituye una valoración”. Cuenta el flujo: la familia ordena su preocupación y llega mejor a la primera cita. Datos solo en su navegador.' },
+      { t: '8:30 – 11:30', title: 'El patrón: criterio', demo: 'NO alargues demo. Si hace falta, abre Rub-IA 30 s.',
+        say: 'No vuelvas a vender el cuaderno. Usa la slide para explicar el patrón: objetivo, contexto y revisión. Frase fuerte: “La IA no sustituye mi criterio; me obliga a explicarlo mejor”. Di que en el curso esto se practica con materiales reales de cada persona.' },
+      { t: '11:30 – 15:30', title: 'Del juego a la práctica', demo: 'ABRIR opcional: Monitor FonoMundos · 45 s.',
+        say: 'No enseñes más juegos salvo que lo pidan. Explica que juego no significa entretenimiento: significa repetición, motivación, feedback y seguimiento. Si abres algo, abre el monitor para que vean que detrás del juego puede haber lectura profesional.' },
+      { t: '15:30 – 18:30', title: 'Transferencia: familia y aula', demo: 'ABRIR opcional: “Antes de consultar” · 45 s.',
+        say: 'Habla de tiempo invisible y continuidad. No podemos estar siempre empujando solos: hay que enseñar a familias, dar apoyos claros y mantener rigor fuera de consulta. Idea: trabajar menos en preparar desde cero para estar más presentes con paciente y familia.' },
       { t: '18:30 – 21:00', title: 'Ética y privacidad', demo: 'Opcional: semáforo ético 60 s si hay ritmo.',
         say: 'Baja el tono, sube la seriedad. Tres reglas: no datos identificables, no aceptar sin revisar, la decisión es del profesional. Di claro: la ética no va al final del curso, va dentro de cada práctica.' },
       { t: '21:00 – 24:30', title: 'Colmenia', demo: 'En pantalla: alterna El Nexo y El Enjambre.',
         say: 'Deja claro que NO es una academia de vídeos. Enseña El Nexo (todo conectado) y El Enjambre (gente trabajando ahora). Idea fuerza: la formación termina, la comunidad sigue viva y la mejora continúa contigo.' },
       { t: '24:30 – 28:00', title: 'Formación de Extremadura', demo: 'Opcional: abre el caso Google Form bonito o la vitrina útil · 45 s.',
         say: '<b>Aquí conviertes.</b> Cierra el argumento del día: lo que impresiona es verlo, pero lo que te cambia el trabajo es hacerlo — y la diferencia no fue la tecnología, fue el criterio, y eso se aprende. Si hay tiempo, abre el caso del Google Form o la vitrina útil de recursos: una urgencia real convertida esta mañana en una experiencia útil y varios ejemplos preparados por perfil. Dos módulos: CONSTRUIR e INTEGRAR. Nombra la metodología: directos con interacción, diferido, tutoriales, práctica guiada y revisión en grupo. Remata: te vas con materiales tuyos, no con apuntes.' },
-      { t: '28:00 – 30:00', title: 'Cierre', demo: 'Sin demo. Contacto visual.',
-        say: 'No quiero que salgas pensando “qué bonito”, sino “yo puedo aprender a hacer esto”. Invita a la formación del Colegio de Extremadura, sin presión: directos, diferido, tutoriales, práctica y revisión. <b>Señala el QR: “escanea y únete a la comunidad en Telegram, @LOGOPED_IA”.</b> Deja el QR en pantalla mientras respondes preguntas. Agradece.' }
+      { t: '28:00 – 30:00', title: 'Cómo lo aprendemos juntos', demo: 'Sin demo. Cierre metodológico.',
+        say: 'Cierra con tranquilidad: la IA es otra historia y nadie la aprende solo mirando vídeos. Explica el método: tutorial breve antes, directo con interacción, diferido para quien no pueda, tarea real en Moodle y revisión en grupo. Frase final: “No venimos a deslumbrarnos con IA; venimos a aprender a usarla sin perder mirada clínica, humanidad y prudencia”.' }
     ];
 
     const notesEl = document.getElementById('notes');
