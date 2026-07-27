@@ -1,0 +1,1891 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Resuelve los casos — Detective del Colegio</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&display=swap');
+
+    :root {
+      --paper:   #fef9f0;
+      --ink:     #1c110a;
+      --rule:    rgba(110,150,200,.15);
+      --hand:    'Caveat', cursive;
+      --cc:      #5b9e6b;
+      --cc-mid:  rgba(91,158,107,.45);
+      --cc-light:rgba(91,158,107,.18);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+
+    body {
+      font-family: var(--hand);
+      font-size: 20px;
+      color: var(--ink);
+      background: var(--paper);
+      background-image: repeating-linear-gradient(transparent, transparent 28px, var(--rule) 28px, var(--rule) 29px);
+    }
+
+    body::before {
+      content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 9999; opacity: .04;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    /* ── LAYOUT PRINCIPAL ─────────────────────── */
+    #activity {
+      display: flex; flex-direction: column;
+      min-height: 100vh;
+      max-width: 1100px; margin: 0 auto; padding: 0 20px;
+    }
+
+    /* ── STUDENT BAR (Alumno / datos) ─ */
+    .student-bar {
+      flex-shrink: 0;
+      padding: 10px 0 8px;
+      border-bottom: 2.5px solid var(--ink);
+      display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+      font-family: var(--hand); font-size: 16px; font-weight: 600;
+    }
+    .student-bar strong { opacity: .65; }
+    .student-bar input, .student-bar select {
+      font-family: var(--hand); font-size: 18px; font-weight: 600;
+      border: none; border-bottom: 2px solid var(--ink);
+      background: transparent; padding: 2px 8px; outline: none; color: var(--ink);
+    }
+    .student-bar input { width: 140px; }
+    .student-bar select { width: 105px; cursor: pointer; }
+
+    /* ── TOPBAR (stats + botones) ─ */
+    .topbar {
+      flex-shrink: 0;
+      padding: 5px 0 4px;
+      display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: center;
+      border-bottom: 1.5px dashed rgba(28,17,10,.2);
+      font-family: var(--hand); font-size: 14px; font-weight: 600;
+    }
+    .topbar .stats { display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: center; flex: 1; }
+    .topbar span { opacity: .75; }
+    .therapist-back, .manual-button {
+      font-family: var(--hand); font-weight: 700; font-size: 14px;
+      border: 2.5px solid var(--ink); border-radius: 4px 10px 5px 9px / 9px 4px 10px 5px;
+      background: #fff9c4; padding: 3px 13px; cursor: pointer;
+      box-shadow: 2px 2px 0 rgba(28,17,10,.18); transform: rotate(.5deg);
+    }
+    .feedback { font-family: var(--hand); font-size: 14px; font-weight: 700; }
+
+    /* ── PAGE-WRAP — crece y llena el espacio ─ */
+    .page-wrap {
+      flex: 1; display: flex; flex-direction: column;
+      padding: 14px 0 8px; min-height: 0;
+    }
+
+    /* ── PAGE OVERLAY (tarjetas HTML) ─ */
+    .page-overlay { display: none; flex: 1; flex-direction: column; animation: fadeIn .28s ease; min-height: 0; }
+    .page-overlay.active { display: flex; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(5px) } to { opacity:1; transform:none } }
+
+    /* imagen legacy */
+    .page-image { display: block; max-width: 100%; }
+
+    /* ── TRAY (sospechosos + botones) ─ */
+    #tray {
+      flex-shrink: 0;
+      padding: 10px 0 6px;
+      display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+    }
+    #tray.passive #suspectButtons { pointer-events: none; }
+    #tray.passive .suspect-btn { display: none; }
+
+    /* ── EXPLANATION ─ */
+    #explanationBox {
+      flex-shrink: 0; padding: 6px 0 4px;
+      border-top: 1.5px dashed rgba(28,17,10,.2);
+    }
+    .explanation-title { font-family: var(--hand); font-weight: 700; font-size: .9rem; opacity: .56; margin-bottom: 1px; }
+    #explanationText   { font-family: var(--hand); font-size: 1rem; opacity: .8; line-height: 1.4; }
+    #explanationBox.ok  #explanationText { color: #16600a; }
+    #explanationBox.bad #explanationText { color: #8a1010; }
+
+    /* ── AUTHORS ─ */
+    .authors { flex-shrink: 0; font-family: var(--hand); font-size: .82rem; opacity: .38; text-align: center; padding: 5px 0 8px; border-top: 1px dashed rgba(28,17,10,.14); }
+
+    /* ───────────────────────────────────────────
+       TARJETA PORTADA
+    ─────────────────────────────────────────── */
+    .card-cover {
+      flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;
+      background: #fffdf8;
+      background-image: repeating-linear-gradient(-47deg, transparent, transparent 5px, rgba(255,255,255,.38) 5px, rgba(255,255,255,.38) 9px);
+      border: 3px solid var(--ink); border-radius: 5px 14px 7px 12px / 12px 5px 14px 7px;
+      padding: 32px 36px; text-align: center; gap: 16px;
+      box-shadow: 5px 5px 0 rgba(28,17,10,.18);
+    }
+    .cover-emojis { font-size: 2.4rem; letter-spacing: 8px; }
+    .card-cover h1 { font-family: var(--hand); font-weight: 700; font-size: 2.8rem; line-height: 1.1; }
+    .card-cover p  { font-family: var(--hand); font-size: 1.15rem; line-height: 1.55; opacity: .85; max-width: 620px; }
+    .card-cover strong { font-weight: 700; }
+    .cover-steps { display: flex; flex-direction: column; gap: 8px; margin: 4px 0; width: 100%; max-width: 500px; }
+    .cover-step {
+      display: flex; align-items: center; gap: 12px;
+      font-family: var(--hand); font-size: 1.1rem;
+      background: rgba(255,255,255,.65); border: 2px solid var(--ink);
+      border-radius: 3px 9px 4px 8px / 8px 3px 9px 4px;
+      padding: 8px 16px; box-shadow: 2px 2px 0 rgba(28,17,10,.13);
+    }
+    .step-num {
+      font-weight: 700; font-size: 1.1rem;
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--ink); color: var(--paper);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .badge {
+      font-family: var(--hand); font-weight: 700; font-size: 1rem;
+      padding: 7px 20px; border: 2.5px solid var(--ink);
+      border-radius: 3px 10px 4px 9px / 9px 3px 10px 4px;
+      background: #fff9c4; box-shadow: 2px 2px 0 rgba(28,17,10,.14);
+    }
+
+    /* ───────────────────────────────────────────
+       TARJETA PERFIL
+    ─────────────────────────────────────────── */
+    .card-profile {
+      flex: 1; display: grid; grid-template-columns: 240px 1fr;
+      border: 3px solid var(--ink); border-radius: 6px 14px 8px 12px / 12px 6px 14px 8px;
+      overflow: hidden; box-shadow: 5px 5px 0 rgba(28,17,10,.2); min-height: 0;
+    }
+
+    .card-photo-col {
+      background: var(--cc-light, rgba(91,158,107,.18));
+      background-image: repeating-linear-gradient(55deg, transparent, transparent 5px, rgba(255,255,255,.32) 5px, rgba(255,255,255,.32) 9px);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 24px 14px; gap: 12px;
+      border-right: 3px solid var(--ink); position: relative;
+    }
+    .card-photo-col::before {
+      content: ''; position: absolute;
+      width: 154px; height: 154px;
+      border: 4px solid var(--cc, #5b9e6b);
+      border-radius: 52% 48% 50% 50% / 48% 52% 50% 50%; opacity: .6;
+    }
+    .card-photo-col img { width: 136px; height: 136px; border-radius: 50%; display: block; position: relative; z-index: 1; }
+    .card-name   { font-family: var(--hand); font-weight: 700; font-size: 2.2rem; text-align: center; line-height: 1.1; }
+    .card-age    { font-family: var(--hand); font-size: 1.1rem; opacity: .7; text-align: center; }
+    .char-level-badge {
+      font-family: var(--hand); font-weight: 700; font-size: .9rem;
+      padding: 4px 14px; border: 2.5px solid var(--ink);
+      border-radius: 3px 9px 4px 8px / 8px 3px 9px 4px;
+      background: #fff9c4; background-image: repeating-linear-gradient(43deg, transparent, transparent 2px, rgba(255,255,255,.35) 2px, rgba(255,255,255,.35) 5px);
+      transform: rotate(-1.2deg); box-shadow: 2px 2px 0 rgba(28,17,10,.16);
+    }
+
+    .card-data-col {
+      background: #fffdf8;
+      background-image: repeating-linear-gradient(transparent, transparent 28px, rgba(110,150,200,.13) 28px, rgba(110,150,200,.13) 29px);
+      padding: 24px 28px 20px;
+      display: flex; flex-direction: column; gap: 16px; overflow-y: auto;
+    }
+    .card-data-col h2 { font-family: var(--hand); font-weight: 700; font-size: 2.2rem; border-bottom: 2.5px solid var(--ink); padding-bottom: 6px; }
+    .trait-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .trait-list li { font-family: var(--hand); font-weight: 700; font-size: 2rem; line-height: 1.3; display: flex; gap: 10px; align-items: flex-start; }
+    .trait-list li::before { content: "✦"; color: var(--cc, #5b9e6b); font-size: 18px; flex-shrink: 0; margin-top: 5px; }
+
+    .card-clue {
+      background: #fffacd;
+      background-image: repeating-linear-gradient(-44deg, transparent, transparent 3px, rgba(255,255,255,.3) 3px, rgba(255,255,255,.3) 6px);
+      border: 2.5px solid #c8a020; border-radius: 3px 10px 4px 9px / 9px 3px 10px 4px;
+      padding: 14px 18px; position: relative;
+      box-shadow: 3px 3px 0 rgba(200,160,32,.28);
+      font-family: var(--hand); font-weight: 700; font-size: 2rem;
+    }
+    .card-clue::before { content: "🔑"; position: absolute; top: -14px; left: 10px; font-size: 22px; }
+    .card-clue strong { font-weight: 700; display: block; font-size: 1.2rem; opacity: .7; margin-bottom: 4px; }
+
+    .card-desc { font-family: var(--hand); font-weight: 700; font-size: 2rem; line-height: 1.55; border-top: 1.5px dashed rgba(28,17,10,.2); padding-top: 12px; }
+
+    /* ───────────────────────────────────────────
+       TARJETA CASO
+    ─────────────────────────────────────────── */
+    .card-case {
+      flex: 1; display: flex; flex-direction: column;
+      border: 3px solid var(--ink); border-radius: 8px 14px 6px 12px / 12px 6px 14px 8px;
+      overflow: hidden; box-shadow: 5px 5px 0 rgba(28,17,10,.2); min-height: 0;
+    }
+
+    .card-scene-col {
+      flex-shrink: 0;
+      background: #cde4ff;
+      background-image: repeating-linear-gradient(50deg, transparent, transparent 5px, rgba(255,255,255,.35) 5px, rgba(255,255,255,.35) 9px);
+      padding: 20px 28px; text-align: center;
+      border-bottom: 3px solid var(--ink);
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+    }
+    .scene-icon      { font-size: 4rem; line-height: 1; filter: drop-shadow(2px 3px 0 rgba(0,0,0,.13)); }
+    .case-num        { font-family: var(--hand); font-weight: 600; font-size: 1rem; opacity: .55; }
+    .case-location   { font-family: var(--hand); font-size: 1.1rem; opacity: .8; }
+    .case-level-badge {
+      font-family: var(--hand); font-weight: 700; font-size: .88rem;
+      padding: 3px 14px; border: 2px solid var(--ink);
+      border-radius: 3px 8px 4px 7px / 7px 3px 8px 4px;
+      background: #fff9c4; transform: rotate(-.8deg); box-shadow: 2px 2px 0 rgba(28,17,10,.13);
+    }
+
+    .card-case-data {
+      flex: 1; background: #fffdf8;
+      background-image: repeating-linear-gradient(transparent, transparent 28px, rgba(110,150,200,.13) 28px, rgba(110,150,200,.13) 29px);
+      padding: 22px 28px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto;
+    }
+    .card-case-data h2 { font-family: var(--hand); font-weight: 700; font-size: 2.2rem; }
+    .case-text { font-family: var(--hand); font-weight: 700; font-size: 2rem; line-height: 1.65; }
+
+    .case-pista {
+      background: #e4f5e4;
+      background-image: repeating-linear-gradient(44deg, transparent, transparent 3px, rgba(255,255,255,.32) 3px, rgba(255,255,255,.32) 6px);
+      border: 2.5px solid #2d8a4e; border-radius: 4px 10px 5px 9px / 9px 4px 10px 5px;
+      padding: 14px 18px; position: relative;
+      box-shadow: 3px 3px 0 rgba(45,138,78,.22);
+      font-family: var(--hand); font-weight: 700; font-size: 2rem; font-style: italic;
+    }
+    .case-pista::before { content: "🔍"; position: absolute; top: -14px; left: 10px; font-size: 22px; }
+    .case-pista strong { font-weight: 700; font-style: normal; display: block; font-size: 1.2rem; opacity: .7; margin-bottom: 4px; }
+
+    .case-q {
+      font-family: var(--hand); font-weight: 700; font-size: 2rem;
+      padding: 10px 0 2px; border-top: 2px dashed rgba(28,17,10,.2);
+    }
+
+    /* ── BOTÓN BASE — lápiz de color ─ */
+    .suspect-btn,
+    .finalize-reading-btn,
+    .quick-summary-btn,
+    .confirm-button,
+    .next-button {
+      font-family: var(--hand); font-weight: 700; font-size: 1.1rem;
+      padding: 9px 22px; cursor: pointer;
+      background: #fff; color: var(--ink);
+      border: 3px solid var(--ink);
+      border-radius: 3px 10px 4px 9px / 9px 3px 10px 4px;
+      background-image: repeating-linear-gradient(48deg, transparent, transparent 3px, rgba(255,255,255,.5) 3px, rgba(255,255,255,.5) 6px);
+      box-shadow: 3px 3px 0 rgba(28,17,10,.2);
+      transform: rotate(-0.8deg);
+      transition: transform .13s, box-shadow .13s;
+    }
+    .suspect-btn:hover, .finalize-reading-btn:hover,
+    .quick-summary-btn:hover, .confirm-button:hover, .next-button:hover {
+      transform: rotate(.5deg) translateY(-2px); box-shadow: 4px 5px 0 rgba(28,17,10,.26);
+    }
+    .suspect-btn:active, .finalize-reading-btn:active,
+    .quick-summary-btn:active, .confirm-button:active, .next-button:active {
+      transform: translateY(1px); box-shadow: 1px 1px 0 rgba(28,17,10,.2);
+    }
+
+    .suspect-btn[data-suspect="Nora"]  { border-left: 6px solid #16a34a; }
+    .suspect-btn[data-suspect="Leo"]   { border-left: 6px solid #ea580c; }
+    .suspect-btn[data-suspect="Alma"]  { border-left: 6px solid #9333ea; }
+    .suspect-btn[data-suspect="Bruno"] { border-left: 6px solid #d97706; }
+    .suspect-btn[data-suspect="Vera"]  { border-left: 6px solid #0891b2; }
+    .suspect-btn[data-suspect="Iker"]  { border-left: 6px solid #7c3aed; }
+    .suspect-btn[data-suspect="Sara"]  { border-left: 6px solid #db2777; }
+    .suspect-btn[data-suspect="Lucas"] { border-left: 6px solid #1d4ed8; }
+    .suspect-btn[data-suspect="Elena"] { border-left: 6px solid #be185d; }
+    .suspect-btn[data-suspect="Mario"] { border-left: 6px solid #334155; }
+    .suspect-btn.selected {
+      background: #fff9c4;
+      border-color: #c8a020; box-shadow: 2px 2px 0 rgba(200,160,32,.45); transform: rotate(.5deg);
+    }
+    .finalize-reading-btn { border-left: 6px solid #e07a30; }
+    .quick-summary-btn    { border-left: 6px solid #7c5ce8; }
+    .confirm-button       { border-left: 6px solid #e04444; }
+    .next-button          { border-left: 6px solid #5aaa68; }
+
+    /* ── SECCIONES OCULTAS ─ */
+    .final-screen   { display: none; }
+    .final-screen.visible, .final-screen.active { display: block; position: fixed; inset: 0; background: var(--paper); z-index: 500; padding: 32px 20px; overflow-y: auto; font-family: var(--hand); }
+    .final-box { max-width: 640px; margin: 0 auto; }
+    .final-box h1 { font-weight: 700; font-size: 2rem; margin-bottom: 16px; text-align: center; }
+    .final-box p  { font-size: 1.1rem; margin-bottom: 8px; line-height: 1.5; }
+
+    .report-screen  { display: none; }
+    .report-screen.active { display: block; position: fixed; inset: 0; background: var(--paper); z-index: 600; padding: 24px; overflow-y: auto; font-family: var(--hand); }
+
+    .summary-modal  { display: none; }
+    .summary-modal.active { display: flex; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 800; justify-content: center; align-items: center; padding: 20px; }
+
+    .manual-modal   { display: none; }
+    .manual-modal.active { display: flex; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 800; justify-content: center; align-items: center; padding: 20px; }
+
+    .coach-panel    { display: none; }
+    .coach-panel.active {
+      display: block; position: fixed; bottom: 0; inset-inline: 0; z-index: 700;
+      background: #fffdf8;
+      background-image: repeating-linear-gradient(transparent, transparent 28px, rgba(110,150,200,.13) 28px, rgba(110,150,200,.13) 29px);
+      border-top: 3px solid var(--ink);
+      box-shadow: 0 -4px 0 rgba(28,17,10,.12);
+      padding: 14px 20px; font-family: var(--hand); font-size: 1rem; color: var(--ink);
+    }
+    .coach-panel button {
+      font-family: var(--hand); font-weight: 700; font-size: .95rem;
+      padding: 6px 14px; margin: 3px; cursor: pointer;
+      background: #fff; color: var(--ink);
+      border: 2.5px solid var(--ink);
+      border-radius: 3px 8px 4px 7px / 7px 3px 8px 4px;
+      box-shadow: 2px 2px 0 rgba(28,17,10,.18);
+    }
+    .coach-toggle {
+      position: fixed; bottom: 16px; right: 16px;
+      font-family: var(--hand); font-weight: 700; font-size: .95rem;
+      padding: 8px 18px; cursor: pointer;
+      background: #fff; color: var(--ink);
+      border: 3px solid var(--ink);
+      border-radius: 3px 9px 4px 8px / 8px 3px 9px 4px;
+      box-shadow: 3px 3px 0 rgba(28,17,10,.22);
+      border-left: 6px solid #7c5ce8;
+      background-image: repeating-linear-gradient(48deg, transparent, transparent 3px, rgba(255,255,255,.5) 3px, rgba(255,255,255,.5) 6px);
+    }
+
+    .manual-card, .summary-card {
+      background: var(--paper); border: 3px solid var(--ink);
+      border-radius: 6px 14px 8px 12px / 12px 6px 14px 8px;
+      padding: 24px; max-width: 580px; width: 100%; max-height: 80vh; overflow-y: auto;
+      box-shadow: 6px 6px 0 rgba(28,17,10,.18); font-family: var(--hand); font-size: 1rem; line-height: 1.6;
+    }
+    .manual-card h3, .summary-card h3 { font-weight: 700; font-size: 1.3rem; margin-bottom: 12px; }
+
+    .restart-button {
+      font-family: var(--hand); font-weight: 700; font-size: 1rem;
+      padding: 8px 20px; cursor: pointer; border: 3px solid var(--ink);
+      border-radius: 4px 12px 5px 11px / 11px 4px 12px 5px;
+      background: #fffdf8; box-shadow: 3px 3px 0 rgba(28,17,10,.16); margin: 4px;
+    }
+
+    .panel-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 1000; justify-content: center; align-items: center; padding: 16px; }
+    .panel-overlay.open { display: flex; }
+    .panel-box { background: var(--paper); border: 3px solid var(--ink); border-radius: 6px 14px 8px 12px / 12px 6px 14px 8px; padding: 24px; max-width: 640px; width: 100%; max-height: 82vh; overflow-y: auto; position: relative; box-shadow: 8px 8px 0 rgba(28,17,10,.18); font-family: var(--hand); }
+    .panel-box h2 { font-weight: 700; font-size: 1.5rem; margin-bottom: 14px; }
+    .panel-close  { position: absolute; top: 10px; right: 14px; font-weight: 700; font-size: 1.2rem; background: none; border: none; cursor: pointer; cursor: pointer; }
+    .panel-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+    .metric-card { background: #fff; border: 2.5px solid var(--ink); border-radius: 3px 9px 4px 8px / 8px 3px 9px 4px; padding: 10px 14px; box-shadow: 3px 3px 0 rgba(28,17,10,.12); }
+    .metric-label { font-weight: 600; font-size: .85rem; opacity: .62; }
+    .metric-value { font-weight: 700; font-size: 1.5rem; }
+    .panel-table { width: 100%; border-collapse: collapse; font-size: 1rem; }
+    .panel-table th { font-weight: 700; text-align: left; padding: 6px 8px; border-bottom: 2.5px solid var(--ink); }
+    .panel-table td { padding: 5px 8px; border-bottom: 1px dashed rgba(28,17,10,.18); }
+
+    .card-outro { flex: 1; display: flex; flex-direction: column; justify-content: center; border: 3px solid var(--ink); border-radius: 8px 14px 6px 12px / 12px 6px 14px 8px; padding: 28px 32px; background: #fffdf8; box-shadow: 5px 5px 0 rgba(28,17,10,.17); }
+    .card-outro h2 { font-weight: 700; font-size: 1.9rem; margin-bottom: 12px; }
+    .card-outro p  { font-size: 1.1rem; line-height: 1.6; opacity: .84; }
+
+    .report-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+    .report-section h3 { font-weight: 700; font-size: 1.1rem; margin-bottom: 8px; border-bottom: 2px solid var(--ink); padding-bottom: 4px; }
+    .report-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 16px; }
+    .clinical-grid  { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .clinical-item  { font-size: .95rem; display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px dashed rgba(28,17,10,.15); }
+    .clinical-item strong { font-weight: 700; }
+    .micro-summary { background: #fffdf8; border: 2.5px solid var(--ink); border-radius: 4px 10px 5px 9px / 9px 4px 10px 5px; padding: 13px 16px; font-size: 1rem; line-height: 1.5; margin-top: 8px; box-shadow: 3px 3px 0 rgba(28,17,10,.12); }
+    .micro-summary strong { font-weight: 700; }
+
+    @media (max-width: 640px) {
+      .card-profile { grid-template-columns: 1fr; }
+      .card-photo-col { border-right: none; border-bottom: 3px solid var(--ink); }
+      .panel-metrics, .report-grid { grid-template-columns: 1fr; }
+    }
+
+    #pageImage { display: block; max-width: 100%; }
+    #pageImage.hidden { display: none; }
+  </style>
+</head>
+<body>
+  <main id="activity">
+    <section class="student-bar" aria-label="Datos del alumno">
+      <strong>Alumno</strong>
+      <input id="studentName" type="text" placeholder="Nombre">
+      <select id="studentAge" aria-label="Edad">
+        <option value="">Edad</option>
+        <option value="6">6</option><option value="7">7</option><option value="8">8</option>
+        <option value="9">9</option><option value="10">10</option><option value="11">11</option>
+        <option value="12">12</option><option value="13">13</option><option value="14">14</option>
+        <option value="15">15</option><option value="16">16</option><option value="17">17</option>
+        <option value="18">18</option>
+      </select>
+      <select id="studentGrade" aria-label="Curso">
+        <option value="">Curso</option>
+        <option value="1º Primaria">1º Primaria</option>
+        <option value="2º Primaria">2º Primaria</option>
+        <option value="3º Primaria">3º Primaria</option>
+        <option value="4º Primaria">4º Primaria</option>
+        <option value="5º Primaria">5º Primaria</option>
+        <option value="6º Primaria">6º Primaria</option>
+        <option value="1º ESO">1º ESO</option>
+        <option value="2º ESO">2º ESO</option>
+      </select>
+    </section>
+    <section class="topbar" aria-label="Progreso">
+      <button id="therapistBack" class="therapist-back" type="button">Atrás</button>
+      <div class="stats">
+        <span id="pageCounter">Página 1/31</span>
+        <span>Caso: <strong id="caseCounter">-</strong></span>
+        <span>Fase: <strong id="phaseLabel">-</strong></span>
+        <span>Aciertos: <strong id="scoreOk">0</strong></span>
+        <span>Errores: <strong id="scoreBad">0</strong></span>
+        <span>Intentos: <strong id="scoreAttempts">0</strong></span>
+        <span>Precisión: <strong id="scoreAccuracy">0%</strong></span>
+        <span>T. respuesta: <strong id="scoreAvgResponse">0.0s</strong></span>
+        <span>T. caso: <strong id="scoreCaseTime">0.0s</strong></span>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <button id="manualButton" class="manual-button" type="button">Manual</button>
+        <div id="feedback" class="feedback" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section class="page-wrap" aria-label="Página del cuaderno">
+      <img id="pageImage" class="page-image" alt="Página del cuaderno Resuelve los casos">
+      <div id="pageOverlay" class="page-overlay" aria-live="polite">
+        <h3 id="overlayTitle"></h3>
+        <p id="overlayBody"></p>
+      </div>
+    </section>
+
+    <section id="tray" class="tray" aria-label="Selección">
+      <div id="suspectButtons"></div>
+      <button id="finalizeReadingButton" class="finalize-reading-btn" type="button">Finalizar lectura</button>
+      <button id="quickSummaryButton" class="quick-summary-btn" type="button">Micro resumen</button>
+      <button id="confirmButton" class="confirm-button" type="button">Confirmar</button>
+      <button id="nextButton" class="next-button" type="button">Siguiente</button>
+    </section>
+    <section id="explanationBox" class="explanation-box" aria-live="polite">
+      <div class="explanation-title">Pista de aprendizaje</div>
+      <div id="explanationText">Resuelve cada caso y aquí verás por qué era correcto o no.</div>
+      <div id="explanationActions" class="explanation-actions"></div>
+    </section>
+
+    <section class="authors">
+      Misión Perfiles · Logoped-IA · Contenido de ficción creado para uso clínico y educativo
+    </section>
+  </main>
+
+  <section id="finalScreen" class="final-screen" aria-live="polite">
+    <div class="final-box">
+      <h1>Resultado final</h1>
+      <p>Aciertos: <strong id="finalOk">0</strong></p>
+      <p>Errores: <strong id="finalBad">0</strong></p>
+      <p>Intentos: <strong id="finalAttempts">0</strong></p>
+      <p>Porcentaje: <strong id="finalPercent">0%</strong></p>
+      <p>Tiempo total: <strong id="finalTime">0:00</strong></p>
+      <p>Tiempo medio de respuesta: <strong id="finalAvgResponse">0.0s</strong></p>
+      <p>Precisión primer intento: <strong id="finalFirstTry">0%</strong></p>
+      <p>Tiempo medio lectura perfiles: <strong id="finalAvgProfile">0.0s</strong></p>
+      <p>Tiempo medio por caso: <strong id="finalAvgCase">0.0s</strong></p>
+      <button id="openReportButton" class="restart-button" type="button">Ver informe visual</button>
+      <button id="downloadReportButton" class="restart-button" type="button">Descargar informe</button>
+      <button id="restartButton" class="restart-button" type="button">Reiniciar</button>
+    </div>
+  </section>
+  <section id="reportScreen" class="report-screen" aria-live="polite">
+    <div class="report-grid">
+      <div class="kpi"><h3>Precisión por intento</h3><p id="kpiPrecision">0%</p></div>
+      <div class="kpi"><h3>Resolución de casos</h3><p id="kpiFirstTry">0%</p></div>
+      <div class="kpi"><h3>T. respuesta medio</h3><p id="kpiResponse">0.0s</p></div>
+      <div class="kpi"><h3>T. lectura casos</h3><p id="kpiReading">0.0s</p></div>
+    </div>
+    <div class="table-box">
+      <h3>Ficha del alumno y comparativa esperable</h3>
+      <table>
+        <tbody>
+          <tr><th>Nombre</th><td id="repStudentName">-</td><th>Edad</th><td id="repStudentAge">-</td></tr>
+          <tr><th>Curso</th><td id="repStudentGrade">-</td><th>Curso estimado para baremo</th><td id="repGradeNum">-</td></tr>
+          <tr><th>PPM real (casos)</th><td id="repActualPpm">-</td><th>PPM esperado medio</th><td id="repExpectedPpm">-</td></tr>
+          <tr><th>Diferencia vs esperable</th><td id="repGap">-</td><th>Rango esperable</th><td id="repRange">-</td></tr>
+        </tbody>
+      </table>
+      <p style="margin:8px 0 0; font-size:12px; color:#4b5563;">Comparativa estimada con referencia de 32 palabras por caso.</p>
+    </div>
+    <div class="table-box">
+      <h3>Tabla de referencia (fluidez orientativa, ppm)</h3>
+      <table>
+        <thead>
+          <tr><th>Curso Primaria</th><th>Mínimo</th><th>Medio</th><th>Máximo</th></tr>
+        </thead>
+        <tbody id="referenceTableBody"></tbody>
+      </table>
+      <p style="margin:8px 0 0; font-size:12px; color:#4b5563;">Uso orientativo educativo. No sustituye baremación diagnóstica estandarizada.</p>
+    </div>
+    <div class="report-charts">
+      <div class="chart-box">
+        <h3>Tiempo de lectura por caso</h3>
+        <canvas id="chartCaseReading" class="report-canvas" width="520" height="220"></canvas>
+      </div>
+      <div class="chart-box">
+        <h3>Errores por caso</h3>
+        <canvas id="chartCaseErrors" class="report-canvas" width="520" height="220"></canvas>
+      </div>
+      <div class="chart-box">
+        <h3>Tiempo de respuesta por intento</h3>
+        <canvas id="chartResponseAttempts" class="report-canvas" width="520" height="220"></canvas>
+      </div>
+      <div class="chart-box">
+        <h3>Intentos por caso</h3>
+        <canvas id="chartAttemptsByCase" class="report-canvas" width="520" height="220"></canvas>
+      </div>
+      <div class="chart-box">
+        <h3>Comparativa vs media esperable</h3>
+        <canvas id="chartExpectedVsActual" class="report-canvas" width="520" height="220"></canvas>
+      </div>
+    </div>
+    <div class="clinical-grid">
+      <div class="clinical-item">Memoria de trabajo (proxy)<strong id="idxWorkingMemory">0%</strong></div>
+      <div class="clinical-item">Impulsividad de respuesta<strong id="idxImpulsivity">0%</strong></div>
+      <div class="clinical-item">Lectura superficial (riesgo)<strong id="idxSuperficial">0%</strong></div>
+      <div class="clinical-item">Consistencia atencional<strong id="idxConsistency">0%</strong></div>
+      <div class="clinical-item">Autorregulación (1er intento)<strong id="idxSelfRegulation">0%</strong></div>
+      <div class="clinical-item">Uso de apoyos (resumen/perfil)<strong id="idxSupportUse">0</strong></div>
+      <div class="clinical-item">Carga ejecutiva (errores/caso)<strong id="idxExecLoad">0.0</strong></div>
+      <div class="clinical-item">Índice clínico global<strong id="idxClinicalGlobal">0/100</strong></div>
+      <div class="clinical-item">Comprensión textual global<strong id="idxTextComp">0%</strong></div>
+      <div class="clinical-item">Comprensión inferencial<strong id="idxInferential">0%</strong></div>
+      <div class="clinical-item">Retención de perfiles<strong id="idxRetention">0%</strong></div>
+      <div class="clinical-item">Tolerancia a la dificultad<strong id="idxPerseverance">0%</strong></div>
+      <div class="clinical-item">Fatiga cognitiva (riesgo)<strong id="idxFatigue">0%</strong></div>
+    </div>
+    <div class="table-box">
+      <h3>Resumen por nivel</h3>
+      <table>
+        <thead><tr><th>Nivel</th><th>Caso</th><th>Intentos</th><th>Errores</th><th>Lectura</th><th>Respuesta</th><th>Esperado edad</th></tr></thead>
+        <tbody id="reportTableBody"></tbody>
+      </table>
+    </div>
+    <div class="table-box">
+      <h3>Explicación para familias</h3>
+      <p id="parentSummaryText" style="margin:0; font-size:14px; line-height:1.5;"></p>
+    </div>
+    <div class="report-actions">
+      <button id="reportBackFinal" class="restart-button" type="button">Volver al resumen</button>
+      <button id="reportDownload" class="restart-button" type="button">Descargar informe</button>
+      <button id="reportRestart" class="restart-button" type="button">Nueva sesión</button>
+    </div>
+  </section>
+  <section id="summaryModal" class="summary-modal" aria-live="polite">
+    <div class="summary-card">
+      <h3 id="summaryTitle">Micro resumen</h3>
+      <div id="summaryPills"></div>
+      <div style="margin-top:10px;">
+        <button id="closeSummaryButton" class="restart-button" type="button">Volver al perfil</button>
+      </div>
+    </div>
+  </section>
+  <section id="manualModal" class="manual-modal" aria-live="polite">
+    <div class="manual-card">
+      <h3>Manual de uso rápido</h3>
+      <p><strong>Paciente</strong>: 1) Lee perfil/caso. 2) Pulsa <strong>Finalizar lectura</strong>. 3) En caso, elige sospechoso y confirma. 4) Revisa explicación y usa “Ver perfil” si hace falta.</p>
+      <p><strong>Profesional</strong>: usa <strong>Panel profesional</strong> para navegación libre, salto por nivel/pantalla e informe visual.</p>
+      <p><strong>Acceso Panel profesional</strong>: clave <strong>profesional</strong>.</p>
+      <p><strong>Métricas</strong>: tiempo lectura de perfil/caso, tiempo de respuesta, aciertos, errores, impulsividad, comprensión textual, retención, fatiga y más índices clínicos.</p>
+      <button id="closeManualButton" class="restart-button" type="button">Cerrar manual</button>
+    </div>
+  </section>
+
+  <button id="coachToggle" class="coach-toggle" type="button" aria-label="Panel profesional">Panel profesional</button>
+  <aside id="coachPanel" class="coach-panel" aria-label="Panel de control profesional">
+    <div class="row"><strong>Panel profesional</strong></div>
+    <div class="coach-help">
+      1) Activa <strong>navegación libre</strong> para moverte sin bloqueo.<br>
+      2) Usa "Ir al nivel" o "Ir a pantalla PDF".<br>
+      3) Vuelve a <strong>modo paciente</strong> para bloquear el avance.
+    </div>
+    <div class="row">
+      <label for="levelSelect">Ir al nivel</label>
+      <select id="levelSelect"></select>
+      <button id="goLevelButton" type="button">Abrir</button>
+    </div>
+    <div class="row">
+      <label for="pageSelect">Ir a pantalla PDF</label>
+      <select id="pageSelect"></select>
+      <button id="goPageButton" type="button">Abrir</button>
+    </div>
+    <div class="row">
+      <button id="coachPrev" type="button">← Anterior</button>
+      <button id="coachNext" type="button">Siguiente →</button>
+      <button id="coachLock" type="button">Navegación libre: OFF</button>
+    </div>
+    <div class="row">
+      <button id="coachReport" type="button">Descargar informe</button>
+      <button id="coachDemo" type="button">Modo demo</button>
+      <button id="coachClose" type="button" style="margin-left:auto">✕ Cerrar panel</button>
+    </div>
+  </aside>
+
+  <script>
+    const suspects = ["Nora", "Leo", "Alma", "Bruno", "Vera", "Iker", "Sara", "Lucas", "Elena", "Mario"];
+    const profilePageBySuspect = { Nora: 3, Leo: 4, Alma: 5, Bruno: 6, Vera: 7, Iker: 8, Sara: 9, Lucas: 10, Elena: 11, Mario: 12 };
+    const caseAnswers = { 1: "Alma", 2: "Iker", 3: "Sara", 4: "Bruno", 5: "Mario", 6: "Elena", 7: "Nora", 8: "Bruno", 9: "Iker", 10: "Vera", 11: "Leo", 12: "Lucas", 13: "Nora", 14: "Sara", 15: "Vera" };
+    const profileDescriptions = {
+      Nora:  { age: 12, color: "#16a34a", traits: ["Botas de monte manchadas de barro", "Chaleco con múltiples bolsillos", "Siempre huele a pino", "Lleva hojas secas en el pelo", "Mira al suelo buscando insectos"], clue: "Lupa con mango de madera rústica", description: "Nora tiene 12 años y es la exploradora del colegio. Siempre viste un chaleco con múltiples bolsillos y gruesas botas de monte manchadas de barro. Camina encorvada mirando al suelo buscando insectos. Suele llevar hojas secas enredadas en el pelo y huele a pino fresco. Nunca sale al recreo sin su lupa con mango de madera rústica." },
+      Leo:   { age: 11, color: "#ea580c", traits: ["Zapatillas deportivas chillonas", "Sudadera sin mangas todo el año", "Bebe de un bidón gigante", "No para quieto ni un segundo", "Lleva un balón desinflado bajo el brazo"], clue: "Muñequera de capitán a cuadros", description: "Leo tiene 11 años y es el deportista más activo del patio. Usa zapatillas deportivas chillonas y una sudadera sin mangas todo el año. No para quieto ni un segundo, botando siempre su balón desinflado. Por tanto ejercicio bebe de un bidón gigante. Compite en los torneos usando siempre su inseparable muñequera de capitán a cuadros." },
+      Alma:  { age: 13, color: "#9333ea", traits: ["Manchas de pintura en las manos", "Delantal vaquero desgastado", "Pelo recogido en moño desordenado", "Olor constante a aguarrás", "Zapatos salpicados de colores"], clue: "Pincel de cerdas moradas", description: "Alma tiene 13 años y es la artista del colegio. Siempre lleva un delantal vaquero desgastado y el pelo recogido en un moño desordenado. Sus manos y zapatos están siempre salpicados de llamativas manchas de pintura. Al acercarte notas un constante olor a aguarrás. Pinta todos sus cuadros con su viejo pincel de cerdas moradas." },
+      Bruno: { age: 10, color: "#d97706", traits: ["Gorrito de tela blanco", "Delantal con restos de harina", "Olor dulce a vainilla", "Manitas regordetas siempre ocupadas", "Bolsillos llenos de moldes metálicos"], clue: "Cuchara de madera con un nombre grabado", description: "Bruno tiene 10 años y es el cocinero de su clase. Sus manitas regordetas siempre están ocupadas amasando. Viste un gorrito de tela blanco y sus bolsillos están llenos de moldes metálicos. Huele a vainilla dulce y su delantal tiene restos de harina. Prepara sus postres mezclando todo con una cuchara de madera con su nombre grabado." },
+      Vera:  { age: 12, color: "#0891b2", traits: ["Gafas cuadradas gruesas", "Camiseta con dibujos de circuitos", "Destornillador tras la oreja", "Teclea en el aire con los dedos", "Mochila con luces LED parpadeantes"], clue: "Pendrive de plata en forma de robotito", description: "Vera tiene 12 años y arregla cualquier ordenador del colegio. Lleva gafas cuadradas gruesas y una camiseta con dibujos de circuitos. Cuando piensa, teclea en el aire con los dedos. Su mochila tiene luces LED parpadeantes y lleva un destornillador tras la oreja. Guarda todos sus códigos secretos en un pendrive de plata en forma de robotito." },
+      Iker:  { age: 11, color: "#7c3aed", traits: ["Sombrero de copa plegable", "Chaqueta con bolsillos ocultos", "Siempre baraja cartas en las manos", "Guantes blancos inmaculados", "Hace aparecer monedas tras las orejas"], clue: "Varita mágica con la punta fluorescente", description: "Iker tiene 11 años y es el ilusionista del colegio. Siempre usa impecables guantes blancos y una elegante chaqueta con bolsillos ocultos. Camina barajando cartas en las manos y lleva un divertido sombrero de copa plegable. Suele hacer aparecer monedas tras las orejas de sus compañeros. Practica sus trucos más difíciles con una varita mágica de punta fluorescente." },
+      Sara:  { age: 13, color: "#db2777", traits: ["Cámara vintage colgada al cuello", "Libreta amarilla de notas", "Lápiz mordido tras la oreja", "Chaleco lleno de cremalleras", "Guiña el ojo izquierdo al enfocar"], clue: "Flash externo de cámara antiguo", description: "Sara tiene 13 años y dirige el periódico escolar. Viste un útil chaleco lleno de cremalleras y siempre lleva una libreta amarilla con un lápiz muy mordido. Tiene la costumbre de guiñar el ojo izquierdo y camina con su cámara vintage colgada al cuello. Ilumina lugares oscuros para sus reportajes con un enorme flash externo de cámara antiguo." },
+      Lucas: { age: 10, color: "#1d4ed8", traits: ["Chaqueta de cuero negra", "Tamborilea rítmicamente con los dedos", "Cascos inmensos al cuello", "Zapatillas desgastadas en la punta", "Masca chicle haciendo globos ruidosos"], clue: "Baqueta roja muy astillada", description: "Lucas tiene 10 años y adora la música rock. Tamborilea rítmicamente con los dedos en cualquier superficie y sus zapatillas están totalmente desgastadas en la punta. Lleva chaqueta de cuero negra, cascos inmensos al cuello y hace globos ruidosos al mascar chicle. Toca todas sus canciones con una sola baqueta roja muy astillada que siempre lleva en la mano." },
+      Elena: { age: 12, color: "#be185d", traits: ["Zapatillas de ballet colgando del bolso", "Moño perfectamente estirado", "Camina de puntillas sin hacer ruido", "Falda de tul oscura", "Calentadores de lana rosa"], clue: "Pasador de pelo en forma de cisne dorado", description: "Elena tiene 12 años y es bailarina silenciosa. Camina de puntillas sin hacer ruido por los pasillos. Lleva el pelo en un moño perfectamente estirado y usa falda de tul oscura. De su bolso cuelgan sus zapatillas de ballet y calza calentadores de lana rosa. Se sujeta el flequillo con un bonito pasador de pelo en forma de cisne dorado." },
+      Mario: { age: 11, color: "#0f172a", traits: ["Camiseta negra con galaxias", "Telescopio portátil bajo el brazo", "Brújula atada a la muñeca", "Zapatillas que brillan en la oscuridad", "Ojeras de no dormir por las noches"], clue: "Llavero hecho con un meteorito real", description: "Mario tiene 11 años y quiere ser astronauta. Tiene ojeras de no dormir por las noches observando el cielo y camina con un telescopio portátil bajo el brazo. Viste una camiseta negra con galaxias y lleva una brújula atada a la muñeca. Usa zapatillas que brillan en la oscuridad. En su mochila lleva un llavero hecho con un meteorito real." }
+    };
+    const caseNarratives = {
+      1:  { title: "El dragón del mural",       scene: "🎨", location: "Aula de Arte",           text: "El profesor llegó al aula de arte y encontró el mural pintado con colores nuevos que nadie había autorizado. El aula olía muy fuerte a aguarrás y había pisadas de zapatos salpicados de colores sobre el suelo de madera. Olvidada sobre un pupitre, descansaba una herramienta de pintor muy característica. Lucas estuvo cerca, pero no vio nada.", pista: "Un pincel de cerdas moradas.", answer: "Alma" },
+      2:  { title: "La torre imposible",        scene: "📚", location: "Biblioteca",              text: "En la biblioteca, el encargado halló una inmensa torre de libros en un equilibrio imposible sobre la mesa central. En la alfombra había resbaladizas cartas de póker desparramadas. Bajo la lámpara de lectura, alguien perdió un objeto mágico que permanecía iluminado en la penumbra. Sara estaba cerca tomando fotos, pero no escuchó nada.", pista: "Una varita mágica con la punta fluorescente.", answer: "Iker" },
+      3:  { title: "Secretos de dirección",     scene: "📂", location: "Despacho del Director",   text: "Alguien abrió el tablón del despacho del director para leer los secretos del colegio. En el suelo había un lápiz amarillo completamente mordido por los nervios. En el pomo de la puerta principal apareció colgado un accesorio fotográfico antiguo que nadie recordaba haber dejado. Bruno repartía postres fuera, pero nadie más entró.", pista: "Un flash externo de cámara antiguo.", answer: "Sara" },
+      4:  { title: "El postre evaporado",       scene: "🍰", location: "Comedor",                 text: "Justo antes del recreo, una gran tarta de chocolate desapareció misteriosamente del comedor escolar. En el aire flotaba un dulce olor a vainilla y la bandeja limpia tenía marcas de manitas regordetas. Escondido bajo una servilleta, encontraron un utensilio de cocina con un nombre grabado a fuego. Leo pasó corriendo hacia el patio, pero iba demasiado rápido.", pista: "Una cuchara de madera con un nombre grabado.", answer: "Bruno" },
+      5:  { title: "Pisadas hacia la luna",     scene: "🔭", location: "Azotea",                  text: "La puerta de la azotea amaneció abierta y un mapa estelar señalaba la posición exacta de la luna. En el suelo destacaban pisadas de zapatillas que brillaban en la oscuridad, dirigiéndose hacia el borde de la terraza. Atrapado en la malla metálica, tintineaba un objeto pesado y espacial muy inusual. Elena ensayaba giros en el piso inferior sin escuchar nada.", pista: "Un llavero hecho con un meteorito real.", answer: "Mario" },
+      6:  { title: "Espejismos de cristal",     scene: "🩰", location: "Gimnasio",                text: "Un intruso en el gimnasio apartó las colchonetas y empañó el espejo ensayando piruetas en absoluto silencio. Sobre la espaldera quedaron olvidados unos calentadores de lana rosa. En el centro de la pista relucía un pequeño adorno dorado para el cabello. Iker hacía trucos de magia en la grada sin prestar atención a los movimientos del fondo.", pista: "Un pasador de pelo en forma de cisne dorado.", answer: "Elena" },
+      7:  { title: "Fuga en miniatura",         scene: "🐜", location: "Laboratorio de Ciencias", text: "El terrario de hormigas en el laboratorio de ciencias amaneció destapado y los insectos en libertad. Todo el aula olía a pino fresco, y unas marcadas pisadas de botas de monte con barro rodeaban los experimentos. Junto a los microscopios de cristal encontraron abandonada una herramienta de exploración muy específica. Vera programaba concentrada cerca y no notó la intrusión.", pista: "Una lupa con mango de madera rústica.", answer: "Nora" },
+      8:  { title: "El festín clandestino",     scene: "🍪", location: "Patio",                   text: "En el banco más oculto del patio, alguien preparó un pequeño banquete secreto usando los ingredientes de la cocina. Había migas dulces esparcidas y la madera lucía una fina capa de harina blanca. Escondido bajo el asiento de madera, olvidaron un valioso utensilio culinario con un nombre grabado que delataba claramente a su dueño. Mario observaba las nubes sin notar nada.", pista: "Una cuchara de madera con un nombre grabado.", answer: "Bruno" },
+      9:  { title: "La tormenta de colores",    scene: "🎭", location: "Salón de Actos",          text: "Durante el ensayo de teatro, las luces se apagaron solas y estalló un cañón de confeti que llenó el escenario de colores. Sobre el escenario de madera, el responsable perdió un elegante guante blanco inmaculado. Detrás del pesado telón rojo, alguien abandonó su mayor secreto mágico. Alma pintaba el decorado y se asustó mucho con el ruido repentino.", pista: "Una varita mágica con la punta fluorescente.", answer: "Iker" },
+      10: { title: "Ataque cibernético",        scene: "💻", location: "Aula de Informática",     text: "Los ordenadores del aula de informática mostraban de repente robots bailando en bucle y nadie sabía cómo había ocurrido. El responsable olvidó un pequeño destornillador metálico sobre el teclado maestro del profesor. Conectado a la torre central, destellaba velozmente la verdadera clave del ataque. Lucas escuchaba música con sus cascos enormes y no notó la broma.", pista: "Un pendrive de plata en forma de robotito.", answer: "Vera" },
+      11: { title: "Terremoto en el aro",       scene: "🏀", location: "Cancha de Baloncesto",    text: "La red de la canasta de baloncesto amaneció completamente desenganchada y el tablero tenía marcas frescas de manos sudadas. En la grada vacía quedó un bidón de agua gigante a medio llenar con una etiqueta de nombre. Enganchada entre las altas cuerdas de la canasta, flameaba una prenda deportiva muy reconocible. Nora buscaba insectos en los arbustos cercanos.", pista: "Una muñequera de capitán a cuadros.", answer: "Leo" },
+      12: { title: "Concierto de madrugada",    scene: "🥁", location: "Aula de Música",          text: "Fuertes golpes rítmicos alteraron la tranquila aula de música muy temprano por la mañana antes de que llegaran los profesores. En el piso quedaron restos de globos de chicle rosado explotado y pisadas de zapatillas totalmente desgastadas en la punta. Clavada con fuerza en el corcho de anuncios, descansaba el arma rítmica del culpable. Elena estiraba las piernas cerca.", pista: "Una baqueta roja muy astillada.", answer: "Lucas" },
+      13: { title: "Semillas silvestres",       scene: "🌱", location: "Huerto Escolar",          text: "Alguien saltó al huerto escolar para enterrar semillas silvestres misteriosas cerca de las zanahorias del proyecto de clase. Había hojas secas desparramadas por los caminos y profundas huellas embarradas hechas con pesadas botas de monte. Semienterrada en la tierra húmeda, brillaba una preciada herramienta de exploración. Sara tomaba fotos de abejas y solo capturó una veloz sombra.", pista: "Una lupa con mango de madera rústica.", answer: "Nora" },
+      14: { title: "Noticias de pasillo",       scene: "📰", location: "Pasillo Principal",       text: "El menú del comedor fue reemplazado por un divertido reportaje lleno de secretos de los profesores pegado en el tablón principal. El culpable huyó rápido, pero en el pasillo olvidó una hoja amarilla rayada con garabatos de periodista. También dejó un equipo pesado vital para iluminar fotos en lugares oscuros. Bruno ofreció galletas a los que intentaban quitar el cartel.", pista: "Un flash externo de cámara antiguo.", answer: "Sara" },
+      15: { title: "Sinfonía electrónica",      scene: "🏆", location: "Sala de Trofeos",         text: "La vitrina de trofeos fue hackeada para emitir pitidos de videojuegos a través del sistema de sonido del colegio. El culpable escapó con su mochila de luces LED parpadeando. En la placa del panel de seguridad se halló el dispositivo diminuto de la broma, conectado con una precisión técnica que pocos alumnos dominarían. Leo, que pasaba por allí, juró no saber nada de ordenadores.", pista: "Un pendrive de plata en forma de robotito.", answer: "Vera" }
+    };
+    // Referencia orientativa de fluidez lectora (ppm) por curso de Primaria.
+    // Basada en tablas educativas de uso escolar; no es baremo diagnóstico clínico.
+    const expectedPpmByGrade = {
+      1: { min: 38, mid: 46, max: 55 },
+      2: { min: 64, mid: 73, max: 83 },
+      3: { min: 88, mid: 99, max: 111 },
+      4: { min: 111, mid: 124, max: 139 },
+      5: { min: 136, mid: 149, max: 167 },
+      6: { min: 161, mid: 177, max: 195 }
+    };
+    const profileMicroSummaries = {
+      Nora:  ["Botas embarradas", "Chaleco explorador", "Olor a pino", "Objeto: Lupa de madera"],
+      Leo:   ["Ropa chillona", "Bidón gigante", "Muy inquieto", "Objeto: Muñequera a cuadros"],
+      Alma:  ["Delantal vaquero", "Manchas de pintura", "Olor a aguarrás", "Objeto: Pincel morado"],
+      Bruno: ["Gorrito blanco", "Bolsillos con moldes", "Olor a vainilla", "Objeto: Cuchara grabada"],
+      Vera:  ["Gafas cuadradas", "Mochila luces LED", "Destornillador", "Objeto: Pendrive robotito"],
+      Iker:  ["Guantes blancos", "Sombrero de copa", "Baraja de cartas", "Objeto: Varita fluorescente"],
+      Sara:  ["Cámara colgada", "Libreta amarilla", "Lápiz mordido", "Objeto: Flash antiguo"],
+      Lucas: ["Chaqueta de cuero", "Cascos de música", "Masca chicle", "Objeto: Baqueta astillada"],
+      Elena: ["Zapatillas de ballet", "Moño estirado", "Calentadores rosas", "Objeto: Pasador cisne"],
+      Mario: ["Camiseta de galaxias", "Zapatillas brillantes", "Lleva brújula", "Objeto: Llavero meteorito"]
+    };
+    const casePage = (caseId) => caseId + 14;
+    const profileImageBySuspect = {
+      Nora: "https://api.dicebear.com/9.x/adventurer/svg?seed=Nora&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf",
+      Leo: "https://api.dicebear.com/9.x/adventurer/svg?seed=Leo&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf",
+      Alma: "https://api.dicebear.com/9.x/adventurer/svg?seed=Alma&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf",
+      Bruno: "https://api.dicebear.com/9.x/adventurer/svg?seed=Bruno&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf",
+      Vera: "https://api.dicebear.com/9.x/adventurer/svg?seed=Vera&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf",
+      Iker: "https://api.dicebear.com/9.x/adventurer/svg?seed=Iker&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf",
+      Sara: "https://api.dicebear.com/9.x/adventurer/svg?seed=Sara&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf",
+      Lucas: "https://api.dicebear.com/9.x/adventurer/svg?seed=Lucas&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf",
+      Elena: "https://api.dicebear.com/9.x/adventurer/svg?seed=Elena&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf",
+      Mario: "https://api.dicebear.com/9.x/adventurer/svg?seed=Mario&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf"
+    };
+    const caseImageById = {
+      1: "https://api.dicebear.com/9.x/shapes/svg?seed=case-1-aula",
+      2: "https://api.dicebear.com/9.x/shapes/svg?seed=case-2-secuencia",
+      3: "https://api.dicebear.com/9.x/shapes/svg?seed=case-3-preguntas",
+      4: "https://api.dicebear.com/9.x/shapes/svg?seed=case-4-patrones",
+      5: "https://api.dicebear.com/9.x/shapes/svg?seed=case-5-resistencia",
+      6: "https://api.dicebear.com/9.x/shapes/svg?seed=case-6-sintesis",
+      7: "https://api.dicebear.com/9.x/shapes/svg?seed=case-7-detalle",
+      8: "https://api.dicebear.com/9.x/shapes/svg?seed=case-8-cruce",
+      9: "https://api.dicebear.com/9.x/shapes/svg?seed=case-9-auditivo",
+      10: "https://api.dicebear.com/9.x/shapes/svg?seed=case-10-comparacion",
+      11: "https://api.dicebear.com/9.x/shapes/svg?seed=case-11-revision",
+      12: "https://api.dicebear.com/9.x/shapes/svg?seed=case-12-anticipacion",
+      13: "https://api.dicebear.com/9.x/shapes/svg?seed=case-13-observacion",
+      14: "https://api.dicebear.com/9.x/shapes/svg?seed=case-14-ambiguedad",
+      15: "https://api.dicebear.com/9.x/shapes/svg?seed=case-15-cierre"
+    };
+    function textSlide(title, subtitle, bg = "EAF2FF", fg = "1f2933") {
+      const t = encodeURIComponent(`${title}\n${subtitle}`);
+      return `https://placehold.co/1240x1754/${bg}/${fg}.png?text=${t}`;
+    }
+    function escXml(s) {
+      return String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+    }
+    function wrapText(text, max = 44) {
+      const words = String(text || "").split(/\s+/);
+      const lines = [];
+      let current = "";
+      words.forEach((w) => {
+        const test = current ? `${current} ${w}` : w;
+        if (test.length > max) {
+          if (current) lines.push(current);
+          current = w;
+        } else {
+          current = test;
+        }
+      });
+      if (current) lines.push(current);
+      return lines.slice(0, 6);
+    }
+
+    function artSlide(title, subtitle, emoji, c1 = "#e0f2fe", c2 = "#fef3c7", body = "") {
+      const safeTitle = escXml(title);
+      const safeSubtitle = escXml(subtitle);
+      const safeEmoji = escXml(emoji || "");
+      const bodyLines = wrapText(body, 44).map((line, i) =>
+        `<text x='620' y='${1215 + (i * 58)}' text-anchor='middle' font-family='Patrick Hand, Comic Sans MS, Arial' font-size='44' fill='#334155'>${escXml(line)}</text>`
+      ).join("");
+      const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1240 1754'>
+      <defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop stop-color='${c1}'/><stop offset='1' stop-color='${c2}'/></linearGradient></defs>
+      <rect width='1240' height='1754' fill='url(#g)'/>
+      <circle cx='620' cy='520' r='180' fill='white' fill-opacity='.92'/>
+      <text x='620' y='580' text-anchor='middle' font-size='180'>${safeEmoji}</text>
+      <rect x='110' y='860' width='1020' height='620' rx='32' fill='white' fill-opacity='.9'/>
+      <text x='620' y='1020' text-anchor='middle' font-family='Patrick Hand, Comic Sans MS, Arial' font-size='86' fill='#1f2933'>${safeTitle}</text>
+      <text x='620' y='1140' text-anchor='middle' font-family='Patrick Hand, Comic Sans MS, Arial' font-size='52' fill='#374151'>${safeSubtitle}</text>
+      ${bodyLines}
+      </svg>`;
+      return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+    }
+
+    function pageImageSrc(page, step) {
+      if (!step) return artSlide(`Pantalla ${page}`, "Actividad de perfiles", "");
+      if (step.type === "cover") return artSlide("Mision de Perfiles", "Lectura, memoria y razonamiento", "", "#dbeafe", "#ede9fe");
+      if (step.type === "outro") return artSlide("Cierre de actividad", "Buen trabajo, revisa tus resultados", "", "#dcfce7", "#fef9c3");
+      if (step.type === "solutions") return artSlide("Resumen final", "Informe profesional y metricas", "", "#fee2e2", "#fef3c7");
+      if (step.type === "profile") return profileImageBySuspect[step.suspect] || artSlide(`${step.suspect}`, "", "", "#e0f2fe", "#fff7ed");
+      if (step.type === "case") return caseImageById[step.caseId] || artSlide(`Caso ${step.caseId}`, "", "", "#ecfdf5", "#fef3c7");
+      return artSlide(`Pantalla ${page}`, "Actividad", "");
+    }
+
+    const levelPlan = [
+      { level: 1, addSuspect: null, caseId: 13, base: ["Nora", "Leo"] },
+      { level: 2, addSuspect: "Alma", caseId: 11 },
+      { level: 3, addSuspect: "Bruno", caseId: 1 },
+      { level: 4, addSuspect: "Vera", caseId: 4 },
+      { level: 5, addSuspect: "Iker", caseId: 10 },
+      { level: 6, addSuspect: "Sara", caseId: 2 },
+      { level: 7, addSuspect: "Lucas", caseId: 3 },
+      { level: 8, addSuspect: "Elena", caseId: 12 },
+      { level: 9, addSuspect: "Mario", caseId: 6 },
+      { level: 10, addSuspect: null, caseId: 5 },
+      { level: 11, addSuspect: null, caseId: 7 },
+      { level: 12, addSuspect: null, caseId: 8 },
+      { level: 13, addSuspect: null, caseId: 9 },
+      { level: 14, addSuspect: null, caseId: 14 },
+      { level: 15, addSuspect: null, caseId: 15 }
+    ];
+
+    const flow = [];
+    const activeSuspects = [...levelPlan[0].base];
+    flow.push({ type: "cover", page: 1, label: "Portada" });
+    flow.push({ type: "cover", page: 2, label: "Portada" });
+    levelPlan.forEach((lv) => {
+      if (lv.addSuspect) activeSuspects.push(lv.addSuspect);
+      const learnedSet = lv.addSuspect ? [lv.addSuspect] : [];
+      const shownProfiles = lv.level === 1 ? lv.base : learnedSet;
+      shownProfiles.forEach((suspect) => flow.push({ type: "profile", level: lv.level, suspect, page: profilePageBySuspect[suspect], options: [...activeSuspects] }));
+      flow.push({ type: "case", level: lv.level, caseId: lv.caseId, suspectAnswer: caseAnswers[lv.caseId], page: casePage(lv.caseId), options: [...activeSuspects] });
+    });
+    flow.push({ type: "outro", page: 30, label: "Cierre" });
+    flow.push({ type: "solutions", page: 31, label: "Soluciones" });
+
+    function validateLevelPackaging() {
+      // 1) cada caso solo puede usar perfiles disponibles en ese nivel
+      const invalidStep = flow.find((step) => step.type === "case" && !step.options.includes(step.suspectAnswer));
+      if (invalidStep) {
+        throw new Error(`Caso ${invalidStep.caseId} invalido: ${invalidStep.suspectAnswer} no fue presentado antes.`);
+      }
+      // 2) evitar patrón trivial: caso = último perfil recién introducido
+      const trivialLevel = levelPlan.find((lv) => lv.addSuspect && caseAnswers[lv.caseId] === lv.addSuspect);
+      if (trivialLevel) {
+        throw new Error(`Nivel ${trivialLevel.level} trivial: el caso apunta al ultimo perfil presentado (${trivialLevel.addSuspect}).`);
+      }
+      // 3) cada nivel debe tener opciones coherentes (sin perfiles futuros)
+      const seenByLevel = new Set(levelPlan[0].base);
+      levelPlan.forEach((lv) => {
+        if (lv.addSuspect) seenByLevel.add(lv.addSuspect);
+        const caseStep = flow.find((s) => s.type === "case" && s.level === lv.level);
+        if (!caseStep) throw new Error(`Nivel ${lv.level} sin caso asignado.`);
+        const hasFutureProfile = caseStep.options.some((name) => !seenByLevel.has(name));
+        if (hasFutureProfile) throw new Error(`Nivel ${lv.level} contiene perfiles futuros en opciones.`);
+      });
+    }
+    validateLevelPackaging();
+
+    const totalCases = levelPlan.length;
+    const totalProfiles = flow.filter((x) => x.type === "profile").length;
+
+    const state = {
+      index: 0, ok: 0, bad: 0, attempts: 0, firstTryHits: 0,
+      solvedCases: new Set(), selectedSuspect: null, startTime: Date.now(),
+      readingStartAt: Date.now(), responseStartAt: Date.now(), currentCaseErrors: 0,
+      responseTimes: [], readingProfiles: [], readingCases: [], screenReadings: [],
+      timerId: null, therapistUnlocked: false, therapistMode: false, caseStats: {},
+      seenProfiles: new Set(), returnCaseIndex: null, readingFinalized: false, finalizedReadingMs: 0,
+      attemptLog: [], supportUsage: { summaries: 0, profileJumps: 0 }, learnedProfiles: new Set()
+    };
+
+    const activity = document.getElementById("activity");
+    const finalScreen = document.getElementById("finalScreen");
+    const pageImage = document.getElementById("pageImage");
+    const pageCounter = document.getElementById("pageCounter");
+    const caseCounter = document.getElementById("caseCounter");
+    const phaseLabel = document.getElementById("phaseLabel");
+    const scoreOk = document.getElementById("scoreOk");
+    const scoreBad = document.getElementById("scoreBad");
+    const scoreAttempts = document.getElementById("scoreAttempts");
+    const scoreAccuracy = document.getElementById("scoreAccuracy");
+    const scoreAvgResponse = document.getElementById("scoreAvgResponse");
+    const scoreCaseTime = document.getElementById("scoreCaseTime");
+    const manualButton = document.getElementById("manualButton");
+    const feedback = document.getElementById("feedback");
+    const explanationBox = document.getElementById("explanationBox");
+    const explanationText = document.getElementById("explanationText");
+    const explanationActions = document.getElementById("explanationActions");
+    const tray = document.getElementById("tray");
+    const finalizeReadingButton = document.getElementById("finalizeReadingButton");
+    const quickSummaryButton = document.getElementById("quickSummaryButton");
+    const suspectButtons = document.getElementById("suspectButtons");
+    const confirmButton = document.getElementById("confirmButton");
+    const nextButton = document.getElementById("nextButton");
+    const restartButton = document.getElementById("restartButton");
+    const openReportButton = document.getElementById("openReportButton");
+    const downloadReportButton = document.getElementById("downloadReportButton");
+    const reportScreen = document.getElementById("reportScreen");
+    const reportBackFinal = document.getElementById("reportBackFinal");
+    const reportDownload = document.getElementById("reportDownload");
+    const reportRestart = document.getElementById("reportRestart");
+    const coachToggle = document.getElementById("coachToggle");
+    const coachPanel = document.getElementById("coachPanel");
+    const therapistBack = document.getElementById("therapistBack");
+    const levelSelect = document.getElementById("levelSelect");
+    const pageSelect = document.getElementById("pageSelect");
+    const goLevelButton = document.getElementById("goLevelButton");
+    const goPageButton = document.getElementById("goPageButton");
+    const coachPrev = document.getElementById("coachPrev");
+    const coachNext = document.getElementById("coachNext");
+    const coachLock = document.getElementById("coachLock");
+    const coachReport = document.getElementById("coachReport");
+    const coachDemo = document.getElementById("coachDemo");
+    const chartCaseReading = document.getElementById("chartCaseReading");
+    const chartCaseErrors = document.getElementById("chartCaseErrors");
+    const chartResponseAttempts = document.getElementById("chartResponseAttempts");
+    const chartAttemptsByCase = document.getElementById("chartAttemptsByCase");
+    const chartExpectedVsActual = document.getElementById("chartExpectedVsActual");
+    const studentNameInput = document.getElementById("studentName");
+    const studentAgeInput = document.getElementById("studentAge");
+    const studentGradeInput = document.getElementById("studentGrade");
+    const reportTableBody = document.getElementById("reportTableBody");
+    const referenceTableBody = document.getElementById("referenceTableBody");
+    const summaryModal = document.getElementById("summaryModal");
+    const summaryTitle = document.getElementById("summaryTitle");
+    const summaryPills = document.getElementById("summaryPills");
+    const closeSummaryButton = document.getElementById("closeSummaryButton");
+    const manualModal = document.getElementById("manualModal");
+    const closeManualButton = document.getElementById("closeManualButton");
+    const pageOverlay = document.getElementById("pageOverlay");
+    const overlayTitle = document.getElementById("overlayTitle");
+    const overlayBody = document.getElementById("overlayBody");
+
+    const normalize = (v) => v.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
+    const average = (arr) => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
+    const formatSeconds = (ms) => `${(ms / 1000).toFixed(1)}s`;
+    const formatClock = (ms) => { const s = Math.max(0, Math.floor(ms / 1000)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`; };
+    const parseGradeNumber = (text) => {
+      const m = String(text || "").match(/[1-6]/);
+      return m ? Number(m[0]) : null;
+    };
+    const expectedProfile = (gradeNum) => expectedPpmByGrade[gradeNum] || expectedPpmByGrade[3];
+
+    function captureReadingTime() {
+      const current = flow[state.index];
+      if (!current) return;
+      const elapsed = state.readingFinalized ? state.finalizedReadingMs : (Date.now() - state.readingStartAt);
+      if (elapsed < 0) return;
+      state.screenReadings.push({ type: current.type, page: current.page, level: current.level || null, caseId: current.caseId || null, suspect: current.suspect || null, ms: elapsed });
+    }
+
+    function updateStats() {
+      scoreOk.textContent = state.ok;
+      scoreBad.textContent = state.bad;
+      scoreAttempts.textContent = state.attempts;
+      scoreAccuracy.textContent = `${state.attempts ? Math.round((state.ok / state.attempts) * 100) : 0}%`;
+      scoreAvgResponse.textContent = formatSeconds(average(state.responseTimes));
+    }
+
+    function showFeedback(msg, type) {
+      feedback.textContent = msg;
+      feedback.className = `feedback ${type}`;
+    }
+
+    function findProfileReference(suspect, untilIndex) {
+      for (let i = untilIndex; i >= 0; i -= 1) {
+        const step = flow[i];
+        if (step?.type === "profile" && step.suspect === suspect) return { stepIndex: i + 1, pdfPage: step.page };
+      }
+      return { stepIndex: "-", pdfPage: profilePageBySuspect[suspect] || "-" };
+    }
+
+    function firstStepForProfile(suspect) {
+      return flow.findIndex((step) => step.type === "profile" && step.suspect === suspect);
+    }
+
+    function showExplanation(kind, text) {
+      explanationBox.classList.remove("ok", "bad");
+      if (kind) explanationBox.classList.add(kind);
+      explanationText.textContent = text;
+      explanationActions.innerHTML = "";
+    }
+
+    function setExplanationActions(targetSuspect) {
+      explanationActions.innerHTML = "";
+      if (!targetSuspect) return;
+      const profileIndex = firstStepForProfile(targetSuspect);
+      if (profileIndex >= 0) {
+        const profileBtn = document.createElement("button");
+        profileBtn.className = "explain-btn";
+        profileBtn.type = "button";
+        profileBtn.textContent = `Ver perfil de ${targetSuspect}`;
+        profileBtn.addEventListener("click", () => {
+          state.supportUsage.profileJumps += 1;
+          state.returnCaseIndex = state.index;
+          goToIndex(profileIndex);
+        });
+        explanationActions.appendChild(profileBtn);
+      }
+      if (typeof state.returnCaseIndex === "number") {
+        const backBtn = document.createElement("button");
+        backBtn.className = "explain-btn";
+        backBtn.type = "button";
+        backBtn.textContent = "Volver al caso";
+        backBtn.addEventListener("click", () => {
+          const idx = state.returnCaseIndex;
+          state.returnCaseIndex = null;
+          goToIndex(idx);
+        });
+        explanationActions.appendChild(backBtn);
+      }
+    }
+
+    function clearTimer() {
+      if (state.timerId) window.clearInterval(state.timerId);
+      state.timerId = null;
+    }
+    function updateScreenTimer() {
+      scoreCaseTime.textContent = formatSeconds(Date.now() - state.readingStartAt);
+    }
+    function startTimer() {
+      clearTimer();
+      updateScreenTimer();
+      state.timerId = window.setInterval(updateScreenTimer, 200);
+    }
+
+    function renderSuspects(options) {
+      suspectButtons.innerHTML = "";
+      options.forEach((name) => {
+        const btn = document.createElement("button");
+        btn.className = "suspect-btn";
+        btn.type = "button";
+        btn.textContent = name;
+        btn.dataset.suspect = name;
+        btn.addEventListener("click", () => {
+          if (btn.classList.contains("used")) return;
+          state.selectedSuspect = name;
+          suspectButtons.querySelectorAll(".suspect-btn").forEach((b) => b.classList.toggle("selected", b.dataset.suspect === name));
+          feedback.textContent = "";
+          feedback.className = "feedback";
+        });
+        suspectButtons.appendChild(btn);
+      });
+      suspectButtons.style.display = "flex";
+      suspectButtons.style.flexWrap = "wrap";
+      suspectButtons.style.gap = "8px";
+      suspectButtons.style.justifyContent = "center";
+    }
+
+    function isCurrentCaseSolved() {
+      const current = flow[state.index];
+      return current.type === "case" && state.solvedCases.has(current.caseId);
+    }
+
+    function renderPage() {
+      const current = flow[state.index];
+      if (current.type === "profile") {
+        state.seenProfiles.add(current.suspect);
+      }
+      pageCounter.textContent = `Pantalla ${state.index + 1}/${flow.length}`;
+      caseCounter.textContent = current.type === "case" ? `${current.caseId}/15` : (current.level ? `Nivel ${current.level}` : "-");
+
+      if (current.type === "cover") {
+        phaseLabel.textContent = "Inicio";
+        pageOverlay.classList.add("active");
+        pageImage.style.display = "none";
+        if (current.page === 1) {
+          pageOverlay.innerHTML = `
+            <div class="card-cover">
+              <div class="cover-emojis">🔍🕵️🎒🗂️🔎</div>
+              <h1>Detective del Colegio</h1>
+              <p>Lee las fichas de 10 sospechosos, memoriza sus rasgos únicos y resuelve 15 casos misteriosos. ¡Las pistas están ahí… si sabes mirar!</p>
+              <div class="cover-steps">
+                <div class="cover-step"><span class="step-num">1</span>Lee el perfil del sospechoso</div>
+                <div class="cover-step"><span class="step-num">2</span>Pulsa «Finalizar lectura»</div>
+                <div class="cover-step"><span class="step-num">3</span>Lee el caso y elige al culpable</div>
+                <div class="cover-step"><span class="step-num">4</span>¡Confirma y descubre si acertaste!</div>
+              </div>
+              <div class="badge">10 personajes · 15 casos · Logoped-IA</div>
+            </div>`;
+        } else {
+          pageOverlay.innerHTML = `
+            <div class="card-cover" style="background:linear-gradient(145deg,#059669,#10b981,#34d399)">
+              <div class="cover-emojis">📋✏️🧠💡🎯</div>
+              <h1>¿Cómo se juega?</h1>
+              <p>Cada nivel presenta un nuevo personaje. Fíjate bien en su <strong>objeto único</strong>: ese objeto aparecerá como pista en los casos.</p>
+              <p>No siempre es el último personaje que conociste. ¡Usa la memoria y razona con calma!</p>
+              <div class="badge">Pulsa «Siguiente» para empezar 🚀</div>
+            </div>`;
+        }
+      } else if (current.type === "profile") {
+        phaseLabel.textContent = `Aprendizaje de perfil (${current.suspect})`;
+        pageImage.style.display = "none";
+        pageOverlay.classList.add("active");
+        const d = profileDescriptions[current.suspect] || {};
+        const col = d.color || "#6366f1";
+        const traitsHtml = (d.traits || []).map(t => `<li>${t}</li>`).join("");
+        pageOverlay.innerHTML = `
+          <div class="card-profile" style="--cc:${col}; --cc-mid:${col}80; --cc-light:${col}40">
+            <div class="card-photo-col">
+              <img src="${profileImageBySuspect[current.suspect]}" alt="Avatar de ${current.suspect}" loading="lazy">
+              <div class="card-name">${current.suspect}</div>
+              <div class="card-age">${d.age || ""} años</div>
+              <div class="char-level-badge">Nivel ${current.level}</div>
+            </div>
+            <div class="card-data-col">
+              <h2>Ficha de ${current.suspect}</h2>
+              <ul class="trait-list">${traitsHtml}</ul>
+              <div class="card-clue"><strong>Objeto único — pista clave</strong>${d.clue || ""}</div>
+              <div class="card-desc">${d.description || ""}</div>
+            </div>
+          </div>`;
+      } else if (current.type === "case") {
+        phaseLabel.textContent = `Discriminación de perfiles (Nivel ${current.level})`;
+        pageImage.style.display = "none";
+        pageOverlay.classList.add("active");
+        const c = caseNarratives[Number(current.caseId)] || {};
+        pageOverlay.innerHTML = `
+          <div class="card-case">
+            <div class="card-scene-col">
+              <div class="scene-icon">${c.scene || "🔍"}</div>
+              <div class="case-num">Caso #${current.caseId}</div>
+              <div class="case-location">📍 ${c.location || ""}</div>
+              <div class="case-level-badge">Nivel ${current.level}</div>
+            </div>
+            <div class="card-case-data">
+              <h2>${c.title || "Caso " + current.caseId}</h2>
+              <div class="case-text">${c.text || ""}</div>
+              <div class="case-pista"><strong>Pista clave</strong>${c.pista || ""}</div>
+              <div class="case-q">🕵️ ¿Quién estuvo allí?</div>
+            </div>
+          </div>`;
+      } else if (current.type === "outro") {
+        phaseLabel.textContent = "Final";
+        pageOverlay.classList.add("active");
+        pageImage.style.display = "none";
+        pageOverlay.innerHTML = `
+          <div class="card-cover" style="background:linear-gradient(145deg,#f59e0b,#fbbf24,#fde68a);color:#1c1917">
+            <div class="cover-emojis">🏆🎉🥇🎊✨</div>
+            <h1 style="color:#1c1917">¡Misión completada!</h1>
+            <p style="color:#44403c">Has resuelto todos los casos. Pulsa «Ver resultado» para descubrir tu puntuación y el informe detallado.</p>
+            <div class="badge" style="background:rgba(0,0,0,.15);border-color:rgba(0,0,0,.2);color:#1c1917">Pulsa Siguiente para ver tu resultado 🎯</div>
+          </div>`;
+      } else if (current.type === "solutions") {
+        phaseLabel.textContent = "Soluciones";
+        pageOverlay.classList.add("active");
+        pageImage.style.display = "none";
+        const entries = Object.entries(caseAnswers);
+        const rows = entries.map(([id, name]) => {
+          const c = caseNarratives[Number(id)] || {};
+          return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 12px;border-radius:10px;background:#f5f3ff;margin:4px 0;font-size:13px;font-weight:700">
+            <span>${c.scene || ""} Caso ${id} — ${c.title || ""}</span>
+            <span style="color:#4f46e5;background:#ede9fe;border-radius:20px;padding:2px 12px">${name}</span>
+          </div>`;
+        }).join("");
+        pageOverlay.innerHTML = `
+          <div style="padding:24px;background:#fff">
+            <h2 style="font-family:var(--font-title);font-size:26px;color:#4f46e5;margin:0 0 16px">🗂️ Soluciones de los 15 casos</h2>
+            ${rows}
+          </div>`;
+      } else {
+        phaseLabel.textContent = "Transición";
+        pageOverlay.classList.remove("active");
+        pageOverlay.innerHTML = "";
+        pageImage.style.display = "block";
+        pageImage.src = pageImageSrc(current.page, current);
+        pageImage.onerror = () => { pageImage.src = textSlide(`Pantalla ${current.page}`, "Actividad"); };
+      }
+
+      feedback.textContent = "";
+      feedback.className = "feedback";
+      if (current.type === "profile") {
+        showExplanation(null, `Memoriza los rasgos de ${current.suspect} — especialmente su objeto único. Pulsa Finalizar lectura cuando hayas terminado.`);
+      } else if (current.type === "case") {
+        showExplanation(null, "Lee la escena y la pista clave. Compara con los perfiles que ya conoces y elige al sospechoso.");
+      } else {
+        showExplanation(null, "Avanza cuando estés listo para continuar.");
+      }
+      if (typeof state.returnCaseIndex === "number" && state.index !== state.returnCaseIndex) {
+        const backBtn = document.createElement("button");
+        explanationActions.innerHTML = "";
+        backBtn.className = "explain-btn";
+        backBtn.type = "button";
+        backBtn.textContent = "Volver al caso";
+        backBtn.addEventListener("click", () => {
+          const idx = state.returnCaseIndex;
+          state.returnCaseIndex = null;
+          goToIndex(idx);
+        });
+        explanationActions.appendChild(backBtn);
+      }
+      state.selectedSuspect = null;
+      state.readingStartAt = Date.now();
+      state.readingFinalized = !["profile", "case"].includes(current.type);
+      state.finalizedReadingMs = 0;
+
+      const isCase = current.type === "case";
+      const isProfile = current.type === "profile";
+      tray.classList.toggle("passive", !isCase);
+      confirmButton.disabled = !isCase;
+      quickSummaryButton.classList.toggle("active", isProfile);
+      finalizeReadingButton.style.display = (isCase || isProfile) ? "inline-block" : "none";
+      finalizeReadingButton.disabled = state.readingFinalized;
+      if (isCase) {
+        if (!state.learnedProfiles.has(current.suspectAnswer) && !state.therapistMode) {
+          const idx = firstStepForProfile(current.suspectAnswer);
+          if (idx >= 0 && idx !== state.index) {
+            showFeedback("Primero revisa ese perfil", "bad");
+            showExplanation("bad", `Antes de resolver este caso debes conocer a ${current.suspectAnswer}. Te llevo a su ficha ahora.`);
+            return goToIndex(idx);
+          }
+        }
+        const optionPool = (current.options || suspects).filter((name) => state.learnedProfiles.has(name));
+        if (optionPool.length < 2 && !state.therapistMode) {
+          const missing = (current.options || suspects).find((name) => !state.learnedProfiles.has(name));
+          const idx = missing ? firstStepForProfile(missing) : -1;
+          if (idx >= 0 && idx !== state.index) {
+            showFeedback("Falta revisar perfiles previos", "bad");
+            showExplanation("bad", `Vamos primero a la ficha de ${missing} para mantener la secuencia correcta.`);
+            return goToIndex(idx);
+          }
+        }
+        renderSuspects(optionPool.length ? optionPool : (current.options || suspects));
+      } else {
+        renderSuspects(current.options || suspects);
+      }
+
+      if (isCase) {
+        if (state.solvedCases.has(current.caseId)) {
+          confirmButton.disabled = true;
+          nextButton.dataset.locked = "false";
+        } else {
+          confirmButton.disabled = !state.readingFinalized;
+          nextButton.dataset.locked = state.therapistMode ? "false" : "true";
+          state.responseStartAt = state.readingFinalized ? Date.now() : 0;
+          state.currentCaseErrors = 0;
+        }
+      } else {
+        nextButton.dataset.locked = "false";
+      }
+      nextButton.textContent = state.index === flow.length - 1 ? "Ver resultado" : "Siguiente";
+      updateStats();
+      startTimer();
+      syncCoachPanel();
+    }
+
+    function openQuickSummary() {
+      const current = flow[state.index];
+      if (!current || current.type !== "profile") return;
+      state.supportUsage.summaries += 1;
+      const bullets = profileMicroSummaries[current.suspect] || ["Revisa el perfil completo para consolidar la información clave."];
+      summaryTitle.textContent = `Micro resumen · ${current.suspect}`;
+      summaryPills.innerHTML = bullets.map((b) => `<span class="summary-pill">${b}</span>`).join("");
+      summaryModal.classList.add("active");
+    }
+
+    function closeQuickSummary() {
+      summaryModal.classList.remove("active");
+    }
+
+    function openManual() {
+      manualModal.classList.add("active");
+    }
+
+    function closeManual() {
+      manualModal.classList.remove("active");
+    }
+
+    function confirmSelection() {
+      const current = flow[state.index];
+      if (current.type !== "case" || state.solvedCases.has(current.caseId)) return;
+      if (!state.readingFinalized) finalizeReading();
+      if (!state.selectedSuspect) return showFeedback("Selecciona un sospechoso", "bad");
+      if (!state.caseStats[current.caseId]) {
+        state.caseStats[current.caseId] = { level: current.level, attempts: 0, errors: 0, readingMs: 0, responseMs: 0 };
+      }
+      state.attempts += 1;
+      state.caseStats[current.caseId].attempts += 1;
+      const attemptResponseMs = Date.now() - state.responseStartAt;
+      if (normalize(state.selectedSuspect) === normalize(current.suspectAnswer)) {
+        const responseMs = Date.now() - state.responseStartAt;
+        const readingMs = Date.now() - state.readingStartAt;
+        state.ok += 1;
+        state.responseTimes.push(responseMs);
+        state.caseStats[current.caseId].responseMs = responseMs;
+        if (!state.caseStats[current.caseId].readingMs) state.caseStats[current.caseId].readingMs = state.finalizedReadingMs || readingMs;
+        if (state.currentCaseErrors === 0) state.firstTryHits += 1;
+        state.solvedCases.add(current.caseId);
+        confirmButton.disabled = true;
+        nextButton.dataset.locked = "false";
+        showFeedback("Acierto", "ok");
+        const selectedRef = findProfileReference(state.selectedSuspect, state.index);
+        showExplanation(
+          "ok",
+          `Correcto. Este caso se ajusta al perfil ${current.suspectAnswer}. Buena lectura de pistas. Puedes repasar su ficha en la pantalla ${selectedRef.stepIndex} (PDF ${selectedRef.pdfPage}) para reforzar por qué encaja.`
+        );
+        setExplanationActions(current.suspectAnswer);
+        state.attemptLog.push({ caseId: current.caseId, level: current.level, correct: true, responseMs: attemptResponseMs, readingMs: state.finalizedReadingMs || readingMs });
+      } else {
+        state.bad += 1;
+        state.currentCaseErrors += 1;
+        state.caseStats[current.caseId].errors += 1;
+        showFeedback("Error, inténtalo de nuevo", "bad");
+        const wrongRef = findProfileReference(state.selectedSuspect, state.index);
+        const rightRef = findProfileReference(current.suspectAnswer, state.index);
+        showExplanation(
+          "bad",
+          `No encaja ${state.selectedSuspect}. Las pistas de este caso se corresponden mejor con ${current.suspectAnswer}. Revisa la ficha de ${state.selectedSuspect} en pantalla ${wrongRef.stepIndex} (PDF ${wrongRef.pdfPage}) y compárala con ${current.suspectAnswer} en pantalla ${rightRef.stepIndex} (PDF ${rightRef.pdfPage}).`
+        );
+        setExplanationActions(current.suspectAnswer);
+        state.attemptLog.push({ caseId: current.caseId, level: current.level, correct: false, responseMs: attemptResponseMs, readingMs: state.finalizedReadingMs || 0 });
+      }
+      updateStats();
+    }
+
+    function canAdvance() {
+      const current = flow[state.index];
+      if (state.therapistMode) return true;
+      if (current.type !== "case") return true;
+      return state.solvedCases.has(current.caseId);
+    }
+
+    function goToIndex(nextIndex) {
+      if (nextIndex < 0 || nextIndex >= flow.length) return;
+      captureReadingTime();
+      state.index = nextIndex;
+      renderPage();
+    }
+
+    function nextPage() {
+      const current = flow[state.index];
+      if ((current.type === "profile" || current.type === "case") && !state.readingFinalized) finalizeReading();
+      if (!canAdvance()) {
+        if (!state.therapistMode) return showFeedback("Resuelve el caso para continuar", "bad");
+      }
+      if (state.index === flow.length - 1) return showFinal();
+      goToIndex(state.index + 1);
+    }
+
+    function finalizeReading() {
+      const current = flow[state.index];
+      if (!current || state.readingFinalized || !["profile", "case"].includes(current.type)) return;
+      state.readingFinalized = true;
+      state.finalizedReadingMs = Date.now() - state.readingStartAt;
+      finalizeReadingButton.disabled = true;
+      if (current.type === "profile") {
+        state.readingProfiles.push(state.finalizedReadingMs);
+        state.learnedProfiles.add(current.suspect);
+        showFeedback("Lectura de perfil registrada", "ok");
+      } else if (current.type === "case") {
+        state.readingCases.push(state.finalizedReadingMs);
+        state.responseStartAt = Date.now();
+        confirmButton.disabled = false;
+        if (!state.caseStats[current.caseId]) {
+          state.caseStats[current.caseId] = { level: current.level, attempts: 0, errors: 0, readingMs: 0, responseMs: 0 };
+        }
+        state.caseStats[current.caseId].readingMs = state.finalizedReadingMs;
+        showFeedback("Lectura de caso registrada", "ok");
+      }
+    }
+
+    function showFinal() {
+      captureReadingTime();
+      clearTimer();
+      activity.classList.add("hidden");
+      finalScreen.classList.add("active");
+      const percent = totalCases ? Math.round((state.ok / totalCases) * 100) : 0;
+      const firstTry = totalCases ? Math.round((state.firstTryHits / totalCases) * 100) : 0;
+      const avgProfileRead = average(state.readingProfiles);
+      const avgCaseRead = average(state.readingCases);
+      document.getElementById("finalOk").textContent = state.ok;
+      document.getElementById("finalBad").textContent = state.bad;
+      document.getElementById("finalAttempts").textContent = state.attempts;
+      document.getElementById("finalPercent").textContent = `${percent}%`;
+      document.getElementById("finalTime").textContent = formatClock(Date.now() - state.startTime);
+      document.getElementById("finalAvgResponse").textContent = formatSeconds(average(state.responseTimes));
+      document.getElementById("finalFirstTry").textContent = `${firstTry}%`;
+      document.getElementById("finalAvgProfile").textContent = formatSeconds(avgProfileRead);
+      document.getElementById("finalAvgCase").textContent = formatSeconds(avgCaseRead);
+      try {
+        localStorage.setItem("maleta_resuelve_los_casos_last_session", JSON.stringify(buildReportData()));
+      } catch (error) {
+        console.warn("No se pudo guardar medicion local", error);
+      }
+    }
+
+    function buildReportData() {
+      const stdDev = (arr) => {
+        if (!arr.length) return 0;
+        const m = average(arr);
+        return Math.sqrt(average(arr.map((v) => (v - m) ** 2)));
+      };
+      const totalTimeMs = Date.now() - state.startTime;
+      const student = {
+        name: (studentNameInput.value || "").trim(),
+        age: Number(studentAgeInput.value || 0) || null,
+        grade: (studentGradeInput.value || "").trim()
+      };
+      const gradeNum = parseGradeNumber(student.grade) || (student.age ? Math.min(6, Math.max(1, student.age - 5)) : 3);
+      const expected = expectedProfile(gradeNum);
+      const solvedCount = state.solvedCases.size;
+      const percent = totalCases ? Math.round((state.ok / totalCases) * 100) : 0;
+      const firstTry = totalCases ? Math.round((state.firstTryHits / totalCases) * 100) : 0;
+      const avgResponseMs = average(state.responseTimes);
+      const avgCaseReadingMs = average(state.readingCases);
+      const avgProfileReadingMs = average(state.readingProfiles);
+      const attemptsPerCase = totalCases ? state.attempts / totalCases : 0;
+      const errorRate = state.attempts ? (state.bad / state.attempts) * 100 : 0;
+      const readingEfficiency = avgCaseReadingMs > 0 ? (1 / avgCaseReadingMs) * 1000 : 0;
+      const responseEfficiency = avgResponseMs > 0 ? (1 / avgResponseMs) * 1000 : 0;
+      const globalIndex = Math.round(((percent * 0.45) + (firstTry * 0.35) + ((100 - errorRate) * 0.20)) * 10) / 10;
+      const impulsiveWrong = state.attemptLog.filter((a) => !a.correct && a.responseMs < 2500).length;
+      const impulsivityPercent = state.attempts ? (impulsiveWrong / state.attempts) * 100 : 0;
+      const superficialCases = Object.values(state.caseStats).filter((c) => c.readingMs > 0 && c.readingMs < 8000 && c.errors > 0).length;
+      const superficialReadingPercent = solvedCount ? (superficialCases / solvedCount) * 100 : 0;
+      const consistencyCv = avgCaseReadingMs > 0 ? (stdDev(state.readingCases) / avgCaseReadingMs) * 100 : 0;
+      const consistencyIndex = Math.max(0, 100 - consistencyCv);
+      const execLoad = solvedCount ? state.bad / solvedCount : 0;
+      const supportUseCount = (state.supportUsage.summaries || 0) + (state.supportUsage.profileJumps || 0);
+      const firstTryByCase = Object.entries(state.caseStats).filter(([, v]) => v.attempts === 1).length;
+      const selfRegulationPercent = solvedCount ? (firstTryByCase / solvedCount) * 100 : 0;
+      const workingMemoryCases = Object.entries(state.caseStats).filter(([, v]) => v.level >= 8);
+      const wmHits = workingMemoryCases.filter(([, v]) => v.attempts === 1).length;
+      const workingMemoryPercent = workingMemoryCases.length ? (wmHits / workingMemoryCases.length) * 100 : 0;
+      const profileCountAtLevel = (level) => Math.min(10, level + 1);
+      const inferredWeights = Object.entries(state.caseStats).map(([caseId, row]) => {
+        const level = row.level || 1;
+        const memoryLoad = Math.max(1, profileCountAtLevel(level));
+        const solvedEffort = row.attempts <= 1 ? 1 : Math.max(0.2, 1 - (row.errors / Math.max(1, row.attempts)));
+        return { memoryLoad, solvedEffort };
+      });
+      const inferentialPercent = inferredWeights.length
+        ? average(inferredWeights.map((x) => Math.min(100, (x.solvedEffort * 70) + ((x.memoryLoad / 10) * 30))))
+        : 0;
+      const responseByAttempt = state.attemptLog.map((a) => a.responseMs);
+      const firstHalf = responseByAttempt.slice(0, Math.floor(responseByAttempt.length / 2) || 1);
+      const secondHalf = responseByAttempt.slice(Math.floor(responseByAttempt.length / 2) || 1);
+      const fatigueDelta = (average(secondHalf) - average(firstHalf));
+      const fatigueRiskPercent = responseByAttempt.length > 2
+        ? Math.max(0, Math.min(100, (fatigueDelta / Math.max(1, average(firstHalf))) * 100))
+        : 0;
+      const retentionPercent = Math.max(0, Math.min(100, (workingMemoryPercent * 0.6) + (selfRegulationPercent * 0.4)));
+      const perseverancePercent = Math.max(0, Math.min(100, 100 - (impulsivityPercent * 0.4) - (errorRate * 0.6)));
+      const textComprehensionPercent = Math.max(0, Math.min(100,
+        (inferentialPercent * 0.35)
+        + ((100 - superficialReadingPercent) * 0.25)
+        + (selfRegulationPercent * 0.20)
+        + (retentionPercent * 0.20)
+      ));
+      const clinicalGlobal = Math.round(
+        (percent * 0.28)
+        + (selfRegulationPercent * 0.18)
+        + (workingMemoryPercent * 0.16)
+        + ((100 - impulsivityPercent) * 0.14)
+        + ((100 - superficialReadingPercent) * 0.12)
+        + (consistencyIndex * 0.12)
+      );
+      const wordsPerCaseRef = 32;
+      const actualCasePpm = avgCaseReadingMs > 0 ? (wordsPerCaseRef * 60000) / avgCaseReadingMs : 0;
+      const expectedCasePpm = expected.mid;
+      const expectedGapPercent = expectedCasePpm > 0 ? ((actualCasePpm - expectedCasePpm) / expectedCasePpm) * 100 : 0;
+      return {
+        student,
+        savedAt: new Date().toISOString(),
+        totalCases,
+        totalProfiles,
+        solvedCases: solvedCount,
+        hits: state.ok,
+        errors: state.bad,
+        attempts: state.attempts,
+        scorePercent: percent,
+        firstTryAccuracyPercent: firstTry,
+        totalTimeMs,
+        totalTimeClock: formatClock(totalTimeMs),
+        averageResponseMs: Math.round(avgResponseMs),
+        averageCaseReadingMs: Math.round(avgCaseReadingMs),
+        averageProfileReadingMs: Math.round(avgProfileReadingMs),
+        attemptsPerCase: Number(attemptsPerCase.toFixed(2)),
+        errorRatePercent: Number(errorRate.toFixed(1)),
+        readingEfficiencyScreensPerSecond: Number(readingEfficiency.toFixed(3)),
+        responseEfficiencyAnswersPerSecond: Number(responseEfficiency.toFixed(3)),
+        globalPerformanceIndex: globalIndex,
+        expectedBenchmarks: {
+          gradeNum,
+          expectedPpmMin: expected.min,
+          expectedPpmMid: expected.mid,
+          expectedPpmMax: expected.max,
+          actualCasePpm: Number(actualCasePpm.toFixed(1)),
+          expectedGapPercent: Number(expectedGapPercent.toFixed(1))
+        },
+        progression: state.screenReadings,
+        clinical: {
+          workingMemoryPercent: Number(workingMemoryPercent.toFixed(1)),
+          impulsivityPercent: Number(impulsivityPercent.toFixed(1)),
+          superficialReadingPercent: Number(superficialReadingPercent.toFixed(1)),
+          consistencyIndex: Number(consistencyIndex.toFixed(1)),
+          selfRegulationPercent: Number(selfRegulationPercent.toFixed(1)),
+          supportUseCount,
+          execLoad: Number(execLoad.toFixed(2)),
+          clinicalGlobal,
+          textComprehensionPercent: Number(textComprehensionPercent.toFixed(1)),
+          inferentialPercent: Number(inferentialPercent.toFixed(1)),
+          retentionPercent: Number(retentionPercent.toFixed(1)),
+          perseverancePercent: Number(perseverancePercent.toFixed(1)),
+          fatigueRiskPercent: Number(fatigueRiskPercent.toFixed(1))
+        }
+      };
+    }
+
+    function downloadReport() {
+      const report = buildReportData();
+      const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+      const reportHtml = `<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Informe maleta</title><style>body{font-family:Arial,sans-serif;margin:24px;color:#111}h1{margin:0 0 10px}table{border-collapse:collapse;width:100%;font-size:13px}th,td{border:1px solid #ccc;padding:6px;text-align:left}.kpi{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0}.card{border:1px solid #333;padding:8px}</style></head><body><h1>Informe clínico · Resuelve los casos</h1><p>Fecha: ${new Date(report.savedAt).toLocaleString()}</p><p>Alumno: ${report.student.name || "-"} · Edad: ${report.student.age || "-"} · Curso: ${report.student.grade || "-"}</p><div class="kpi"><div class="card"><strong>Precisión</strong><br>${report.scorePercent}%</div><div class="card"><strong>Primer intento</strong><br>${report.firstTryAccuracyPercent}%</div><div class="card"><strong>Tiempo total</strong><br>${report.totalTimeClock}</div><div class="card"><strong>T. respuesta medio</strong><br>${formatSeconds(report.averageResponseMs)}</div><div class="card"><strong>T. lectura perfiles</strong><br>${formatSeconds(report.averageProfileReadingMs)}</div><div class="card"><strong>T. lectura casos</strong><br>${formatSeconds(report.averageCaseReadingMs)}</div><div class="card"><strong>PPM caso (real)</strong><br>${report.expectedBenchmarks.actualCasePpm}</div><div class="card"><strong>PPM esperado (curso)</strong><br>${report.expectedBenchmarks.expectedPpmMid}</div><div class="card"><strong>Diferencia</strong><br>${report.expectedBenchmarks.expectedGapPercent}%</div></div><table><thead><tr><th>#</th><th>Tipo</th><th>PDF</th><th>Nivel</th><th>Caso</th><th>Perfil</th><th>ms</th></tr></thead><tbody>${report.progression.map((s,i)=>`<tr><td>${i+1}</td><td>${s.type}</td><td>${s.page}</td><td>${s.level??"-"}</td><td>${s.caseId??"-"}</td><td>${s.suspect??"-"}</td><td>${s.ms}</td></tr>`).join("")}</tbody></table></body></html>`;
+      const htmlBlob = new Blob([reportHtml], { type: "text/html;charset=utf-8" });
+      const htmlUrl = URL.createObjectURL(htmlBlob);
+      const htmlA = document.createElement("a");
+      htmlA.href = htmlUrl;
+      htmlA.download = `informe-maleta-${stamp}.html`;
+      document.body.appendChild(htmlA);
+      htmlA.click();
+      htmlA.remove();
+      URL.revokeObjectURL(htmlUrl);
+
+      const lines = [
+        "INFORME CLINICO - RESUELVE LOS CASOS",
+        `Fecha: ${new Date(report.savedAt).toLocaleString()}`,
+        `Alumno: ${report.student.name || "-"}`,
+        `Edad: ${report.student.age || "-"}`,
+        `Curso: ${report.student.grade || "-"}`,
+        `Casos resueltos: ${report.solvedCases}/${report.totalCases}`,
+        `Aciertos: ${report.hits}`,
+        `Errores: ${report.errors}`,
+        `Intentos: ${report.attempts}`,
+        `Precision global: ${report.scorePercent}%`,
+        `Precision al primer intento: ${report.firstTryAccuracyPercent}%`,
+        `Tiempo total de sesion: ${report.totalTimeClock}`,
+        `Tiempo medio de respuesta: ${formatSeconds(report.averageResponseMs)}`,
+        `Tiempo medio de lectura de perfiles: ${formatSeconds(report.averageProfileReadingMs)}`,
+        `Tiempo medio de lectura de casos: ${formatSeconds(report.averageCaseReadingMs)}`,
+        `Intentos por caso: ${report.attemptsPerCase}`,
+        `Tasa de error: ${report.errorRatePercent}%`,
+        `Indice global de rendimiento: ${report.globalPerformanceIndex}/100`,
+        `Memoria de trabajo (proxy): ${report.clinical.workingMemoryPercent}%`,
+        `Impulsividad de respuesta: ${report.clinical.impulsivityPercent}%`,
+        `Lectura superficial (riesgo): ${report.clinical.superficialReadingPercent}%`,
+        `Consistencia atencional: ${report.clinical.consistencyIndex}%`,
+        `Autorregulacion (1er intento): ${report.clinical.selfRegulationPercent}%`,
+        `Uso de apoyos: ${report.clinical.supportUseCount}`,
+        `Carga ejecutiva (errores/caso): ${report.clinical.execLoad}`,
+        `Indice clinico global: ${report.clinical.clinicalGlobal}/100`,
+        `PPM caso (real): ${report.expectedBenchmarks.actualCasePpm}`,
+        `PPM esperado (curso ${report.expectedBenchmarks.gradeNum}): ${report.expectedBenchmarks.expectedPpmMid}`,
+        `Diferencia respecto a esperado: ${report.expectedBenchmarks.expectedGapPercent}%`,
+        `Comprension textual global: ${report.clinical.textComprehensionPercent}%`,
+        `Comprension inferencial: ${report.clinical.inferentialPercent}%`,
+        `Retencion de perfiles: ${report.clinical.retentionPercent}%`,
+        `Tolerancia a la dificultad: ${report.clinical.perseverancePercent}%`,
+        `Fatiga cognitiva (riesgo): ${report.clinical.fatigueRiskPercent}%`,
+        "",
+        "Detalle por pantalla (ms):",
+        ...report.progression.map((s, i) => `${i + 1}. ${s.type} | PDF ${s.page} | Nivel ${s.level ?? "-"} | Caso ${s.caseId ?? "-"} | Perfil ${s.suspect ?? "-"} | ${s.ms}`)
+      ];
+      const text = lines.join("\n");
+      const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `informe-maleta-${stamp}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      try {
+        localStorage.setItem("maleta_resuelve_los_casos_last_report", JSON.stringify(report));
+      } catch (error) {
+        console.warn("No se pudo guardar informe", error);
+      }
+    }
+
+    function drawBarChart(canvas, labels, values, color) {
+      const ctx = canvas.getContext("2d");
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+      const pad = { l: 34, r: 10, t: 10, b: 30 };
+      const max = Math.max(1, ...values);
+      const chartW = w - pad.l - pad.r;
+      const chartH = h - pad.t - pad.b;
+      const step = chartW / Math.max(1, values.length);
+      const barW = Math.max(8, step - 6);
+      ctx.strokeStyle = "#e5e7eb";
+      for (let i = 1; i <= 4; i += 1) {
+        const gy = pad.t + (chartH * (i / 4));
+        ctx.beginPath();
+        ctx.moveTo(pad.l, gy);
+        ctx.lineTo(w - pad.r, gy);
+        ctx.stroke();
+      }
+      ctx.strokeStyle = "#6b7280";
+      ctx.beginPath();
+      ctx.moveTo(pad.l, pad.t);
+      ctx.lineTo(pad.l, h - pad.b);
+      ctx.lineTo(w - pad.r, h - pad.b);
+      ctx.stroke();
+      values.forEach((v, i) => {
+        const x = pad.l + i * step + 3;
+        const bh = (v / max) * (chartH - 2);
+        const y = h - pad.b - bh;
+        ctx.fillStyle = color;
+        ctx.fillRect(x, y, barW, bh);
+        ctx.fillStyle = "#111827";
+        ctx.font = "10px Arial";
+        ctx.fillText(labels[i], x, h - 14);
+      });
+    }
+
+    function drawLineChart(canvas, labels, values, color) {
+      const ctx = canvas.getContext("2d");
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+      const pad = { l: 34, r: 10, t: 10, b: 30 };
+      const max = Math.max(1, ...values);
+      const chartW = w - pad.l - pad.r;
+      const chartH = h - pad.t - pad.b;
+      const step = values.length > 1 ? chartW / (values.length - 1) : chartW;
+      ctx.strokeStyle = "#e5e7eb";
+      for (let i = 1; i <= 4; i += 1) {
+        const gy = pad.t + (chartH * (i / 4));
+        ctx.beginPath();
+        ctx.moveTo(pad.l, gy);
+        ctx.lineTo(w - pad.r, gy);
+        ctx.stroke();
+      }
+      ctx.strokeStyle = "#6b7280";
+      ctx.beginPath();
+      ctx.moveTo(pad.l, pad.t);
+      ctx.lineTo(pad.l, h - pad.b);
+      ctx.lineTo(w - pad.r, h - pad.b);
+      ctx.stroke();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      values.forEach((v, i) => {
+        const x = pad.l + i * step;
+        const y = h - pad.b - ((v / max) * (chartH - 4));
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+      if (values.length > 2) {
+        const x1 = pad.l;
+        const y1 = h - pad.b - ((values[0] / max) * (chartH - 4));
+        const x2 = pad.l + ((values.length - 1) * step);
+        const y2 = h - pad.b - ((values[values.length - 1] / max) * (chartH - 4));
+        ctx.setLineDash([4, 4]);
+        ctx.strokeStyle = "#9ca3af";
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+      values.forEach((v, i) => {
+        const x = pad.l + i * step;
+        const y = h - pad.b - ((v / max) * (chartH - 4));
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(x, y, 3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#111827";
+        ctx.font = "10px Arial";
+        ctx.fillText(labels[i], x - 6, h - 14);
+      });
+    }
+
+    function renderVisualReport() {
+      const report = buildReportData();
+      const attemptPrecision = report.attempts ? Math.round((report.hits / report.attempts) * 100) : 0;
+      document.getElementById("kpiPrecision").textContent = `${attemptPrecision}%`;
+      document.getElementById("kpiFirstTry").textContent = `${report.scorePercent}%`;
+      document.getElementById("kpiResponse").textContent = formatSeconds(report.averageResponseMs);
+      document.getElementById("kpiReading").textContent = formatSeconds(report.averageCaseReadingMs);
+      document.getElementById("repStudentName").textContent = report.student.name || "-";
+      document.getElementById("repStudentAge").textContent = report.student.age || "-";
+      document.getElementById("repStudentGrade").textContent = report.student.grade || "-";
+      document.getElementById("repGradeNum").textContent = `${report.expectedBenchmarks.gradeNum}º Primaria`;
+      document.getElementById("repActualPpm").textContent = String(report.expectedBenchmarks.actualCasePpm);
+      document.getElementById("repExpectedPpm").textContent = String(report.expectedBenchmarks.expectedPpmMid);
+      document.getElementById("repGap").textContent = `${report.expectedBenchmarks.expectedGapPercent}%`;
+      document.getElementById("repRange").textContent = `${report.expectedBenchmarks.expectedPpmMin} - ${report.expectedBenchmarks.expectedPpmMax} ppm`;
+      referenceTableBody.innerHTML = Object.entries(expectedPpmByGrade)
+        .map(([grade, v]) => `<tr><td>${grade}º Primaria</td><td>${v.min}</td><td>${v.mid}</td><td>${v.max}</td></tr>`)
+        .join("");
+
+      const cases = Object.keys(state.caseStats).map(Number).sort((a, b) => a - b);
+      const labels = cases.map((c) => `C${c}`);
+      const reading = cases.map((c) => (state.caseStats[c].readingMs || 0) / 1000);
+      const errors = cases.map((c) => state.caseStats[c].errors || 0);
+      const attempts = cases.map((c) => state.caseStats[c].attempts || 0);
+      drawBarChart(chartCaseReading, labels, reading, "#2563eb");
+      drawBarChart(chartCaseErrors, labels, errors, "#dc2626");
+      drawBarChart(chartAttemptsByCase, labels, attempts, "#7c3aed");
+      drawBarChart(
+        chartExpectedVsActual,
+        ["Esperable min", "Esperable medio", "Esperable max", "Real alumno"],
+        [
+          report.expectedBenchmarks.expectedPpmMin,
+          report.expectedBenchmarks.expectedPpmMid,
+          report.expectedBenchmarks.expectedPpmMax,
+          report.expectedBenchmarks.actualCasePpm
+        ],
+        "#0f766e"
+      );
+      const attemptLabels = state.attemptLog.map((_, i) => `I${i + 1}`);
+      const attemptResponse = state.attemptLog.map((a) => (a.responseMs || 0) / 1000);
+      drawLineChart(chartResponseAttempts, attemptLabels.length ? attemptLabels : ["I0"], attemptResponse.length ? attemptResponse : [0], "#0f766e");
+
+      reportTableBody.innerHTML = cases.map((c) => {
+        const row = state.caseStats[c];
+        const expectedReadMs = report.expectedBenchmarks.expectedPpmMid > 0
+          ? (32 * 60000) / report.expectedBenchmarks.expectedPpmMid
+          : 0;
+        return `<tr><td>${row.level}</td><td>${c}</td><td>${row.attempts}</td><td>${row.errors}</td><td>${formatSeconds(row.readingMs)}</td><td>${formatSeconds(row.responseMs)}</td><td>${formatSeconds(expectedReadMs)}</td></tr>`;
+      }).join("");
+
+      document.getElementById("idxWorkingMemory").textContent = `${report.clinical.workingMemoryPercent}%`;
+      document.getElementById("idxImpulsivity").textContent = `${report.clinical.impulsivityPercent}%`;
+      document.getElementById("idxSuperficial").textContent = `${report.clinical.superficialReadingPercent}%`;
+      document.getElementById("idxConsistency").textContent = `${report.clinical.consistencyIndex}%`;
+      document.getElementById("idxSelfRegulation").textContent = `${report.clinical.selfRegulationPercent}%`;
+      document.getElementById("idxSupportUse").textContent = String(report.clinical.supportUseCount);
+      document.getElementById("idxExecLoad").textContent = String(report.clinical.execLoad);
+      document.getElementById("idxClinicalGlobal").textContent = `${report.clinical.clinicalGlobal}/100`;
+      document.getElementById("idxTextComp").textContent = `${report.clinical.textComprehensionPercent}%`;
+      document.getElementById("idxInferential").textContent = `${report.clinical.inferentialPercent}%`;
+      document.getElementById("idxRetention").textContent = `${report.clinical.retentionPercent}%`;
+      document.getElementById("idxPerseverance").textContent = `${report.clinical.perseverancePercent}%`;
+      document.getElementById("idxFatigue").textContent = `${report.clinical.fatigueRiskPercent}%`;
+      const displayName = report.student.name || "El alumno";
+      const speedStatus = report.expectedBenchmarks.expectedGapPercent >= 10
+        ? "por encima de la referencia orientativa"
+        : report.expectedBenchmarks.expectedGapPercent <= -10
+          ? "por debajo de la referencia orientativa"
+          : "en línea con la referencia orientativa";
+      const impulseRisk = report.clinical.impulsivityPercent > 35
+        ? "se observa tendencia a responder con cierta impulsividad"
+        : "no se observa impulsividad marcada en la respuesta";
+      const comprehensionStatus = report.clinical.textComprehensionPercent >= 75
+        ? "la comprensión funcional del texto es buena para la tarea"
+        : report.clinical.textComprehensionPercent >= 55
+          ? "la comprensión es adecuada pero todavía inestable"
+          : "la comprensión necesita refuerzo específico";
+      const fatigueStatus = report.clinical.fatigueRiskPercent >= 35
+        ? "aparecen señales de fatiga cognitiva al avanzar la actividad"
+        : "no se aprecian señales relevantes de fatiga durante la actividad";
+
+      const parentSummary = `${displayName} ha completado ${report.solvedCases} de ${report.totalCases} casos, con una resolución global del ${report.scorePercent}% `
+        + `y una precisión por intento cercana al ${report.attempts ? Math.round((report.hits / report.attempts) * 100) : 0}%. `
+        + `En esta sesión, el tiempo medio de lectura por caso ha sido ${formatSeconds(report.averageCaseReadingMs)} y el tiempo medio de respuesta ${formatSeconds(report.averageResponseMs)}. `
+        + `En velocidad lectora orientativa para su curso (${report.expectedBenchmarks.expectedPpmMid} ppm), su rendimiento actual (${report.expectedBenchmarks.actualCasePpm} ppm) está ${speedStatus}. `
+        + `A nivel de proceso, ${impulseRisk}, ${comprehensionStatus} y ${fatigueStatus}. `
+        + `Esto sugiere que conviene seguir trabajando: 1) lectura atenta de pistas antes de responder, 2) contraste entre dos perfiles parecidos, `
+        + `3) breve autoexplicación oral de por qué elige una opción, y 4) pausas cortas cada varios casos para mantener la calidad. `
+        + `Importante: este informe es una observación funcional de la actividad y NO equivale a una prueba psicométrica ni a un diagnóstico clínico por sí solo; `
+        + `debe interpretarse junto con la valoración profesional y otras fuentes de información.`;
+      document.getElementById("parentSummaryText").textContent = parentSummary;
+    }
+
+    function loadDemoSession() {
+      restart();
+      studentNameInput.value = "Paciente Demo";
+      studentAgeInput.value = "9";
+      studentGradeInput.value = "4º Primaria";
+      const demoCases = Array.from({ length: 15 }, (_, i) => i + 1);
+      state.startTime = Date.now() - (18 * 60 * 1000);
+      state.ok = 15;
+      state.bad = 7;
+      state.attempts = 22;
+      state.firstTryHits = 10;
+      state.solvedCases = new Set(demoCases);
+      state.responseTimes = [4100, 5200, 3900, 6100, 4800, 5500, 7000, 4600, 5100, 6200, 4300, 6800, 5300, 4900, 5900];
+      state.readingProfiles = [12000, 10500, 9800, 11000, 9600, 11500, 10100, 9900, 9400, 10800];
+      state.readingCases = [15000, 13200, 14100, 15900, 13800, 14600, 17000, 13600, 14500, 16100, 14000, 16800, 14700, 14200, 15500];
+      state.attemptLog = [];
+      state.caseStats = {};
+      demoCases.forEach((caseId, idx) => {
+        const errors = idx % 4 === 0 ? 1 : (idx % 7 === 0 ? 2 : 0);
+        const attempts = 1 + errors;
+        const level = idx + 1;
+        state.caseStats[caseId] = {
+          level,
+          attempts,
+          errors,
+          readingMs: state.readingCases[idx],
+          responseMs: state.responseTimes[idx]
+        };
+        for (let a = 0; a < attempts; a += 1) {
+          const correct = a === attempts - 1;
+          state.attemptLog.push({
+            caseId,
+            level,
+            correct,
+            responseMs: correct ? state.responseTimes[idx] : Math.max(1300, state.responseTimes[idx] - 1800),
+            readingMs: state.readingCases[idx]
+          });
+        }
+      });
+      state.supportUsage = { summaries: 9, profileJumps: 4 };
+      state.screenReadings = flow.map((step, i) => ({
+        type: step.type,
+        page: step.page,
+        level: step.level || null,
+        caseId: step.caseId || null,
+        suspect: step.suspect || null,
+        ms: step.type === "case" ? state.readingCases[Math.max(0, (step.caseId || 1) - 1)] : (step.type === "profile" ? 10300 : 3000 + (i % 3) * 500)
+      }));
+      state.readingFinalized = true;
+      state.finalizedReadingMs = 0;
+      activity.classList.add("hidden");
+      finalScreen.classList.remove("active");
+      openVisualReport();
+    }
+
+    function openVisualReport() {
+      renderVisualReport();
+      finalScreen.classList.remove("active");
+      activity.classList.add("hidden");
+      reportScreen.classList.add("active");
+    }
+
+    function backToFinal() {
+      reportScreen.classList.remove("active");
+      activity.classList.add("hidden");
+      finalScreen.classList.add("active");
+    }
+
+    function restart() {
+      clearTimer();
+      state.index = 0; state.ok = 0; state.bad = 0; state.attempts = 0; state.firstTryHits = 0;
+      state.solvedCases = new Set(); state.selectedSuspect = null; state.startTime = Date.now();
+      state.readingStartAt = Date.now(); state.responseStartAt = Date.now(); state.currentCaseErrors = 0;
+      state.responseTimes = []; state.readingProfiles = []; state.readingCases = []; state.screenReadings = [];
+      state.caseStats = {};
+      state.seenProfiles = new Set();
+      state.learnedProfiles = new Set();
+      state.readingFinalized = false;
+      state.finalizedReadingMs = 0;
+      state.attemptLog = [];
+      state.supportUsage = { summaries: 0, profileJumps: 0 };
+      activity.classList.remove("hidden");
+      finalScreen.classList.remove("active");
+      reportScreen.classList.remove("active");
+      renderPage();
+    }
+
+    function syncCoachPanel() {
+      pageSelect.innerHTML = flow.map((step, i) => {
+        const kind = step.type === "profile" ? "Perfil" : step.type === "case" ? "Caso" : "Transición";
+        const extra = step.type === "case"
+          ? ` · Caso ${step.caseId}`
+          : step.type === "profile"
+            ? ` · ${step.suspect}`
+            : "";
+        return `<option value="${i}">Pantalla ${i + 1}/${flow.length} · ${kind}${extra}</option>`;
+      }).join("");
+      pageSelect.value = String(state.index);
+      if (!levelSelect.innerHTML) {
+        levelSelect.innerHTML = levelPlan.map((lv) => `<option value="${lv.level}">Nivel ${lv.level}</option>`).join("");
+      }
+      coachLock.textContent = state.therapistMode ? "Navegación libre: ON" : "Navegación libre: OFF";
+      therapistBack.classList.toggle("active", state.therapistUnlocked);
+    }
+
+    function firstIndexOfLevel(level) {
+      return flow.findIndex((step) => step.level === level);
+    }
+
+    coachToggle.addEventListener("click", () => {
+      // En preview/file:// algunos prompts fallan; el panel debe abrir siempre.
+      if (!state.therapistUnlocked) {
+        let key = null;
+        try { key = window.prompt("Clave profesional (opcional para desbloquear navegación):"); } catch (_) {}
+        if (key === "profesional") {
+          state.therapistUnlocked = true;
+          state.therapistMode = true;
+          showFeedback("Panel profesional desbloqueado", "ok");
+        } else {
+          showFeedback("Panel abierto en modo básico", "ok");
+        }
+      }
+      coachPanel.classList.toggle("active");
+      coachToggle.textContent = coachPanel.classList.contains("active") ? "✕ Cerrar panel" : "Panel profesional";
+      syncCoachPanel();
+      renderPage();
+    });
+    document.getElementById("coachClose").addEventListener("click", () => {
+      coachPanel.classList.remove("active");
+      coachToggle.textContent = "Panel profesional";
+    });
+    goLevelButton.addEventListener("click", () => {
+      const idx = firstIndexOfLevel(Number(levelSelect.value));
+      if (idx >= 0) goToIndex(idx);
+    });
+    goPageButton.addEventListener("click", () => goToIndex(Number(pageSelect.value)));
+    coachPrev.addEventListener("click", () => goToIndex(state.index - 1));
+    coachNext.addEventListener("click", () => goToIndex(state.index + 1));
+    coachLock.addEventListener("click", () => {
+      state.therapistMode = !state.therapistMode;
+      syncCoachPanel();
+      renderPage();
+    });
+    therapistBack.addEventListener("click", () => goToIndex(state.index - 1));
+    coachReport.addEventListener("click", openVisualReport);
+    coachDemo.addEventListener("click", loadDemoSession);
+    openReportButton.addEventListener("click", openVisualReport);
+    reportBackFinal.addEventListener("click", backToFinal);
+    reportDownload.addEventListener("click", downloadReport);
+    reportRestart.addEventListener("click", restart);
+    downloadReportButton.addEventListener("click", downloadReport);
+    quickSummaryButton.addEventListener("click", openQuickSummary);
+    finalizeReadingButton.addEventListener("click", finalizeReading);
+    closeSummaryButton.addEventListener("click", closeQuickSummary);
+    summaryModal.addEventListener("click", (event) => {
+      if (event.target === summaryModal) closeQuickSummary();
+    });
+    manualButton.addEventListener("click", openManual);
+    closeManualButton.addEventListener("click", closeManual);
+    manualModal.addEventListener("click", (event) => {
+      if (event.target === manualModal) closeManual();
+    });
+
+    confirmButton.addEventListener("click", confirmSelection);
+    nextButton.addEventListener("click", nextPage);
+    restartButton.addEventListener("click", restart);
+    renderPage();
+  </script>
+</body>
+</html>
