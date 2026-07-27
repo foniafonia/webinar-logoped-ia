@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Secuenciador visual SAAC</title>
+  <style>
+    :root {
+      --ink: #16231a;
+      --muted: #5d6b62;
+      --line: #d7e4db;
+      --paper: #f3fbf5;
+      --accent: #15803d;
+      --warn: #f59e0b;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #eefcf3, #ffffff 56%, #fff7ed);
+      color: var(--ink);
+    }
+
+    main {
+      width: min(1220px, calc(100% - 38px));
+      margin: 0 auto;
+      padding: 28px 0;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: 1fr minmax(300px, 430px);
+      gap: 20px;
+      align-items: end;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(34px, 5vw, 66px);
+      line-height: 0.96;
+      letter-spacing: 0;
+    }
+
+    p { margin: 0; color: var(--muted); line-height: 1.42; }
+
+    .panel, .result {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 16px;
+      box-shadow: 0 14px 34px rgba(22, 35, 26, 0.07);
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      resize: vertical;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 12px;
+      font: inherit;
+      font-size: 18px;
+      line-height: 1.35;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    button, select {
+      min-height: 46px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      color: var(--ink);
+      font: inherit;
+      font-weight: 850;
+      padding: 0 12px;
+    }
+
+    button {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .examples {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .example {
+      min-height: 36px;
+      background: #eef7f0;
+      color: #14532d;
+      border-color: #b8d9c4;
+      font-size: 14px;
+    }
+
+    .result {
+      min-height: 470px;
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .step {
+      display: grid;
+      gap: 9px;
+      align-content: start;
+      min-height: 220px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8faf8;
+      padding: 12px;
+      position: relative;
+    }
+
+    .num {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 950;
+    }
+
+    .icon {
+      display: grid;
+      min-height: 86px;
+      place-items: center;
+      border: 3px solid #111827;
+      border-radius: 6px;
+      background: #fff;
+      font-size: 52px;
+    }
+
+    .label {
+      color: var(--ink);
+      font-size: 19px;
+      font-weight: 900;
+      line-height: 1.18;
+      text-align: center;
+    }
+
+    .tip {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.3;
+      text-align: center;
+    }
+
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .metric {
+      border-radius: 6px;
+      background: #eef7f0;
+      padding: 12px;
+      color: #14532d;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    @media (max-width: 900px) {
+      header { grid-template-columns: 1fr; }
+      .controls, .meta { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>Secuenciador visual</h1>
+        <p>Convierte una rutina oral en pasos con apoyo pictográfico, anticipación y nivel de ayuda.</p>
+      </div>
+      <section class="panel" aria-label="Entrada de rutina">
+        <textarea id="input">Lavarse las manos antes de merendar</textarea>
+        <div class="controls">
+          <select id="profile">
+            <option value="infantil">Perfil infantil</option>
+            <option value="tea">Perfil TEA</option>
+            <option value="afasia">Perfil afasia</option>
+          </select>
+          <button type="button" id="generate">Crear secuencia</button>
+        </div>
+        <div class="examples">
+          <button class="example" type="button">Ir al baño</button>
+          <button class="example" type="button">Pedir ayuda</button>
+          <button class="example" type="button">Preparar mochila</button>
+        </div>
+      </section>
+    </header>
+
+    <section class="result">
+      <p id="summary">Secuencia propuesta para: lavarse las manos antes de merendar.</p>
+      <div class="meta">
+        <div class="metric" id="metricSteps">5 pasos</div>
+        <div class="metric" id="metricSupport">Apoyo medio</div>
+        <div class="metric" id="metricMode">Pictos + voz</div>
+      </div>
+      <div class="timeline" id="timeline"></div>
+    </section>
+  </main>
+
+  <script>
+    const recipes = {
+      "lavarse las manos antes de merendar": [
+        ["🚶", "Voy al lavabo", "Anticipar con gesto de ir."],
+        ["💧", "Abro el agua", "Modelar si no inicia."],
+        ["🧼", "Uso jabón", "Señalar el pictograma jabón."],
+        ["👏", "Froto las manos", "Contar hasta diez."],
+        ["🍎", "Ya puedo merendar", "Refuerzo funcional inmediato."]
+      ],
+      "ir al baño": [
+        ["☝️", "Pido baño", "Usar tarjeta o gesto."],
+        ["🚪", "Voy al baño", "Caminar con guía visual."],
+        ["🚽", "Uso el váter", "Mantener privacidad."],
+        ["🧻", "Me limpio", "Apoyo según autonomía."],
+        ["🧼", "Me lavo las manos", "Cerrar con rutina higiénica."]
+      ],
+      "pedir ayuda": [
+        ["😟", "Tengo un problema", "Nombrar la dificultad."],
+        ["🆘", "Busco ayuda", "Usar tarjeta AYUDA."],
+        ["👀", "Miro a la persona", "No exigir contacto ocular."],
+        ["☝️", "Digo: ayuda", "Aceptar gesto, voz o tablero."],
+        ["✅", "Recibo apoyo", "Reforzar la comunicación."]
+      ],
+      "preparar mochila": [
+        ["🎒", "Cojo la mochila", "Ponerla visible."],
+        ["📖", "Guardo la agenda", "Marcar como hecho."],
+        ["✏️", "Guardo el estuche", "Usar checklist."],
+        ["🥤", "Guardo el agua", "Revisar bolsillo lateral."],
+        ["✅", "Mochila lista", "Cerrar la rutina."]
+      ]
+    };
+
+    const input = document.querySelector("#input");
+    const timeline = document.querySelector("#timeline");
+    const summary = document.querySelector("#summary");
+
+    function normalize(text) {
+      return text.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function infer(text) {
+      const key = normalize(text);
+      if (key.includes("baño") || key.includes("bano")) return recipes["ir al baño"];
+      if (key.includes("ayuda")) return recipes["pedir ayuda"];
+      if (key.includes("mochila")) return recipes["preparar mochila"];
+      if (key.includes("mano") || key.includes("merendar")) return recipes["lavarse las manos antes de merendar"];
+      return [
+        ["👂", "Escucho la consigna", "Reducir lenguaje verbal."],
+        ["👀", "Miro el primer paso", "Presentar una tarjeta."],
+        ["✋", "Hago la acción", "Dar ayuda mínima necesaria."],
+        ["✅", "Marco terminado", "Cerrar visualmente."],
+        ["😊", "Continúo", "Reforzar autonomía."]
+      ];
+    }
+
+    function supportFor(profile) {
+      if (profile === "tea") return "Estructura alta";
+      if (profile === "afasia") return "Frase corta";
+      return "Apoyo medio";
+    }
+
+    function render() {
+      const text = input.value.trim() || "rutina funcional";
+      const profile = document.querySelector("#profile").value;
+      const steps = infer(text);
+      summary.textContent = `Secuencia propuesta para: ${text}.`;
+      document.querySelector("#metricSteps").textContent = `${steps.length} pasos`;
+      document.querySelector("#metricSupport").textContent = supportFor(profile);
+      document.querySelector("#metricMode").textContent = profile === "afasia" ? "Texto + pictos" : "Pictos + voz";
+      timeline.innerHTML = steps.map((step, index) => `
+        <article class="step">
+          <div class="num">${index + 1}</div>
+          <div class="icon">${step[0]}</div>
+          <div class="label">${step[1]}</div>
+          <div class="tip">${step[2]}</div>
+        </article>
+      `).join("");
+    }
+
+    document.querySelector("#generate").addEventListener("click", render);
+    document.querySelector("#profile").addEventListener("change", render);
+    document.querySelectorAll(".example").forEach(button => {
+      button.addEventListener("click", () => {
+        input.value = button.textContent;
+        render();
+      });
+    });
+    render();
+  </script>
+</body>
+</html>
