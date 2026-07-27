@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Caveat:wght@600;700&family=Nunito:wght@400;600;700&family=Patrick+Hand&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=rubia-demo-on" />
 </head>
 <body>
   <div class="app-shell">
@@ -34,6 +34,15 @@
       <input id="sessionDate" type="date" />
       <input id="sessionNum" type="number" min="1" max="999" placeholder="Sesión nº" style="width:90px" />
     </div>
+
+    <section class="demo-hero no-print" aria-label="Demo rápida de Rub-IA">
+      <div>
+        <span class="demo-kicker">Demo para webinar · de idea a cuaderno</span>
+        <h2>Escribe sílabas, ajusta la pauta y genera una página imprimible.</h2>
+        <p>Rub-IA muestra el salto importante: no pedir una ficha genérica, sino controlar objetivo, edad, pauta, tipo de letra y progresión.</p>
+      </div>
+      <button id="quickDemoBtn" type="button" class="btn-demo">Probar BA BE BI BO BU</button>
+    </section>
 
     <!-- LAYOUT PRINCIPAL -->
     <main class="layout">
@@ -130,6 +139,7 @@
         <input id="objective" type="text" value="Consolidar automatización grafomotora" maxlength="120" />
 
         <button id="applyPresetBtn" type="button">Aplicar preset pedagógico</button>
+        <button id="quickDemoBtnPanel" type="button" class="btn-demo small">&#9889; Demo rápida: BA BE BI BO BU</button>
         <button id="addPageBtn" type="button" class="btn-generate">&#10024; Generar página</button>
         <p id="editorError" class="empty-text" role="alert" aria-live="polite"></p>
 
@@ -196,6 +206,6 @@
     </article>
   </template>
 
-  <script src="script.js"></script>
+  <script src="script.js?v=rubia-demo-on"></script>
 </body>
 </html>

@@ -8,6 +8,8 @@ const prevBtn       = document.getElementById("prevBtn");
 const nextBtn       = document.getElementById("nextBtn");
 const printBtn      = document.getElementById("printBtn");
 const addPageBtn    = document.getElementById("addPageBtn");
+const quickDemoBtn  = document.getElementById("quickDemoBtn");
+const quickDemoBtnPanel = document.getElementById("quickDemoBtnPanel");
 const pageIndicator = document.getElementById("pageIndicator");
 const totalIndicator= document.getElementById("totalIndicator");
 const editorError   = document.getElementById("editorError");
@@ -409,6 +411,8 @@ function bindEvents() {
     window.print();
   });
   addPageBtn.addEventListener("click", createCustomPageFromInput);
+  quickDemoBtn?.addEventListener("click", createQuickDemoPage);
+  quickDemoBtnPanel?.addEventListener("click", createQuickDemoPage);
   applyPresetBtn?.addEventListener("click", applyStagePreset);
   stagePresetEl?.addEventListener("change", applyStagePreset);
 
@@ -417,6 +421,21 @@ function bindEvents() {
     if (e.key === "ArrowRight") navigate(+1);
     if (e.key === "ArrowLeft")  navigate(-1);
   });
+}
+
+function createQuickDemoPage() {
+  customTitleEl.value = "Sílabas directas con /b/";
+  customPromptEl.value = "BA BE BI BO BU";
+  stagePresetEl.value = "5-6";
+  applyStagePreset();
+  contentLevelEl.value = "syllables";
+  letterCaseEl.value = "both";
+  lineStyleEl.value = "mixed";
+  repetitionsEl.value = "3";
+  objectiveEl.value = "Consolidar asociación grafema-fonema y automatización de sílabas directas";
+  createCustomPageFromInput();
+  currentPage = pages.length - 1;
+  updateFlipState();
 }
 
 function navigate(delta) {
