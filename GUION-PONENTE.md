@@ -105,6 +105,6 @@ No busques el «qué bonito», busca el «yo puedo». Invita a Colmenia y a la f
 
 ---
 
-## Posible ajuste pendiente (para José)
+## Estructura de la formación
 
-La **landing pública del curso** (`extremadura-landing`) describe **3 cursos de 6 h (18 h al año)**, mientras que el brief y esta webinar hablan de **dos módulos (Construir / Integrar)**. Ambas cosas pueden convivir (dos módulos como marco narrativo, tres cursos como calendario), pero conviene alinear el mensaje para no confundir. La slide 10 usa el marco de **dos módulos** del brief.
+La formación son **dos módulos**: **MÓDULO 1 · CONSTRUIR** (de la idea al primer recurso) y **MÓDULO 2 · INTEGRAR** (del recurso a tu forma de trabajar). Es el marco que usa la slide 10 y el que se nombra en el cierre.
