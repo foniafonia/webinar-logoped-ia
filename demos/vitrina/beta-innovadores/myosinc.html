@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyoSync — Rehabilitación Miofuncional</title>
+<style>
+:root{--acc:#7dd3c0}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:#000;color:#fff;font-family:'JetBrains Mono','Courier New',monospace;overflow:hidden;user-select:none;touch-action:none}
+video,canvas{position:absolute;top:0;left:0;width:100%;height:100%}
+#videoEl{z-index:0;filter:brightness(.32) contrast(1.15);transform:scaleX(-1);object-fit:cover}
+#bgC{z-index:1}#gC{z-index:3}#mC{z-index:5}#oC{z-index:8}
+
+/* ── HUD ─────────────────────────────────────────────────────── */
+#hud{position:absolute;z-index:10;inset:0;pointer-events:none;display:none}
+#hud.on{display:block}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 20px;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);pointer-events:auto}
+.topbar .score{font-size:24px;font-weight:800;color:var(--acc,#7dd3c0);min-width:72px}
+.topbar .lbl{font-size:10px;opacity:.5;line-height:1.2;letter-spacing:1px;text-transform:uppercase}
+.topbar .val{font-size:16px;font-weight:700}
+.topbar .exname{font-size:15px;font-weight:700;color:var(--acc,#7dd3c0)}
+.topbar .spacer{flex:1}
+.topbar .sess-t{font-size:14px;opacity:.6}
+#prog-hud{height:4px;background:rgba(255,255,255,.1)}
+#ui-prog{height:100%;background:var(--acc,#7dd3c0);transition:width .3s}
+#combo{position:absolute;top:68px;left:20px;font-size:30px;font-weight:900;color:#ffd93d;text-shadow:0 0 16px #ffd93d88;opacity:0;transition:opacity .2s;pointer-events:none}
+#combo.on{opacity:1}
+#banner{position:absolute;top:68px;left:50%;transform:translateX(-50%);text-align:center;pointer-events:none}
+#banner .ex-title{font-size:18px;font-weight:700;letter-spacing:2px;color:var(--acc,#7dd3c0);text-shadow:0 0 14px var(--acc,#7dd3c0)}
+#banner .ex-desc{font-size:12px;opacity:.55;margin-top:3px}
+#noSensor{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.75);border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:16px 28px;font-size:15px;opacity:.85;pointer-events:none;text-align:center}
+#skipBtn{position:absolute;bottom:24px;right:20px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.22);color:rgba(255,255,255,.6);padding:8px 18px;border-radius:9px;cursor:pointer;font-size:13px;pointer-events:auto;font-family:inherit}
+#skipBtn:hover{background:rgba(255,255,255,.16)}
+
+/* ── DEBUG ────────────────────────────────────────────────────── */
+#debug{position:absolute;z-index:20;top:58px;right:14px;background:rgba(0,0,0,.84);border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:12px 16px;font-size:12px;font-family:'Courier New',monospace;min-width:240px;display:none;pointer-events:none}
+#debug.on{display:block}
+.dt{color:#888;margin-bottom:6px;font-size:10px;letter-spacing:1px}
+.dr{display:flex;justify-content:space-between;gap:10px;margin:3px 0}
+.dk{color:#aaa}.dv{font-weight:700;min-width:55px;text-align:right}
+.dbar-wrap{margin:5px 0 2px}.dbar-bg{background:rgba(255,255,255,.1);border-radius:3px;height:5px;margin-top:2px}
+.dbar-fill{height:5px;border-radius:3px;transition:width .1s}
+.dsep{border:none;border-top:1px solid rgba(255,255,255,.1);margin:6px 0}
+
+/* ── START SCREEN ─────────────────────────────────────────────── */
+#start{position:absolute;inset:0;z-index:50;background:radial-gradient(ellipse at center,#0a1420 0%,#000 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px}
+#start.hidden{display:none}
+#start h1{font-size:42px;font-weight:900;letter-spacing:6px;color:var(--acc,#7dd3c0);text-shadow:0 0 40px rgba(125,211,192,.35)}
+#start .subtitle{opacity:.4;font-size:13px;letter-spacing:3px}
+#start .tagline{opacity:.22;font-size:11px;letter-spacing:1px;text-align:center}
+#cfg-area{display:flex;flex-direction:column;align-items:center;gap:14px;margin-top:8px}
+.cfg-row{display:flex;align-items:center;gap:12px;font-size:14px}
+.cfg-row label{opacity:.65}
+.stepper{display:flex;align-items:center;gap:6px}
+.stepper button{width:30px;height:30px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);color:#fff;border-radius:7px;cursor:pointer;font-size:18px;line-height:1}
+.stepper span{min-width:30px;text-align:center;font-weight:700;font-size:17px}
+#startBtn{padding:14px 50px;background:rgba(125,211,192,.12);border:2px solid var(--acc,#7dd3c0);color:var(--acc,#7dd3c0);font-size:18px;font-weight:700;letter-spacing:3px;border-radius:13px;cursor:pointer;box-shadow:0 0 28px rgba(125,211,192,.2);transition:all .2s;font-family:inherit}
+#startBtn:disabled{opacity:.35;cursor:not-allowed}
+#startBtn:not(:disabled):hover{background:rgba(125,211,192,.22);box-shadow:0 0 48px rgba(125,211,192,.35)}
+#loadStatus{font-size:13px;color:var(--acc,#7dd3c0);opacity:.7;min-height:18px;text-align:center}
+
+/* ── INSTRUCTION / LEVEL / END OVERLAYS ───────────────────────── */
+#instrOv{position:absolute;inset:0;z-index:30;background:rgba(0,0,0,.86);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px}
+#instrOv.hidden{display:none}
+.instr-icon{font-size:68px}
+.instr-title{font-size:24px;font-weight:700;letter-spacing:2px;color:var(--acc,#7dd3c0);text-shadow:0 0 22px var(--acc,#7dd3c0)}
+.instr-text{font-size:15px;opacity:.72;text-align:center;max-width:420px;line-height:1.6}
+.cd-ring{position:relative;margin:8px}
+.cd-ring svg{transform:rotate(-90deg)}
+.cd-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:var(--acc,#7dd3c0)}
+#instrSkip{padding:9px 22px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.22);color:rgba(255,255,255,.6);border-radius:9px;cursor:pointer;font-size:13px;font-family:inherit}
+#instrSkip:hover{background:rgba(255,255,255,.16)}
+#ov-lvl,#ov-end{position:absolute;inset:0;z-index:40;background:rgba(0,0,0,.9);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+#ov-lvl.hidden,#ov-end.hidden{display:none}
+.ov-title{font-size:28px;font-weight:900;letter-spacing:3px;color:var(--acc,#7dd3c0);text-shadow:0 0 22px var(--acc,#7dd3c0)}
+.ov-stats{font-size:14px;opacity:.7;text-align:center;line-height:2.2}
+.stars{font-size:34px;letter-spacing:6px}
+.ov-btn{margin-top:8px;padding:13px 40px;background:rgba(125,211,192,.12);border:2px solid var(--acc,#7dd3c0);color:var(--acc,#7dd3c0);font-size:17px;font-weight:700;border-radius:11px;cursor:pointer;letter-spacing:2px;font-family:inherit}
+.ov-btn:hover{background:rgba(125,211,192,.25)}
+</style>
+</head>
+<body>
+
+<video id="videoEl" autoplay muted playsinline></video>
+<canvas id="bgC"></canvas><canvas id="gC"></canvas><canvas id="mC"></canvas><canvas id="oC"></canvas>
+
+<!-- HUD -->
+<div id="hud">
+  <div class="topbar">
+    <div><div class="lbl">PUNTOS</div><div class="score" id="scoreEl">0</div></div>
+    <div><div class="lbl">NIVEL</div><div class="val" id="levelEl">1</div></div>
+    <div class="spacer"></div>
+    <div style="text-align:center"><div class="lbl">EJERCICIO</div><div class="exname" id="exnameEl">—</div></div>
+    <div class="spacer"></div>
+    <div class="sess-t" id="sessTimeEl">5:00</div>
+  </div>
+  <div id="prog-hud"><div id="ui-prog" style="width:0%"></div></div>
+  <div id="combo">×<span id="comboNum">2</span></div>
+  <div id="banner"><div class="ex-title" id="bannerTitle"></div><div class="ex-desc" id="bannerDesc"></div></div>
+  <div id="noSensor">Muestra tu cara a la cámara</div>
+  <button id="skipBtn" onclick="skipRep()">Saltar rep</button>
+</div>
+
+<!-- Debug (tecla D) -->
+<div id="debug">
+  <div class="dt">── DEBUG · tecla D para ocultar ──</div>
+  <div class="dr"><span class="dk">Sensor:</span><span class="dv" id="db-det" style="color:#7dd3c0">—</span></div>
+  <hr class="dsep">
+  <div class="dr"><span class="dk">IOD (norm×10):</span><span class="dv" id="db-iod">—</span></div>
+  <div class="dr"><span class="dk">innerH / mouthW:</span><span class="dv" id="db-im">—</span></div>
+  <div class="dbar-wrap">
+    <div class="dr"><span class="dk">APERTURA %:</span><span class="dv" id="db-ap" style="color:#7dd3c0">—</span></div>
+    <div class="dbar-bg"><div class="dbar-fill" id="db-ap-bar" style="background:#7dd3c0;width:0%"></div></div>
+  </div>
+  <div class="dr"><span class="dk">outerH (0→17):</span><span class="dv" id="db-oh">—</span></div>
+  <div class="dbar-wrap">
+    <div class="dr"><span class="dk">PROTRUSIÓN %:</span><span class="dv" id="db-pr" style="color:#ff6b6b">—</span></div>
+    <div class="dbar-bg"><div class="dbar-fill" id="db-pr-bar" style="background:#ff6b6b;width:0%"></div></div>
+  </div>
+  <div class="dr"><span class="dk">lipSpread norm:</span><span class="dv" id="db-ls">—</span></div>
+  <div class="dbar-wrap">
+    <div class="dr"><span class="dk">LABIOS spread %:</span><span class="dv" id="db-lab" style="color:#ffd93d">—</span></div>
+    <div class="dbar-bg"><div class="dbar-fill" id="db-lab-bar" style="background:#ffd93d;width:0%"></div></div>
+  </div>
+  <hr class="dsep">
+  <div class="dr"><span class="dk">Ejercicio / tipo:</span><span class="dv" id="db-ex">—</span></div>
+  <div class="dr"><span class="dk">Fase:</span><span class="dv" id="db-phase">—</span></div>
+  <div class="dr"><span class="dk">Reps / total:</span><span class="dv" id="db-reps">—</span></div>
+</div>
+
+<!-- PANTALLA INICIO -->
+<div id="start">
+  <h1>MYOSYNC</h1>
+  <div class="subtitle">REHABILITACIÓN MIOFUNCIONAL · IA + CÁMARA</div>
+  <div class="tagline">Sellado · Ápice lingual · Disociación · Masticación · Deglución · Praxias</div>
+
+  <div id="cfg-area">
+    <div id="loadStatus">Cargando modelo facial…</div>
+    <div class="cfg-row">
+      <label>Repeticiones por ejercicio:</label>
+      <div class="stepper">
+        <button onclick="changeCfg('trials',-1)">−</button>
+        <span id="cfgTrials">8</span>
+        <button onclick="changeCfg('trials',+1)">+</button>
+      </div>
+    </div>
+    <button id="startBtn" disabled onclick="startSession()">INICIAR SESIÓN</button>
+    <div style="font-size:11px;opacity:.35;text-align:center">Tecla <b>D</b> = debug · <b>ESC</b> = menú · requiere Internet para modelos</div>
+  </div>
+</div>
+
+<!-- INSTRUCCIÓN -->
+<div id="instrOv" class="hidden">
+  <div class="instr-icon" id="instrIcon">👄</div>
+  <div class="instr-title" id="instrTitle">EJERCICIO</div>
+  <div class="instr-text" id="instrText">—</div>
+  <div class="cd-ring">
+    <svg width="72" height="72" viewBox="0 0 72 72">
+      <circle cx="36" cy="36" r="29" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="5"/>
+      <circle id="cdArc" cx="36" cy="36" r="29" fill="none" stroke="var(--acc,#7dd3c0)" stroke-width="5"
+              stroke-dasharray="182.2" stroke-dashoffset="0" stroke-linecap="round"/>
+    </svg>
+    <div class="cd-num" id="cdNum">5</div>
+  </div>
+  <button id="instrSkip" onclick="skipInstr()">Empezar ya</button>
+</div>
+
+<!-- OVERLAY NIVEL -->
+<div id="ov-lvl" class="hidden">
+  <div class="ov-title" id="lvlTitle">NIVEL 1 COMPLETADO</div>
+  <div class="stars" id="lvlStars">★★★</div>
+  <div class="ov-stats" id="lvlStats"></div>
+  <button class="ov-btn" onclick="continueLevel()">SIGUIENTE NIVEL →</button>
+</div>
+
+<!-- OVERLAY FIN -->
+<div id="ov-end" class="hidden">
+  <div class="ov-title">SESIÓN COMPLETADA</div>
+  <div class="stars" id="endStars">★★★</div>
+  <div class="ov-stats" id="endStats"></div>
+  <button class="ov-btn" onclick="location.reload()">NUEVA SESIÓN</button>
+</div>
+
+<script type="module">
+'use strict'
+import { FaceLandmarker, FilesetResolver }
+  from 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14'
+
+// ═══════════════════════════════════════════════════════════════
+// 0. CONSTANTES
+// ═══════════════════════════════════════════════════════════════
+const LEVELS = 3
+const SESS_S = 300
+const CD_SEC = 5
+const CIRC   = 182.2
+
+const PH = { PREP_O:1.2, OPEN:3.2, RES_O:1.0, PREP_C:0.8, CLOSE:2.8, RES_C:0.7 }
+
+const PROT_T   = 7.0
+const LABIOS_T = 6.0
+const SEAL_T   = 8.0
+
+const TH_PROT     = 18
+const TH_FRUNCE   = 42
+const TH_ESTIRADO = 72
+const TH_SEAL     = 12
+
+const CHEERS = ['¡PERFECTO!','¡GENIAL!','¡MUY BIEN!','¡SIGUE ASÍ!','¡BRAVO!','¡EXCELENTE!']
+
+// ═══════════════════════════════════════════════════════════════
+// 1. EJERCICIOS MIOFUNCIONALES
+// ═══════════════════════════════════════════════════════════════
+const MIO_EX = [
+  { id:'sellado',     type:'phase',  name:'MIO-01 SELLADO',    icon:'👄', color:'#7dd3c0',
+    desc:'Abre y sella los labios siguiendo el medidor',
+    instr:'Abre la boca ampliamente, luego ciérrala sellando los labios con firmeza. Sigue el ritmo del medidor.',
+    phaseLabels:{ prep_open:'Prepárate...', open:'ABRE LA BOCA', res_open:'Mantén abierto...',
+                  prep_close:'Ahora cierra...', close:'SELLA LOS LABIOS', res_close:'¡Sellado!' } },
+
+  { id:'apice',       type:'target', name:'MIO-02 ÁPICE',      icon:'👅', color:'#ff6b6b',
+    desc:'Saca la lengua al máximo (ápice lingual)',
+    instr:'Cuando aparezca el target, saca la lengua lo más adelante posible. Mantenla hasta escuchar el sonido.' },
+
+  { id:'disociacion', type:'phase',  name:'MIO-03 DISOCIACIÓN', icon:'🦷', color:'#ffd93d',
+    desc:'Baja la mandíbula con control sin mover otras estructuras',
+    instr:'Baja la mandíbula lentamente sin mover los labios ni la lengua. Ciérrala sin apretar. Disociación pura.',
+    phaseLabels:{ prep_open:'Relaja la mandíbula...', open:'BAJA LA MANDÍBULA', res_open:'Mantén...',
+                  prep_close:'Lentamente...', close:'CIERRA SIN APRETAR', res_close:'¡Disociado!' } },
+
+  { id:'masticacion', type:'target', name:'MIO-04 MASTICACIÓN', icon:'😬', color:'#ff9f43',
+    desc:'Alterna frunce y estira labios (masticación bilateral)',
+    instr:'Target ROJO = frunce los labios (como un beso). Target AZUL = estíralos (sonrisa amplia). Alterna.' },
+
+  { id:'deglucion',   type:'seal',   name:'MIO-05 DEGLUCIÓN',  icon:'💧', color:'#74b9ff',
+    desc:'Cierra bien la boca y sella para simular deglución',
+    instr:'Cuando aparezca el target, cierra completamente la boca y sella los labios. Mantén hasta el sonido.' },
+
+  { id:'praxias',     type:'target', name:'MIO-06 PRAXIAS',    icon:'🎯', color:'#a29bfe',
+    desc:'Praxias combinadas: frunce, estira y saca la lengua',
+    instr:'Target ROJO = frunce labios. Target AZUL = estira (sonríe). Target VERDE = saca la lengua. ¡Atentos!' }
+]
+
+function ex() { return MIO_EX[G.stageIdx % MIO_EX.length] }
+
+// ═══════════════════════════════════════════════════════════════
+// 2. CANVAS & RESIZE
+// ═══════════════════════════════════════════════════════════════
+const bgC = document.getElementById('bgC'), bx = bgC.getContext('2d')
+const gC  = document.getElementById('gC'),  gx = gC.getContext('2d')
+const mC  = document.getElementById('mC'),  mx = mC.getContext('2d')
+const oC  = document.getElementById('oC'),  ox = oC.getContext('2d')
+const video = document.getElementById('videoEl')
+
+let W = 0, H = 0, mcols = []
+function resize() {
+  W = window.innerWidth; H = window.innerHeight
+  ;[bgC,gC,mC,oC].forEach(c=>{ c.width=W; c.height=H })
+  mcols = Array.from({ length: Math.floor(W/18) }, () => Math.random()*H)
+}
+window.addEventListener('resize', resize); resize()
+
+// ═══════════════════════════════════════════════════════════════
+// 3. AUDIO
+// ═══════════════════════════════════════════════════════════════
+let audioCtx = null
+function initAudio() { audioCtx = new (window.AudioContext||window.webkitAudioContext)() }
+function playTone(freq,startT,dur,type='sine',vol=0.18) {
+  if (!audioCtx) return
+  const o=audioCtx.createOscillator(), g=audioCtx.createGain()
+  o.connect(g); g.connect(audioCtx.destination)
+  o.type=type; o.frequency.value=freq
+  const t=audioCtx.currentTime+startT
+  g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol,t+.04)
+  g.gain.setValueAtTime(vol,t+dur-.08); g.gain.linearRampToValueAtTime(0,t+dur)
+  o.start(t); o.stop(t+dur)
+}
+function chime(type) {
+  if(type==='open'){playTone(392,0,.25);playTone(523,.28,.3)}
+  else             {playTone(523,0,.25);playTone(392,.28,.3)}
+}
+function boop(color) {
+  const m={'#7dd3c0':523,'#ff6b6b':659,'#ffd93d':784,'#ff9f43':698,'#74b9ff':587,'#a29bfe':659,'#00ffcc':523}
+  playTone(m[color]||523,0,.18,'triangle',.22)
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 4. MEDIAPIPE FACE LANDMARKER
+// ═══════════════════════════════════════════════════════════════
+let faceLandmarker = null
+let faceDetected   = false
+let fv = { openPct:0, protPct:0, spreadPct:50, innerH:0, mouthW:0, outerH:0, iod:0, lipSpreadNorm:0, lm:null }
+
+function dst(a,b) { return Math.hypot(a.x-b.x, a.y-b.y) }
+function fmap(lm,i) { return { x:(1-lm[i].x)*W, y:lm[i].y*H } }
+
+function processFace(lm) {
+  const iod = dst(lm[33],lm[263])
+  if (iod < 0.05) return
+  const innerH      = dst(lm[13],lm[14])
+  const mouthW      = dst(lm[61],lm[291])
+  const outerH      = dst(lm[0], lm[17])
+  const openRatio   = innerH / iod
+  const openPct     = Math.min(100,Math.max(0,(openRatio-0.03)/0.27*100))
+  const outerExcess = Math.max(0,outerH-innerH)/iod
+  const protPct     = Math.min(100,Math.max(0,(outerExcess-0.01)/0.09*100))
+  const lipSpreadNorm = mouthW/iod
+  const spreadPct   = Math.min(100,Math.max(0,(lipSpreadNorm-0.7)/1.1*100))
+  fv = {
+    openPct, protPct, spreadPct,
+    innerH: Math.round(innerH*1000)/10,
+    mouthW: Math.round(mouthW*1000)/10,
+    outerH: Math.round(outerH*1000)/10,
+    iod: Math.round(iod*1000)/10,
+    lipSpreadNorm: Math.round(lipSpreadNorm*100)/100,
+    lm
+  }
+  faceDetected = true
+}
+
+async function initFace() {
+  setLoadStatus('Cargando WASM…')
+  try {
+    const vision = await FilesetResolver.forVisionTasks(
+      'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm'
+    )
+    setLoadStatus('Cargando modelo facial…')
+    faceLandmarker = await FaceLandmarker.createFromOptions(vision, {
+      baseOptions: {
+        modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task',
+        delegate: 'GPU'
+      },
+      runningMode:'VIDEO', numFaces:1,
+      minFaceDetectionConfidence:0.55, minFacePresenceConfidence:0.55, minTrackingConfidence:0.55,
+      outputFaceBlendshapes:false, outputFacialTransformationMatrixes:false
+    })
+    setLoadStatus('✓ Listo — pulsa INICIAR SESIÓN')
+    document.getElementById('startBtn').disabled = false
+  } catch(e) {
+    setLoadStatus('Error: '+e.message)
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 5. ESTADO DEL JUEGO
+// ═══════════════════════════════════════════════════════════════
+const CFG = { trials: 8 }
+let G = {}
+
+function resetGame() {
+  G = {
+    level:1, stageIdx:0, reps:0, totalReps:0,
+    score:0, combo:0, maxCombo:0,
+    lvlReps:0, lvlScore:0, lvlCombo:0,
+    lvlDone:false, sessDone:false, instrActive:false,
+    startTs:null, elapsed:0,
+    exPhase:'prep_open', phTimer:0, maxOpen:0, meterAnim:0,
+    targets:[], attemptT:0, closestD:999,
+    sparks:[], popups:[]
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 6. LÓGICA EJERCICIOS
+// ═══════════════════════════════════════════════════════════════
+
+// ── 6a. FASE (SELLADO, DISOCIACIÓN) ──────────────────────────────
+function doPhase(inputVal, dt) {
+  G.meterAnim += (inputVal - G.meterAnim) * Math.min(1, dt*7)
+  G.phTimer   += dt
+  switch (G.exPhase) {
+    case 'prep_open':
+      if (G.phTimer>=PH.PREP_O) { G.exPhase='open'; G.phTimer=0; G.maxOpen=0; chime('open') }
+      break
+    case 'open':
+      G.maxOpen = Math.max(G.maxOpen, inputVal)
+      if (G.phTimer>=PH.OPEN) { G.exPhase='res_open'; G.phTimer=0 }
+      break
+    case 'res_open':
+      if (G.phTimer>=PH.RES_O) { G.exPhase='prep_close'; G.phTimer=0; chime('close') }
+      break
+    case 'prep_close':
+      if (G.phTimer>=PH.PREP_C) { G.exPhase='close'; G.phTimer=0 }
+      break
+    case 'close':
+      if (G.phTimer>=PH.CLOSE) { G.exPhase='res_close'; G.phTimer=0 }
+      break
+    case 'res_close':
+      if (G.phTimer>=PH.RES_C) {
+        const pts = Math.max(10, Math.round(G.maxOpen*1.3))
+        finishRep({x:W/2,y:H*.5}, pts, true)
+        G.exPhase='prep_open'; G.phTimer=0; chime('open')
+      }
+      break
+  }
+}
+
+// ── 6b. ÁPICE LINGUAL (PROTRUSIÓN) ──────────────────────────────
+function doApice(dt) {
+  if (!G.targets.length) spawnTarget()
+  G.attemptT -= dt
+  G.closestD = Math.max(0, 220 - fv.protPct*2.2)
+  if (fv.protPct > TH_PROT) {
+    popTarget(0, true); G.attemptT=PROT_T; return
+  }
+  if (G.attemptT<=0) timeoutRep()
+}
+
+// ── 6c. MASTICACIÓN (LABIOS ALTERNOS) ───────────────────────────
+function doMasticacion(dt) {
+  if (!G.targets.length) spawnTarget()
+  G.attemptT -= dt
+  const t = G.targets[0]
+  let hit = false
+  if (t) {
+    if (t.type==='frunce'   && fv.spreadPct<TH_FRUNCE)   hit=true
+    if (t.type==='estirado' && fv.spreadPct>TH_ESTIRADO) hit=true
+    G.closestD = t.type==='frunce'
+      ? Math.max(0,fv.spreadPct-TH_FRUNCE)*3
+      : Math.max(0,TH_ESTIRADO-fv.spreadPct)*3
+  }
+  if (hit) { popTarget(0, true); G.attemptT=LABIOS_T; return }
+  if (G.attemptT<=0) timeoutRep()
+}
+
+// ── 6d. DEGLUCIÓN (SELLADO / BOCA CERRADA) ──────────────────────
+function doSeal(dt) {
+  if (!G.targets.length) spawnTarget()
+  G.attemptT -= dt
+  G.closestD = fv.openPct * 2
+  if (fv.openPct < TH_SEAL) {
+    popTarget(0, true); G.attemptT=SEAL_T; return
+  }
+  if (G.attemptT<=0) timeoutRep()
+}
+
+// ── 6e. PRAXIAS COMBINADAS ───────────────────────────────────────
+const PRAXIAS_TYPES = ['frunce','estirado','protrude']
+
+function doPraxias(dt) {
+  if (!G.targets.length) spawnTarget()
+  G.attemptT -= dt
+  const t = G.targets[0]
+  let hit = false
+  if (t) {
+    if (t.type==='frunce'   && fv.spreadPct<TH_FRUNCE)   hit=true
+    if (t.type==='estirado' && fv.spreadPct>TH_ESTIRADO) hit=true
+    if (t.type==='protrude' && fv.protPct>TH_PROT)       hit=true
+    if      (t.type==='frunce')   G.closestD = Math.max(0,fv.spreadPct-TH_FRUNCE)*3
+    else if (t.type==='estirado') G.closestD = Math.max(0,TH_ESTIRADO-fv.spreadPct)*3
+    else                           G.closestD = Math.max(0,220-fv.protPct*2.2)
+  }
+  if (hit) { popTarget(0, true); G.attemptT=LABIOS_T; return }
+  if (G.attemptT<=0) timeoutRep()
+}
+
+function timeoutRep() {
+  const t = G.targets[0]
+  const prox = Math.max(0, 1-G.closestD/220)
+  finishRep(t?{x:t.x,y:t.y}:{x:W/2,y:H/2}, Math.round(prox*50), false)
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 7. TARGETS
+// ═══════════════════════════════════════════════════════════════
+const LABIOS_TYPES = ['frunce','estirado']
+
+function spawnTarget() {
+  const pad = 90
+  const id = ex().id
+  let type = null, color = ex().color
+
+  if (id==='masticacion') {
+    type = LABIOS_TYPES[G.reps%2]
+    color = type==='frunce' ? '#ff6b6b' : '#74b9ff'
+  } else if (id==='praxias') {
+    type = PRAXIAS_TYPES[G.reps%3]
+    color = type==='frunce' ? '#ff6b6b' : type==='estirado' ? '#74b9ff' : '#00ffcc'
+  } else if (id==='deglucion') {
+    type = 'seal'
+  }
+
+  G.targets = [{ x:pad+Math.random()*(W-pad*2), y:H*.25+Math.random()*(H*.5), r:34, ph:0, type, color }]
+  G.closestD = 999
+  G.attemptT = id==='apice' ? PROT_T : id==='masticacion' ? LABIOS_T : id==='deglucion' ? SEAL_T : LABIOS_T
+}
+
+function popTarget(i, success) {
+  const t = G.targets[i]; if (!t) return
+  burst({x:t.x,y:t.y}, t.color, success?22:5)
+  G.targets.splice(i,1)
+  if (success) { finishRep({x:t.x,y:t.y}, 100, true); boop(ex().color) }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 8. PUNTUACIÓN & PROGRESIÓN
+// ═══════════════════════════════════════════════════════════════
+function addScore(pts,pos) {
+  const m=Math.max(1,G.combo), total=pts*m
+  G.score+=total; G.lvlScore+=total
+  addPopup(`+${total}${m>1?' ×'+m+'!':''}`, pos, ex().color)
+  if (G.reps%3===0 && pts>25)
+    addPopup(CHEERS[Math.floor(Math.random()*CHEERS.length)], {x:W/2,y:H*.35}, '#fff')
+}
+
+function finishRep(pos,pts,addComboFlag=true) {
+  G.reps++; G.totalReps++; G.lvlReps++
+  if (addComboFlag) {
+    G.combo++
+    G.maxCombo=Math.max(G.maxCombo,G.combo)
+    G.lvlCombo=Math.max(G.lvlCombo,G.combo)
+  } else { G.combo=0 }
+  if (pts>0) addScore(pts,pos)
+  burst(pos, pts>40?ex().color:'#444', pts>40?18:5)
+  if (G.reps>=CFG.trials) nextStage()
+}
+
+window.skipRep = function() { G.combo=0; finishRep({x:W/2,y:H/2},0,false) }
+
+function nextStage() {
+  G.stageIdx++; G.reps=0; G.targets=[]; G.closestD=999
+  G.exPhase='prep_open'; G.phTimer=0
+  if (G.stageIdx % MIO_EX.length === 0) showLvl()
+  else showInstr()
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 9. OVERLAYS
+// ═══════════════════════════════════════════════════════════════
+let cdInterval = null
+
+function showInstr() {
+  G.instrActive=true
+  const e=ex(); setAcc(e.color)
+  document.getElementById('instrIcon').textContent  = e.icon
+  document.getElementById('instrTitle').textContent = e.name
+  document.getElementById('instrText').textContent  = e.instr
+  document.getElementById('instrOv').classList.remove('hidden')
+  startCD()
+}
+
+function startCD() {
+  let t=CD_SEC
+  document.getElementById('cdNum').textContent=t
+  document.getElementById('cdArc').style.strokeDashoffset=0
+  clearInterval(cdInterval)
+  cdInterval=setInterval(()=>{
+    t--
+    document.getElementById('cdNum').textContent=t
+    document.getElementById('cdArc').style.strokeDashoffset=((CD_SEC-t)/CD_SEC)*CIRC
+    if(t<=0) skipInstr()
+  },1000)
+}
+
+window.skipInstr = function() {
+  clearInterval(cdInterval)
+  document.getElementById('instrOv').classList.add('hidden')
+  G.instrActive=false
+  document.getElementById('bannerTitle').textContent=ex().name
+  document.getElementById('bannerDesc').textContent =ex().desc
+  chime('open')
+}
+
+function showLvl() {
+  G.lvlDone=true
+  const stars=G.lvlScore>600?'★★★':G.lvlScore>300?'★★☆':'★☆☆'
+  document.getElementById('lvlTitle').textContent=`NIVEL ${G.level} COMPLETADO`
+  document.getElementById('lvlStars').textContent=stars
+  document.getElementById('lvlStats').innerHTML=
+    `Repeticiones: <b>${G.lvlReps}</b> &nbsp;|&nbsp; Puntos: <b>${G.lvlScore}</b> &nbsp;|&nbsp; Combo máx: <b>×${G.lvlCombo}</b>`
+  document.getElementById('ov-lvl').classList.remove('hidden')
+}
+
+window.continueLevel = function() {
+  document.getElementById('ov-lvl').classList.add('hidden')
+  G.lvlDone=false; G.level++
+  G.lvlReps=0; G.lvlScore=0; G.lvlCombo=0
+  if (G.level>LEVELS) showSession()
+  else showInstr()
+}
+
+function showSession() {
+  G.sessDone=true
+  const stars=G.score>1800?'★★★':G.score>900?'★★☆':'★☆☆'
+  document.getElementById('endStars').textContent=stars
+  document.getElementById('endStats').innerHTML=
+    `Repeticiones totales: <b>${G.totalReps}</b><br>Puntuación final: <b>${G.score}</b><br>Combo máximo: <b>×${G.maxCombo}</b>`
+  document.getElementById('ov-end').classList.remove('hidden')
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 10. EFECTOS VISUALES
+// ═══════════════════════════════════════════════════════════════
+const MCHARS = 'MYOSYNC∿↑↓←→MIOLABPRAX01'
+
+function drawBg() {
+  const motionVal = fv.openPct*.003
+  bx.fillStyle=`rgba(0,0,0,${0.07+Math.min(motionVal,0.28)})`
+  bx.fillRect(0,0,W,H)
+  bx.fillStyle=ex().color+'55'; bx.font='14px monospace'
+  const cw=18
+  mcols.forEach((y,i)=>{
+    bx.fillText(MCHARS[Math.floor(Math.random()*MCHARS.length)],i*cw,y)
+    mcols[i]=y>H?0:y+13
+  })
+}
+
+function drawTargets() {
+  gx.clearRect(0,0,W,H)
+  G.targets.forEach(t=>{
+    t.ph+=0.07
+    const r=t.r*(Math.sin(t.ph)*.09+1)
+    gx.save()
+    gx.shadowBlur=22; gx.shadowColor=t.color
+    gx.beginPath(); gx.arc(t.x,t.y,r+7,0,Math.PI*2)
+    gx.strokeStyle=t.color+'55'; gx.lineWidth=2; gx.stroke()
+    const grad=gx.createRadialGradient(t.x,t.y,0,t.x,t.y,r)
+    grad.addColorStop(0,t.color+'cc'); grad.addColorStop(1,t.color+'22')
+    gx.beginPath(); gx.arc(t.x,t.y,r,0,Math.PI*2)
+    gx.fillStyle=grad; gx.fill()
+    gx.strokeStyle='#ffffff88'; gx.lineWidth=1.5
+    ;[[t.x-r,t.y,t.x+r,t.y],[t.x,t.y-r,t.x,t.y+r]].forEach(([x1,y1,x2,y2])=>{
+      gx.beginPath(); gx.moveTo(x1,y1); gx.lineTo(x2,y2); gx.stroke()
+    })
+    if (t.type) {
+      const labels = { frunce:'🫦 FRUNCE', estirado:'😁 ESTIRA', protrude:'👅 LENGUA', seal:'💧 SELLA' }
+      gx.fillStyle='#fff'; gx.font='bold 12px sans-serif'; gx.textAlign='center'
+      gx.fillText(labels[t.type]||t.type, t.x, t.y+r+20)
+    }
+    if (G.attemptT>0) {
+      const timeMap = { apice:PROT_T, masticacion:LABIOS_T, deglucion:SEAL_T, praxias:LABIOS_T }
+      const total = timeMap[ex().id] || LABIOS_T
+      gx.beginPath(); gx.arc(t.x,t.y,r+16,-Math.PI/2,-Math.PI/2+(G.attemptT/total)*Math.PI*2)
+      gx.strokeStyle=t.color; gx.lineWidth=3; gx.stroke()
+    }
+    gx.restore()
+  })
+}
+
+const MOUTH_OUTER=[61,185,40,39,37,0,267,269,270,409,291,375,321,405,314,17,84,181,91,146,61]
+const MOUTH_INNER=[78,191,80,81,82,13,312,311,310,415,308,324,318,402,317,14,87,178,88,95,78]
+
+function drawFace() {
+  mx.clearRect(0,0,W,H)
+  if (!fv.lm) return
+  const lm=fv.lm, color=ex().color
+  mx.save()
+  mx.shadowBlur=8; mx.shadowColor=color
+  mx.strokeStyle=color+'aa'; mx.lineWidth=1.5
+  mx.beginPath(); MOUTH_OUTER.forEach((idx,i)=>{ const p=fmap(lm,idx); i===0?mx.moveTo(p.x,p.y):mx.lineTo(p.x,p.y) }); mx.stroke()
+  mx.strokeStyle=color+'dd'; mx.lineWidth=2
+  mx.beginPath(); MOUTH_INNER.forEach((idx,i)=>{ const p=fmap(lm,idx); i===0?mx.moveTo(p.x,p.y):mx.lineTo(p.x,p.y) }); mx.stroke()
+  ;[13,14,0,17,61,291].forEach(idx=>{ const p=fmap(lm,idx); mx.beginPath(); mx.arc(p.x,p.y,4,0,Math.PI*2); mx.fillStyle='#fff'; mx.fill() })
+  ;[33,263].forEach(idx=>{ const p=fmap(lm,idx); mx.beginPath(); mx.arc(p.x,p.y,3,0,Math.PI*2); mx.fillStyle=color+'66'; mx.fill() })
+  if (fv.openPct>20 && Math.random()<fv.openPct/180) {
+    const p=fmap(lm,14)
+    G.sparks.push({ x:p.x+(Math.random()-.5)*50, y:p.y+(Math.random()-.5)*20, vx:(Math.random()-.5)*1.5, vy:-Math.random()*2, life:1, color, sz:1+Math.random()*2 })
+  }
+  mx.restore()
+}
+
+function drawMeter() {
+  if (ex().type!=='phase') return
+  const bw=Math.min(340,W*.62), bh=38, bxo=(W-bw)/2, byo=H*.77
+  ox.save()
+  ox.fillStyle='rgba(0,0,0,.65)'
+  ox.beginPath(); ox.roundRect(bxo-16,byo-50,bw+32,bh+68,13); ox.fill()
+  const label=(ex().phaseLabels&&ex().phaseLabels[G.exPhase])||''
+  ox.fillStyle=ex().color; ox.font='bold 16px sans-serif'; ox.textAlign='center'
+  ox.shadowBlur=10; ox.shadowColor=ex().color
+  ox.fillText(label,W/2,byo-20); ox.shadowBlur=0
+  ox.fillStyle='rgba(255,255,255,.1)'
+  ox.beginPath(); ox.roundRect(bxo,byo,bw,bh,8); ox.fill()
+  const pct=G.meterAnim/100
+  if (pct>0) {
+    const grad=ox.createLinearGradient(bxo,0,bxo+bw,0)
+    grad.addColorStop(0,'#ff4444'); grad.addColorStop(.5,'#ffd93d'); grad.addColorStop(1,ex().color)
+    ox.fillStyle=grad; ox.beginPath(); ox.roundRect(bxo,byo,bw*pct,bh,8); ox.fill()
+  }
+  const mx2=bxo+bw*(G.maxOpen/100)
+  ox.strokeStyle='#fff'; ox.lineWidth=2
+  ox.beginPath(); ox.moveTo(mx2,byo-5); ox.lineTo(mx2,byo+bh+5); ox.stroke()
+  ox.fillStyle='#ffffffaa'; ox.font='11px sans-serif'
+  ox.fillText(`${Math.round(G.meterAnim)}%`,W/2,byo+bh+18)
+  ox.restore()
+}
+
+function drawProxBar() {
+  if (ex().type==='phase') return
+  const pct=Math.max(0,Math.min(1,1-G.closestD/220))
+  const bw=Math.min(300,W*.55), bxo=(W-bw)/2, byo=H-60
+  ox.save()
+  ox.fillStyle='rgba(0,0,0,.55)'; ox.beginPath(); ox.roundRect(bxo-10,byo-5,bw+20,30,8); ox.fill()
+  if (pct>0) {
+    const grad=ox.createLinearGradient(bxo,0,bxo+bw,0)
+    grad.addColorStop(0,'#ff4444'); grad.addColorStop(.5,'#ffd93d'); grad.addColorStop(1,ex().color)
+    ox.fillStyle=grad; ox.beginPath(); ox.roundRect(bxo,byo,bw*pct,20,5); ox.fill()
+  }
+  const barLabels = { apice:'protrusión', deglucion:'cierre', masticacion:'proximidad', praxias:'proximidad' }
+  ox.fillStyle='#ffffffaa'; ox.font='11px sans-serif'; ox.textAlign='center'
+  ox.fillText(`${barLabels[ex().id]||'proximidad'} ${Math.round(pct*100)}%`, W/2, byo+34)
+  ox.restore()
+}
+
+function burst(pos,color,n) {
+  for(let i=0;i<n;i++){
+    const a=(Math.PI*2/n)*i+Math.random()*.5, s=2+Math.random()*7
+    G.sparks.push({x:pos.x,y:pos.y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:1,color,sz:1.5+Math.random()*2.5})
+  }
+}
+function drawSparks() {
+  G.sparks=G.sparks.filter(s=>s.life>0)
+  G.sparks.forEach(s=>{
+    s.x+=s.vx; s.y+=s.vy; s.vy+=.09; s.life-=.04
+    mx.save(); mx.globalAlpha=s.life; mx.shadowBlur=8; mx.shadowColor=s.color; mx.fillStyle=s.color
+    mx.beginPath(); mx.arc(s.x,s.y,s.sz*s.life,0,Math.PI*2); mx.fill(); mx.restore()
+  })
+}
+
+function addPopup(text,pos,color) { G.popups.push({text,x:pos.x,y:pos.y,color,life:1}) }
+function drawPopups() {
+  G.popups=G.popups.filter(p=>p.life>0)
+  G.popups.forEach(p=>{
+    p.y-=.85; p.life-=.016
+    ox.save(); ox.globalAlpha=p.life; ox.shadowBlur=10; ox.shadowColor=p.color; ox.fillStyle=p.color
+    ox.font=`bold ${Math.round(14+(1-p.life)*5)}px sans-serif`; ox.textAlign='center'
+    ox.fillText(p.text,p.x,p.y); ox.restore()
+  })
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 11. HUD
+// ═══════════════════════════════════════════════════════════════
+function setAcc(color) { document.documentElement.style.setProperty('--acc',color) }
+
+function updateHUD() {
+  document.getElementById('scoreEl').textContent  = G.score
+  document.getElementById('levelEl').textContent  = G.level
+  document.getElementById('exnameEl').textContent = ex().name
+  setAcc(ex().color)
+  const ce=document.getElementById('combo')
+  if(G.combo>=2){ce.classList.add('on');document.getElementById('comboNum').textContent=G.combo}
+  else ce.classList.remove('on')
+  document.getElementById('ui-prog').style.width=(G.reps/CFG.trials*100)+'%'
+  if (G.startTs) {
+    const rem=Math.max(0,SESS_S-G.elapsed)
+    document.getElementById('sessTimeEl').textContent=`${Math.floor(rem/60)}:${Math.floor(rem%60).toString().padStart(2,'0')}`
+  }
+  document.getElementById('noSensor').style.display=faceDetected?'none':'block'
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 12. DEBUG
+// ═══════════════════════════════════════════════════════════════
+let debugOn=false
+
+function updateDebug() {
+  if (!debugOn) return
+  document.getElementById('db-det').textContent   = faceDetected?'SÍ':'NO'
+  document.getElementById('db-ex').textContent    = `${ex().id} / ${ex().type}`
+  document.getElementById('db-phase').textContent = G.exPhase||'—'
+  document.getElementById('db-reps').textContent  = `${G.reps} / ${G.totalReps}`
+  document.getElementById('db-iod').textContent   = fv.iod
+  document.getElementById('db-im').textContent    = `${fv.innerH} / ${fv.mouthW}`
+  const ap=Math.round(fv.openPct)
+  document.getElementById('db-ap').textContent     = ap+'%'
+  document.getElementById('db-ap-bar').style.width = ap+'%'
+  document.getElementById('db-oh').textContent     = fv.outerH
+  const pr=Math.round(fv.protPct)
+  document.getElementById('db-pr').textContent     = pr+'%'
+  document.getElementById('db-pr-bar').style.width = pr+'%'
+  document.getElementById('db-ls').textContent     = fv.lipSpreadNorm
+  const sp=Math.round(fv.spreadPct)
+  document.getElementById('db-lab').textContent     = sp+'%'
+  document.getElementById('db-lab-bar').style.width = sp+'%'
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key==='d'||e.key==='D') {
+    debugOn=!debugOn
+    document.getElementById('debug').classList.toggle('on',debugOn)
+  }
+  if (e.key==='Escape' && G.startTs && !G.sessDone) {
+    if (confirm('¿Terminar sesión?')) showSession()
+  }
+})
+
+// ═══════════════════════════════════════════════════════════════
+// 13. LOOP PRINCIPAL
+// ═══════════════════════════════════════════════════════════════
+let lastTs = 0
+
+function loop(ts) {
+  requestAnimationFrame(loop)
+  const dt=Math.min((ts-lastTs)/1000,.1); lastTs=ts
+  if (!G.startTs) return
+
+  // ── Detección facial ───────────────────────────────────────
+  faceDetected=false
+  if (faceLandmarker && video.readyState>=2) {
+    try {
+      const r=faceLandmarker.detectForVideo(video,ts)
+      if (r.faceLandmarks && r.faceLandmarks.length>0) processFace(r.faceLandmarks[0])
+    } catch(_) {}
+  }
+
+  // ── Timer sesión ───────────────────────────────────────────
+  if (!G.sessDone) {
+    G.elapsed=(ts-G.startTs)/1000
+    if (G.elapsed>=SESS_S) { showSession(); return }
+  }
+
+  // ── Ejercicio ──────────────────────────────────────────────
+  if (faceDetected && !G.lvlDone && !G.sessDone && !G.instrActive) {
+    const id=ex().id
+    if      (ex().type==='phase')   doPhase(fv.openPct, dt)
+    else if (id==='apice')          doApice(dt)
+    else if (id==='masticacion')    doMasticacion(dt)
+    else if (id==='deglucion')      doSeal(dt)
+    else if (id==='praxias')        doPraxias(dt)
+  }
+
+  // ── Render ─────────────────────────────────────────────────
+  ox.clearRect(0,0,W,H)
+  drawBg()
+  drawTargets()
+  drawFace()
+  drawSparks()
+  drawMeter()
+  drawProxBar()
+  drawPopups()
+  updateHUD()
+  updateDebug()
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 14. INICIO
+// ═══════════════════════════════════════════════════════════════
+function setLoadStatus(msg) {
+  document.getElementById('loadStatus').textContent=msg
+}
+
+async function initCamera() {
+  try {
+    const stream=await navigator.mediaDevices.getUserMedia({
+      video:{ width:{ideal:1280}, height:{ideal:720}, facingMode:'user' }, audio:false
+    })
+    video.srcObject=stream
+  } catch(e) {
+    setLoadStatus('Sin cámara: '+e.message)
+  }
+}
+
+window.changeCfg = function(key,delta) {
+  if (key==='trials') {
+    CFG.trials=Math.min(30,Math.max(3,CFG.trials+delta))
+    document.getElementById('cfgTrials').textContent=CFG.trials
+  }
+}
+
+window.startSession = function() {
+  document.getElementById('start').classList.add('hidden')
+  document.getElementById('hud').classList.add('on')
+  initAudio()
+  resetGame()
+  G.startTs=performance.now()
+  requestAnimationFrame(loop)
+  showInstr()
+}
+
+// Arranque
+initCamera()
+initFace()
+</script>
+</body>
+</html>

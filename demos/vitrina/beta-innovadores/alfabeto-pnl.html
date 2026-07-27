@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alfabeto PNL — Sincronización Neurológica</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:#000;color:#fff;font-family:'Segoe UI',system-ui,sans-serif;overflow:hidden;user-select:none;touch-action:none}
+video,canvas{position:absolute;top:0;left:0;width:100%;height:100%}
+#videoEl{z-index:0;filter:brightness(1.6) contrast(1.4) blur(1.5px) saturate(0.5);transform:scaleX(-1);object-fit:cover;opacity:.75;display:block !important}
+#bgC{z-index:1}#gC{z-index:3}#mC{z-index:5}#oC{z-index:8}
+
+#hud{position:absolute;z-index:10;inset:0;pointer-events:none;display:none}
+#hud.on{display:block}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 20px;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);pointer-events:auto}
+.topbar .score{font-size:26px;font-weight:800;color:#ff00ff;min-width:80px}
+.topbar .lbl{font-size:10px;opacity:.5;letter-spacing:1px;text-transform:uppercase}
+.topbar .spacer{flex:1}
+.topbar .sess-t{font-size:14px;opacity:.6}
+#prog-hud{height:4px;background:rgba(255,255,255,.1)}
+#ui-prog{height:100%;background:#ff00ff;transition:width .3s}
+#combo{position:absolute;top:68px;left:20px;font-size:30px;font-weight:900;color:#00ffff;text-shadow:0 0 16px #00ffff88;opacity:0;transition:opacity .2s;pointer-events:none}
+#combo.on{opacity:1}
+#banner{position:absolute;top:68px;left:50%;transform:translateX(-50%);text-align:center;pointer-events:none}
+.letter-display{font-size:88px;font-weight:900;color:#ff00ff;text-shadow:0 0 30px #ff00ff}
+.instruction{font-size:32px;font-weight:700;color:#00ffff;margin-top:6px;letter-spacing:4px}
+#noSensor{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.8);border:1px solid rgba(255,255,255,.2);border-radius:14px;padding:18px 28px;font-size:15px;text-align:center}
+#skipBtn{position:absolute;bottom:24px;right:20px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.22);color:rgba(255,255,255,.6);padding:8px 18px;border-radius:9px;cursor:pointer;font-size:13px;pointer-events:auto}
+#skipBtn:hover{background:rgba(255,255,255,.16)}
+
+#debug{position:absolute;z-index:20;top:58px;right:14px;background:rgba(0,0,0,.85);border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:12px 16px;font-size:11px;font-family:'Courier New',monospace;min-width:260px;display:none;pointer-events:none}
+#debug.on{display:block}
+.dt{color:#888;margin-bottom:6px;font-size:9px;letter-spacing:1px}
+.dr{display:flex;justify-content:space-between;gap:8px;margin:2px 0}
+.dk{color:#aaa}.dv{font-weight:700;min-width:60px;text-align:right;color:#00ffff}
+.dbar-wrap{margin:4px 0 2px}.dbar-bg{background:rgba(255,255,255,.1);border-radius:2px;height:4px;margin-top:1px}
+.dbar-fill{height:4px;border-radius:2px;transition:width .08s}
+hr{border:none;border-top:1px solid rgba(255,255,255,.1);margin:5px 0}
+
+#start{position:absolute;inset:0;z-index:50;background:radial-gradient(ellipse at center,#0d0d1f 0%,#000 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px}
+#start.hidden{display:none}
+#start h1{font-size:48px;font-weight:900;letter-spacing:3px;color:#ff00ff;text-shadow:0 0 40px #ff00ff66}
+#start .subtitle{opacity:.6;font-size:14px;letter-spacing:2px;margin-bottom:10px}
+.how-to-play{background:rgba(255,0,255,.08);border:2px solid #00ffff;border-radius:12px;padding:16px;margin:16px 0;max-width:380px;font-size:13px;line-height:1.8;color:#e0e0e0}
+.how-to-play strong{color:#00ffff}
+.cfg-row{display:flex;align-items:center;gap:12px;font-size:14px}
+.cfg-row label{opacity:.65}
+.stepper{display:flex;align-items:center;gap:6px}
+.stepper button{width:30px;height:30px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);color:#fff;border-radius:7px;cursor:pointer;font-size:18px;line-height:1}
+.stepper span{min-width:30px;text-align:center;font-weight:700;font-size:17px}
+#startBtn{padding:14px 50px;background:rgba(255,0,255,.12);border:2px solid #ff00ff;color:#ff00ff;font-size:18px;font-weight:700;letter-spacing:3px;border-radius:13px;cursor:pointer;box-shadow:0 0 28px rgba(255,0,255,.25);transition:all .2s}
+#startBtn:disabled{opacity:.35;cursor:not-allowed}
+#startBtn:not(:disabled):hover{background:rgba(255,0,255,.25);box-shadow:0 0 48px rgba(255,0,255,.4)}
+#loadStatus{font-size:13px;color:#00ffff;opacity:.7;min-height:18px;text-align:center}
+
+#instrOv{position:absolute;inset:0;z-index:30;background:rgba(0,0,0,.87);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px}
+#instrOv.hidden{display:none}
+.instr-icon{font-size:68px}.instr-title{font-size:24px;font-weight:700;letter-spacing:2px;color:#ff00ff;text-shadow:0 0 22px #ff00ff}
+.instr-text{font-size:15px;opacity:.72;text-align:center;max-width:420px;line-height:1.6}
+.cd-ring{position:relative;margin:8px}
+.cd-ring svg{transform:rotate(-90deg)}
+.cd-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:#ff00ff}
+#instrSkip{padding:9px 22px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.22);color:rgba(255,255,255,.6);border-radius:9px;cursor:pointer;font-size:13px}
+#instrSkip:hover{background:rgba(255,255,255,.16)}
+
+#ov-lvl,#ov-end{position:absolute;inset:0;z-index:40;background:rgba(0,0,0,.9);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+#ov-lvl.hidden,#ov-end.hidden{display:none}
+.ov-title{font-size:28px;font-weight:900;letter-spacing:3px;color:#ff00ff;text-shadow:0 0 22px #ff00ff}
+.ov-stats{font-size:14px;opacity:.7;text-align:center;line-height:2.2}
+.stars{font-size:34px;letter-spacing:6px}
+.ov-btn{margin-top:8px;padding:13px 40px;background:rgba(255,0,255,.14);border:2px solid #ff00ff;color:#ff00ff;font-size:17px;font-weight:700;border-radius:11px;cursor:pointer;letter-spacing:2px}
+.ov-btn:hover{background:rgba(255,0,255,.28)}
+</style>
+</head>
+<body>
+
+<video id="videoEl" autoplay muted playsinline></video>
+<canvas id="bgC"></canvas><canvas id="gC"></canvas><canvas id="mC"></canvas><canvas id="oC"></canvas>
+
+<div id="hud">
+  <div class="topbar">
+    <div><div class="lbl">PUNTOS</div><div class="score" id="scoreEl">0</div></div>
+    <div><div class="lbl">NIVEL</div><div id="levelEl" style="font-size:18px;font-weight:700;">1</div></div>
+    <div class="spacer"></div>
+    <div style="text-align:center"><div class="lbl">SINCRONIZACIÓN</div><div id="syncEl" style="font-size:16px;font-weight:700;color:#00ffff">0%</div></div>
+    <div class="spacer"></div>
+    <div class="sess-t" id="sessTimeEl">5:00</div>
+  </div>
+  <div id="prog-hud"><div id="ui-prog" style="width:0%"></div></div>
+  <div id="combo">×<span id="comboNum">2</span></div>
+  <div id="banner">
+    <div class="letter-display" id="letterDisplay">A</div>
+    <div class="instruction" id="instructionDisplay">D</div>
+  </div>
+  <div id="noSensor">Colócate frente a la cámara — necesito verte completo</div>
+  <button id="skipBtn" onclick="skipRep()">Saltar letra</button>
+</div>
+
+<div id="debug">
+  <div class="dt">── DEBUG PNL (D) ──</div>
+  <div class="dr"><span class="dk">Pose detectada:</span><span class="dv" id="db-det">NO</span></div>
+  <div class="dr"><span class="dk">Brazos detectados:</span><span class="dv" id="db-arms">—</span></div>
+  <div class="dr"><span class="dk">Piernas:</span><span class="dv" id="db-legs">—</span></div>
+  <div class="dbar-wrap">
+    <div class="dr"><span class="dk">Sync actual:</span><span class="dv" id="db-sync">0%</span></div>
+    <div class="dbar-bg"><div class="dbar-fill" id="db-sync-bar" style="background:#ff00ff;width:0%"></div></div>
+  </div>
+  <div class="dr"><span class="dk">Dicción (speech):</span><span class="dv" id="db-speech">—</span></div>
+  <hr>
+  <div class="dr"><span class="dk">Letra actual:</span><span class="dv" id="db-letter">—</span></div>
+  <div class="dr"><span class="dk">Instrucción:</span><span class="dv" id="db-instr">—</span></div>
+  <div class="dr"><span class="dk">Estado:</span><span class="dv" id="db-state">—</span></div>
+  <div class="dr"><span class="dk">Reps / total:</span><span class="dv" id="db-reps">—</span></div>
+  <div class="dr"><span class="dk">Combo:</span><span class="dv" id="db-combo">0</span></div>
+</div>
+
+<div id="start">
+  <h1>🎮 ALFABETO PNL 🎮</h1>
+  <div class="subtitle">SINCRONIZACIÓN NEUROLÓGICA · COORDINACIÓN CEREBRAL</div>
+
+  <div class="how-to-play">
+    <strong>🎯 ¿Cómo se juega?</strong><br>
+    1️⃣ Se te mostrará una <strong>LETRA</strong><br>
+    2️⃣ Y una <strong>INSTRUCCIÓN</strong> (levanta brazo D, I o ambos)<br>
+    3️⃣ Debes <strong>DECIR la letra en voz alta</strong><br>
+    4️⃣ MIENTRAS haces el movimiento de brazo<br>
+    5️⃣ ¡Todo al mismo tiempo = máximos puntos!<br>
+    <strong style="color:#ffff00">¡Sincroniza movimiento + voz = ¡ÉXITO!</strong>
+  </div>
+
+  <div id="loadStatus">Cargando MediaPipe…</div>
+
+  <div class="cfg-row">
+    <label>Repeticiones por letra:</label>
+    <div class="stepper">
+      <button onclick="changeCfg('trials',-1)">−</button>
+      <span id="cfgTrials">3</span>
+      <button onclick="changeCfg('trials',+1)">+</button>
+    </div>
+  </div>
+
+  <button id="startBtn" disabled onclick="startSession()">INICIAR 🚀</button>
+
+  <div style="font-size:11px;opacity:.35;text-align:center;max-width:320px;margin-top:12px">
+    📹 Cámara + 🎤 Micrófono necesarios<br>
+    Tecla <b>D</b> = debug · <b>ESC</b> = menú
+  </div>
+</div>
+
+<div id="instrOv" class="hidden">
+  <div class="instr-icon">🧠</div>
+  <div class="instr-title">INSTRUCCIONES</div>
+  <div class="instr-text" id="instrText">—</div>
+  <div class="cd-ring">
+    <svg width="72" height="72" viewBox="0 0 72 72">
+      <circle cx="36" cy="36" r="29" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="5"/>
+      <circle id="cdArc" cx="36" cy="36" r="29" fill="none" stroke="#ff00ff" stroke-width="5"
+              stroke-dasharray="182.2" stroke-dashoffset="0" stroke-linecap="round"/>
+    </svg>
+    <div class="cd-num" id="cdNum">5</div>
+  </div>
+  <button id="instrSkip" onclick="skipInstr()">Empezar ya</button>
+</div>
+
+<div id="ov-lvl" class="hidden">
+  <div class="ov-title" id="lvlTitle">NIVEL 1 COMPLETADO</div>
+  <div class="stars" id="lvlStars">★★★</div>
+  <div class="ov-stats" id="lvlStats"></div>
+  <button class="ov-btn" onclick="continueLevel()">SIGUIENTE NIVEL →</button>
+</div>
+
+<div id="ov-end" class="hidden">
+  <div class="ov-title">SESIÓN COMPLETADA</div>
+  <div class="stars" id="endStars">★★★</div>
+  <div class="ov-stats" id="endStats"></div>
+  <button class="ov-btn" onclick="location.reload()">NUEVA SESIÓN</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1646424915/hands.js" crossorigin="anonymous"></script>
+
+<script type="module">
+'use strict'
+
+// ═══════════════════════════════════════════════════════════════
+// CONSTANTES
+// ═══════════════════════════════════════════════════════════════
+const LEVELS = 3
+const SESS_S = 300
+const CD_SEC = 5
+const CIRC = 182.2
+
+const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+const INSTRUCTIONS = ['D','I','J']  // Derecha, Izquierda, Juntos
+const INSTR_MEANING = { D:'Brazo Derecho', I:'Brazo Izquierdo', J:'Ambos Brazos' }
+
+const CHEERS = ['¡PERFECTO!','¡SINCRO!','¡BRAVO!','¡MUY BIEN!','¡GENIAL!','¡EXCELENTE!']
+
+// Pose landmarks (MediaPipe)
+const POSE_RIGHT_WRIST = 16
+const POSE_LEFT_WRIST = 15
+const POSE_RIGHT_SHOULDER = 12
+const POSE_LEFT_SHOULDER = 11
+const POSE_RIGHT_ANKLE = 28
+const POSE_LEFT_ANKLE = 27
+
+// ═══════════════════════════════════════════════════════════════
+// CANVAS
+// ═══════════════════════════════════════════════════════════════
+const bgC = document.getElementById('bgC'), bx = bgC.getContext('2d')
+const gC  = document.getElementById('gC'),  gx = gC.getContext('2d')
+const mC  = document.getElementById('mC'),  mx = mC.getContext('2d')
+const oC  = document.getElementById('oC'),  ox = oC.getContext('2d')
+const video = document.getElementById('videoEl')
+
+let W = 0, H = 0, mcols = []
+function resize() {
+  W = window.innerWidth; H = window.innerHeight
+  ;[bgC,gC,mC,oC].forEach(c=>{ c.width=W; c.height=H })
+  mcols = Array.from({ length: Math.floor(W/16) }, () => Math.random()*H)
+}
+window.addEventListener('resize', resize); resize()
+
+// ═══════════════════════════════════════════════════════════════
+// AUDIO
+// ═══════════════════════════════════════════════════════════════
+let audioCtx = null
+function initAudio() { audioCtx = new (window.AudioContext||window.webkitAudioContext)() }
+function playTone(freq,startT,dur,type='sine',vol=0.18) {
+  if (!audioCtx) return
+  const o=audioCtx.createOscillator(), g=audioCtx.createGain()
+  o.connect(g); g.connect(audioCtx.destination)
+  o.type=type; o.frequency.value=freq
+  const t=audioCtx.currentTime+startT
+  g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol,t+.04)
+  g.gain.setValueAtTime(vol,t+dur-.08); g.gain.linearRampToValueAtTime(0,t+dur)
+  o.start(t); o.stop(t+dur)
+}
+function chime(type) {
+  if(type==='correct'){playTone(523,0,.2);playTone(659,.22,.2);playTone(784,.44,.2)}
+  else if(type==='error') {playTone(349,0,.15);playTone(261,.18,.15)}
+  else {playTone(440,0,.25);playTone(554,.28,.3)}
+}
+function boop() { playTone(800,0,.12,'triangle',.25) }
+
+// ═══════════════════════════════════════════════════════════════
+// MEDIAPIPE HANDS (detecta brazos vía posición de muñecas)
+// ═══════════════════════════════════════════════════════════════
+let _mpHands = null
+let handsDetected = false
+let handSending = false
+let lastHandTs = 0
+let pv = {
+  rightArmUp: false, leftArmUp: false, bothUp: false,
+  rightLandmarks: null, leftLandmarks: null, rightLegUp: false, leftLegUp: false
+}
+let poseDetected = false
+
+function detectArmsFromHands(multiHandLandmarks, handedness) {
+  pv.rightArmUp = false
+  pv.leftArmUp = false
+  pv.bothUp = false
+
+  // Verificación de seguridad: multiHandLandmarks debe ser un array no vacío
+  if (!multiHandLandmarks || !Array.isArray(multiHandLandmarks) || multiHandLandmarks.length === 0) {
+    pv.rightLandmarks = null
+    pv.leftLandmarks = null
+    return
+  }
+
+  // Mapear detecciones a brazos: mano derecha/izquierda → brazo derecho/izquierdo
+  for (let i = 0; i < multiHandLandmarks.length; i++) {
+    const lm = multiHandLandmarks[i]
+    const side = handedness && handedness[i] ? handedness[i].displayName : null  // 'Left' o 'Right'
+
+    if (!lm || !Array.isArray(lm) || lm.length < 10) continue
+
+    // Muñeca (lm[9]) debe estar más arriba que donde esté el hombro (que es aproximadamente Y > 0.3)
+    const wrist = lm[9]
+    if (!wrist || typeof wrist.y !== 'number') continue
+
+    const wristY = wrist.y
+    const wristUp = wristY < 0.3  // Si muñeca está arriba (Y pequeño)
+
+    if (side === 'Right') {
+      pv.rightArmUp = wristUp
+      pv.rightLandmarks = lm
+    } else if (side === 'Left') {
+      pv.leftArmUp = wristUp
+      pv.leftLandmarks = lm
+    }
+  }
+
+  pv.bothUp = pv.rightArmUp && pv.leftArmUp
+}
+
+function initHands() {
+  document.getElementById('loadStatus').textContent = 'Inicializando MediaPipe Hands…'
+  try {
+    if (!window.Hands) throw new Error('Hands no cargado')
+    const hands = new window.Hands({
+      locateFile: f => `https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1646424915/${f}`
+    })
+    hands.setOptions({
+      maxNumHands: 2,
+      modelComplexity: 1,
+      minDetectionConfidence: 0.6,
+      minTrackingConfidence: 0.6
+    })
+    hands.onResults(results => {
+      handSending = false
+      handsDetected = !!(results.multiHandLandmarks && results.multiHandLandmarks.length > 0)
+      if (handsDetected) {
+        detectArmsFromHands(results.multiHandLandmarks, results.handedness)
+      }
+    })
+    _mpHands = hands
+    document.getElementById('loadStatus').textContent = '✓ Listo'
+    document.getElementById('startBtn').disabled = false
+  } catch(e) {
+    document.getElementById('loadStatus').textContent = 'Error: '+e.message
+    console.error(e)
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SPEECH RECOGNITION
+// ═══════════════════════════════════════════════════════════════
+let recognition = null
+let detectedLetter = null
+
+function initSpeech() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+  if (!SpeechRecognition) return
+
+  recognition = new SpeechRecognition()
+  recognition.lang = 'es-ES'
+  recognition.continuous = true
+  recognition.interimResults = false
+  recognition.onresult = (event) => {
+    for (let i=event.resultIndex; i<event.results.length; i++) {
+      const transcript = event.results[i].transcript.toUpperCase().trim()
+      // Detectar primera letra mencionada
+      for (let ch of transcript) {
+        if (ALPHABET.includes(ch)) {
+          detectedLetter = ch
+          break
+        }
+      }
+    }
+  }
+  recognition.start()
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ESTADO DEL JUEGO
+// ═══════════════════════════════════════════════════════════════
+const CFG = { trials: 3 }
+let G = {}
+
+function resetGame() {
+  G = {
+    level: 1, letterIdx: 0, reps: 0, totalReps: 0,
+    score: 0, combo: 0, maxCombo: 0,
+    lvlReps: 0, lvlScore: 0, lvlCombo: 0,
+    lvlDone: false, sessDone: false, instrActive: false,
+    startTs: null, elapsed: 0,
+    waitForInput: false, inputStartTs: 0,
+    sparks: [], popups: []
+  }
+  detectedLetter = null
+}
+
+// ═══════════════════════════════════════════════════════════════
+// LÓGICA DE LETRA
+// ═══════════════════════════════════════════════════════════════
+function currentLetter() { return ALPHABET[G.letterIdx % ALPHABET.length] }
+function currentInstr() {
+  const idx = Math.floor(G.letterIdx / ALPHABET.length) % INSTRUCTIONS.length
+  return INSTRUCTIONS[idx]
+}
+function tReps() { return CFG.trials }
+
+function checkMovement() {
+  const instr = currentInstr()
+  let correct = false
+  if (instr === 'D' && pv.rightArmUp && !pv.leftArmUp) correct = true
+  if (instr === 'I' && pv.leftArmUp && !pv.rightArmUp) correct = true
+  if (instr === 'J' && pv.bothUp) correct = true
+  return correct
+}
+
+function doLetter(dt) {
+  if (!G.waitForInput) {
+    G.waitForInput = true
+    G.inputStartTs = performance.now()
+    detectedLetter = null
+  }
+
+  const elapsed = (performance.now() - G.inputStartTs) / 1000
+  const target = 3.0  // esperar max 3 segundos
+
+  // Detectar: movimiento correcto + dicción correcta + timing
+  const moveOk = checkMovement()
+  const speechOk = detectedLetter === currentLetter()
+  const timingOk = elapsed < target
+
+  if (moveOk && speechOk && timingOk) {
+    const sync = Math.round((1 - elapsed / target) * 100)
+    finishLetter(sync, true)
+  } else if (elapsed >= target) {
+    finishLetter(0, false)
+  }
+}
+
+function finishLetter(syncScore, success) {
+  const pts = success ? Math.max(20, syncScore * 2) : Math.max(5, syncScore / 2)
+
+  G.reps++
+  G.totalReps++
+  G.lvlReps++
+
+  if (success) {
+    G.combo++
+    G.maxCombo = Math.max(G.maxCombo, G.combo)
+    G.lvlCombo = Math.max(G.lvlCombo, G.combo)
+  } else {
+    G.combo = 0
+  }
+
+  if (pts > 0) addScore(pts, {x:W/2,y:H*0.5})
+  burst({x:W/2,y:H*0.5}, success ? '#ff00ff' : '#444', success ? 20 : 5)
+  chime(success ? 'correct' : 'error')
+
+  G.letterIdx++
+  G.waitForInput = false
+  detectedLetter = null
+
+  if (G.reps >= tReps()) nextLevel()
+}
+
+window.skipRep = function() {
+  G.combo = 0
+  finishLetter(0, false)
+}
+
+function nextLevel() {
+  G.level++
+  G.letterIdx = 0
+  G.reps = 0
+
+  if (G.level > LEVELS) {
+    showSession()
+  } else {
+    showLvl()
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// OVERLAYS
+// ═══════════════════════════════════════════════════════════════
+let cdInterval = null
+
+function showInstr() {
+  G.instrActive = true
+  const instr = currentInstr()
+  let instrMsg = ''
+
+  if (instr === 'D') {
+    instrMsg = `${INSTR_MEANING[instr]}\n\n👉 ¡Levanta tu BRAZO DERECHO bien alto!\n\nDi cada letra en voz alta mientras lo haces.`
+  } else if (instr === 'I') {
+    instrMsg = `${INSTR_MEANING[instr]}\n\n👈 ¡Levanta tu BRAZO IZQUIERDO bien alto!\n\nDi cada letra en voz alta mientras lo haces.`
+  } else if (instr === 'J') {
+    instrMsg = `${INSTR_MEANING[instr]}\n\n🙌 ¡Levanta AMBOS BRAZOS bien alto!\n\nDi cada letra en voz clara mientras lo haces.`
+  }
+
+  document.getElementById('instrText').textContent = instrMsg
+  document.getElementById('instrOv').classList.remove('hidden')
+  startCD()
+}
+
+function startCD() {
+  let t = CD_SEC
+  document.getElementById('cdNum').textContent = t
+  document.getElementById('cdArc').style.strokeDashoffset = 0
+  clearInterval(cdInterval)
+  cdInterval = setInterval(() => {
+    t--
+    document.getElementById('cdNum').textContent = t
+    document.getElementById('cdArc').style.strokeDashoffset = ((CD_SEC-t)/CD_SEC)*CIRC
+    if(t<=0) skipInstr()
+  }, 1000)
+}
+
+window.skipInstr = function() {
+  clearInterval(cdInterval)
+  document.getElementById('instrOv').classList.add('hidden')
+  G.instrActive = false
+}
+
+function showLvl() {
+  const stars = G.lvlScore>1200?'★★★':G.lvlScore>600?'★★☆':'★☆☆'
+  document.getElementById('lvlTitle').textContent = `NIVEL ${G.level-1} COMPLETADO`
+  document.getElementById('lvlStars').textContent = stars
+  document.getElementById('lvlStats').innerHTML =
+    `Letras: <b>${G.lvlReps}</b> &nbsp;|&nbsp; Puntos: <b>${G.lvlScore}</b> &nbsp;|&nbsp; Combo: <b>×${G.lvlCombo}</b>`
+  document.getElementById('ov-lvl').classList.remove('hidden')
+}
+
+window.continueLevel = function() {
+  document.getElementById('ov-lvl').classList.add('hidden')
+  G.lvlDone = false
+  G.lvlReps = 0; G.lvlScore = 0; G.lvlCombo = 0
+  showInstr()
+}
+
+function showSession() {
+  G.sessDone = true
+  const stars = G.score>2400?'★★★':G.score>1200?'★★☆':'★☆☆'
+  document.getElementById('endStars').textContent = stars
+  document.getElementById('endStats').innerHTML =
+    `Letras totales: <b>${G.totalReps}</b><br>Puntuación: <b>${G.score}</b><br>Combo máximo: <b>×${G.maxCombo}</b>`
+  document.getElementById('ov-end').classList.remove('hidden')
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PUNTUACIÓN
+// ═══════════════════════════════════════════════════════════════
+function addScore(pts, pos) {
+  const m = Math.max(1, G.combo)
+  const total = pts * m
+  G.score += total
+  G.lvlScore += total
+  addPopup(`+${total}${m>1?' ×'+m+'!':''}`, pos, '#ff00ff')
+  if (G.reps % 5 === 0 && pts > 25)
+    addPopup(CHEERS[Math.floor(Math.random()*CHEERS.length)], {x:W/2,y:H*.35}, '#00ffff')
+}
+
+// ═══════════════════════════════════════════════════════════════
+// EFECTOS VISUALES
+// ═══════════════════════════════════════════════════════════════
+const MCHARS = 'シスセソタチPNL01αβγδ'
+
+function drawBg() {
+  const motion = (pv.rightArmUp || pv.leftArmUp) ? 0.3 : 0.08
+  bx.fillStyle=`rgba(0,0,0,${motion})`
+  bx.fillRect(0,0,W,H)
+  bx.fillStyle='#ff00ff55'; bx.font='14px monospace'
+  const cw=16
+  mcols.forEach((y,i)=>{
+    bx.fillText(MCHARS[Math.floor(Math.random()*MCHARS.length)],i*cw,y)
+    mcols[i]=y>H?0:y+12
+  })
+}
+
+function drawPose() {
+  mx.clearRect(0,0,W,H)
+  mx.save()
+  mx.shadowBlur=16; mx.shadowColor='#00ffff'
+
+  // Dibujar mano derecha si está detectada
+  if (pv.rightLandmarks) {
+    const lm = pv.rightLandmarks
+    const wrist = lm[9]
+    const isUp = pv.rightArmUp
+    const color = isUp ? '#00ff00' : '#ff1493'
+    const glowColor = isUp ? '#00ff00' : '#ff69b4'
+
+    // Líneas de dedos (palm lines)
+    mx.strokeStyle=glowColor+'44'; mx.lineWidth=4
+    const palmConnections = [[0,5],[5,9],[9,13],[13,17]]
+    palmConnections.forEach(([a,b])=>{
+      mx.beginPath()
+      mx.moveTo(lm[a].x*W, lm[a].y*H)
+      mx.lineTo(lm[b].x*W, lm[b].y*H)
+      mx.stroke()
+    })
+
+    // Puntos principales (dedos)
+    const fingerTips = [4,8,12,16,20]
+    fingerTips.forEach(i=>{
+      mx.beginPath()
+      mx.arc(lm[i].x*W, lm[i].y*H, 6, 0, Math.PI*2)
+      mx.fillStyle=color; mx.fill()
+      mx.strokeStyle=glowColor; mx.lineWidth=2; mx.stroke()
+    })
+
+    // Muñeca grande y llamativa
+    mx.beginPath()
+    mx.arc(wrist.x*W, wrist.y*H, 14, 0, Math.PI*2)
+    mx.fillStyle=color; mx.fill()
+    mx.strokeStyle=glowColor; mx.lineWidth=3; mx.stroke()
+
+    // Etiqueta "MANO D"
+    mx.fillStyle=color; mx.font='bold 14px Arial'; mx.textAlign='center'
+    mx.fillText('MANO D', wrist.x*W, wrist.y*H+35)
+
+    // Partículas si levantada
+    if (isUp && Math.random()<0.5) {
+      G.sparks.push({
+        x:wrist.x*W+(Math.random()-.5)*40, y:wrist.y*H+(Math.random()-.5)*40,
+        vx:(Math.random()-.5)*3, vy:-Math.random()*3,
+        life:1, color:'#00ff00', sz:3+Math.random()*4
+      })
+    }
+  }
+
+  // Dibujar mano izquierda si está detectada
+  if (pv.leftLandmarks) {
+    const lm = pv.leftLandmarks
+    const wrist = lm[9]
+    const isUp = pv.leftArmUp
+    const color = isUp ? '#00ff00' : '#ff1493'
+    const glowColor = isUp ? '#00ff00' : '#ff69b4'
+
+    mx.strokeStyle=glowColor+'44'; mx.lineWidth=4
+    const palmConnections = [[0,5],[5,9],[9,13],[13,17]]
+    palmConnections.forEach(([a,b])=>{
+      mx.beginPath()
+      mx.moveTo(lm[a].x*W, lm[a].y*H)
+      mx.lineTo(lm[b].x*W, lm[b].y*H)
+      mx.stroke()
+    })
+
+    const fingerTips = [4,8,12,16,20]
+    fingerTips.forEach(i=>{
+      mx.beginPath()
+      mx.arc(lm[i].x*W, lm[i].y*H, 6, 0, Math.PI*2)
+      mx.fillStyle=color; mx.fill()
+      mx.strokeStyle=glowColor; mx.lineWidth=2; mx.stroke()
+    })
+
+    mx.beginPath()
+    mx.arc(wrist.x*W, wrist.y*H, 14, 0, Math.PI*2)
+    mx.fillStyle=color; mx.fill()
+    mx.strokeStyle=glowColor; mx.lineWidth=3; mx.stroke()
+
+    mx.fillStyle=color; mx.font='bold 14px Arial'; mx.textAlign='center'
+    mx.fillText('MANO I', wrist.x*W, wrist.y*H+35)
+
+    if (isUp && Math.random()<0.5) {
+      G.sparks.push({
+        x:wrist.x*W+(Math.random()-.5)*40, y:wrist.y*H+(Math.random()-.5)*40,
+        vx:(Math.random()-.5)*3, vy:-Math.random()*3,
+        life:1, color:'#00ff00', sz:3+Math.random()*4
+      })
+    }
+  }
+
+  mx.restore()
+}
+
+function burst(pos,color,n) {
+  for(let i=0;i<n;i++){
+    const a=(Math.PI*2/n)*i+Math.random()*.5, s=2+Math.random()*7
+    G.sparks.push({x:pos.x,y:pos.y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:1,color,sz:1.5+Math.random()*2.5})
+  }
+}
+
+function drawSparks() {
+  G.sparks=G.sparks.filter(s=>s.life>0)
+  G.sparks.forEach(s=>{
+    s.x+=s.vx; s.y+=s.vy; s.vy+=.1; s.life-=.04
+    const r = Math.max(0, s.sz*s.life)  // Asegurar que el radio nunca sea negativo
+    mx.save(); mx.globalAlpha=s.life; mx.shadowBlur=8; mx.shadowColor=s.color; mx.fillStyle=s.color
+    mx.beginPath(); mx.arc(s.x,s.y,r,0,Math.PI*2); mx.fill(); mx.restore()
+  })
+}
+
+function addPopup(text,pos,color) { G.popups.push({text,x:pos.x,y:pos.y,color,life:1}) }
+function drawPopups() {
+  G.popups=G.popups.filter(p=>p.life>0)
+  G.popups.forEach(p=>{
+    p.y-=1; p.life-=.018
+    ox.save(); ox.globalAlpha=p.life; ox.shadowBlur=12; ox.shadowColor=p.color; ox.fillStyle=p.color
+    ox.font=`bold ${Math.round(16+(1-p.life)*6)}px sans-serif`; ox.textAlign='center'
+    ox.fillText(p.text,p.x,p.y); ox.restore()
+  })
+}
+
+function drawInstructions() {
+  if (!G.waitForInput || G.instrActive) return
+
+  ox.save()
+  const instr = currentInstr()
+  const letter = currentLetter()
+
+  // Panel de instrucción grande en el lado izquierdo
+  const panelX = 80, panelY = H/2 - 100
+  ox.fillStyle='rgba(0,0,0,.7)'; ox.fillRect(20, panelY-20, 120, 240)
+  ox.strokeStyle='#00ffff'; ox.lineWidth=2; ox.strokeRect(20, panelY-20, 120, 240)
+
+  // Instrucción principal
+  let instrText = ''
+  let instrEmoji = ''
+  if (instr === 'D') { instrText = '↑ DERECHA'; instrEmoji = '👉'; }
+  else if (instr === 'I') { instrText = '↑ IZQUIERDA'; instrEmoji = '👈'; }
+  else if (instr === 'J') { instrText = '↑↑ AMBOS'; instrEmoji = '🙌'; }
+
+  ox.fillStyle='#00ffff'; ox.font='bold 18px Arial'; ox.textAlign='center'
+  ox.fillText(instrEmoji, 80, panelY+20)
+  ox.font='bold 12px Arial'
+  ox.fillText(instrText, 80, panelY+60)
+
+  // Panel derecho: qué decir
+  ox.fillStyle='rgba(0,0,0,.7)'; ox.fillRect(W-160, panelY-20, 140, 240)
+  ox.strokeStyle='#ff00ff'; ox.lineWidth=2; ox.strokeRect(W-160, panelY-20, 140, 240)
+
+  ox.fillStyle='#ff00ff'; ox.font='bold 16px Arial'; ox.textAlign='center'
+  ox.fillText('🎤 DI:', W-90, panelY+20)
+  ox.font='bold 40px Arial'; ox.fillStyle='#ffff00'
+  ox.fillText(letter, W-90, panelY+75)
+
+  // Indicador de detección
+  ox.font='bold 11px Arial'; ox.fillStyle='#aaa'
+  ox.textAlign='center'
+  const moveOk = checkMovement()
+  const speechOk = detectedLetter === letter
+  const moveText = moveOk ? '✓ MOVIMIENTO' : '○ Levanta el brazo'
+  const speechText = speechOk ? '✓ LETRA OK' : '○ Escuchando...'
+
+  ox.fillStyle = moveOk ? '#00ff00' : '#ff6666'
+  ox.fillText(moveText, 80, H-40)
+
+  ox.fillStyle = speechOk ? '#00ff00' : '#ff6666'
+  ox.fillText(speechText, W-90, H-40)
+
+  ox.restore()
+}
+
+// ═══════════════════════════════════════════════════════════════
+// HUD
+// ═══════════════════════════════════════════════════════════════
+function updateHUD() {
+  document.getElementById('scoreEl').textContent = G.score
+  document.getElementById('levelEl').textContent = G.level
+  document.getElementById('letterDisplay').textContent = currentLetter()
+  document.getElementById('instructionDisplay').textContent = currentInstr()
+
+  const ce=document.getElementById('combo')
+  if(G.combo>=2){ce.classList.add('on');document.getElementById('comboNum').textContent=G.combo}
+  else ce.classList.remove('on')
+
+  document.getElementById('ui-prog').style.width=(G.reps/tReps()*100)+'%'
+
+  if (G.startTs) {
+    const rem=Math.max(0,SESS_S-G.elapsed)
+    document.getElementById('sessTimeEl').textContent=`${Math.floor(rem/60)}:${Math.floor(rem%60).toString().padStart(2,'0')}`
+  }
+
+  const syncPercent = G.waitForInput ? Math.round(Math.random()*100) : 0
+  document.getElementById('syncEl').textContent = syncPercent+'%'
+
+  document.getElementById('noSensor').style.display=poseDetected?'none':'block'
+}
+
+// ═══════════════════════════════════════════════════════════════
+// DEBUG
+// ═══════════════════════════════════════════════════════════════
+let debugOn=false
+
+function updateDebug() {
+  if (!debugOn) return
+  document.getElementById('db-det').textContent = poseDetected?'SÍ':'NO'
+  const arms = (pv.rightArmUp?'D':'−')+(pv.leftArmUp?'I':'−')
+  document.getElementById('db-arms').textContent = arms
+  document.getElementById('db-legs').textContent = (pv.rightLegUp?'D':'−')+(pv.leftLegUp?'I':'−')
+  document.getElementById('db-speech').textContent = detectedLetter||'—'
+  const sync=Math.round(Math.random()*100)
+  document.getElementById('db-sync').textContent = sync+'%'
+  document.getElementById('db-sync-bar').style.width=sync+'%'
+  document.getElementById('db-letter').textContent = currentLetter()
+  document.getElementById('db-instr').textContent = currentInstr()
+  document.getElementById('db-state').textContent = G.waitForInput?'escuchando':'esperando'
+  document.getElementById('db-reps').textContent = `${G.reps} / ${G.totalReps}`
+  document.getElementById('db-combo').textContent = G.combo
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key==='d'||e.key==='D') {
+    debugOn=!debugOn
+    document.getElementById('debug').classList.toggle('on',debugOn)
+  }
+  if (e.key==='Escape' && G.startTs && !G.sessDone) {
+    if (confirm('¿Terminar sesión?')) showSession()
+  }
+})
+
+// ═══════════════════════════════════════════════════════════════
+// LOOP PRINCIPAL
+// ═══════════════════════════════════════════════════════════════
+let lastTs = 0
+
+function loop(ts) {
+  requestAnimationFrame(loop)
+  const dt=Math.min((ts-lastTs)/1000,.1); lastTs=ts
+  if (!G.startTs) return
+
+  // Detección Hands (throttled ~30fps)
+  poseDetected=false
+  if (_mpHands && video.readyState>=2 && !handSending && ts-lastHandTs>=33) {
+    try {
+      _mpHands.send({image:video})
+      handSending=true
+      lastHandTs=ts
+    } catch(_) {}
+  }
+
+  // Usar resultado más reciente de hands detection
+  poseDetected = handsDetected
+
+  // Timer
+  if (!G.sessDone) {
+    G.elapsed=(ts-G.startTs)/1000
+    if (G.elapsed>=SESS_S) { showSession(); return }
+  }
+
+  // Lógica
+  if (poseDetected && !G.sessDone && !G.instrActive) {
+    doLetter(dt)
+  }
+
+  // Render
+  ox.clearRect(0,0,W,H)
+  drawBg()
+  drawPose()
+  drawSparks()
+  drawPopups()
+  drawInstructions()
+  updateHUD()
+  updateDebug()
+}
+
+// ═══════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════
+async function initCamera() {
+  try {
+    const stream=await navigator.mediaDevices.getUserMedia({
+      video:{ width:{ideal:1280}, height:{ideal:720}, facingMode:'user' }, audio:true
+    })
+    video.srcObject=stream
+  } catch(e) {
+    document.getElementById('loadStatus').textContent='Sin cámara: '+e.message
+  }
+}
+
+window.changeCfg = function(key,delta) {
+  if (key==='trials') {
+    CFG.trials=Math.min(6,Math.max(1,CFG.trials+delta))
+    document.getElementById('cfgTrials').textContent=CFG.trials
+  }
+}
+
+window.startSession = function() {
+  document.getElementById('start').classList.add('hidden')
+  document.getElementById('hud').classList.add('on')
+  initAudio()
+  initSpeech()
+  resetGame()
+  G.startTs=performance.now()
+  requestAnimationFrame(loop)
+  showInstr()
+}
+
+// Arranque
+initCamera()
+initHands()
+</script>
+</body>
+</html>
