@@ -87,7 +87,9 @@ Alterna **El Nexo** y **El Enjambre**. Deja claro que NO es una academia de víd
 Dos módulos: **CONSTRUIR** e **INTEGRAR**. Nombra la metodología (directos + diferido + tutoriales + práctica guiada + revisión en grupo). Remata: te vas con materiales tuyos, no con apuntes.
 
 **11 · Cierre** — *«Yo puedo aprender a hacer esto.»*
-No busques el «qué bonito», busca el «yo puedo». Invita a Colmenia y a la formación sin presión. Agradece y abre preguntas.
+No busques el «qué bonito», busca el «yo puedo». Invita a Colmenia y a la formación sin presión. **Señala el QR de la tarjeta: «escanea y únete a la comunidad en Telegram, @LOGOPED_IA».** Deja el QR (con el logo del Colegio) en pantalla mientras respondes preguntas. Agradece.
+
+> El cierre lleva el **logo del Colegio (COLOGEX)** y el **QR de Telegram @LOGOPED_IA** en una tarjeta. El logo del Colegio también abre la presentación (slide 01) para dar autoridad institucional.
 
 ---
 

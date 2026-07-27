@@ -574,6 +574,45 @@
       font-size: 12px;
       font-weight: 950;
     }
+
+    .brand-chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 14px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 10px 26px #0006;
+    }
+    .brand-chip img { height: 30px; width: auto; display: block; }
+
+    .join-card {
+      height: 78%;
+      min-height: 390px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 17px;
+      padding: 30px;
+      border-radius: 28px;
+      background: var(--paper);
+      color: var(--ink);
+      box-shadow: 0 24px 60px #0007;
+    }
+    .join-card .jc-logo { width: min(80%, 300px); height: auto; display: block; }
+    .join-card .jc-qr {
+      width: 188px;
+      height: 188px;
+      padding: 11px;
+      background: #fff;
+      border-radius: 18px;
+      border: 1px solid #e6e2d6;
+    }
+    .join-card .jc-qr img { width: 100%; height: 100%; display: block; }
+    .join-card .jc-cta { text-align: center; }
+    .join-card .jc-cta strong { display: block; font-size: 21px; letter-spacing: -.02em; }
+    .join-card .jc-cta span { display: block; margin-top: 5px; color: var(--muted); font-size: 12px; font-weight: 800; }
+    .join-card .jc-cta b { color: #1b6b58; }
     .nav {
       position: fixed;
       z-index: 10;
@@ -725,6 +764,10 @@
       .foot { left: 20px; right: 20px; bottom: 53px; }
       .hero { grid-template-columns: 1fr; }
       .portrait-wrap { display: none; }
+      .brand-chip img { height: 24px; }
+      .join-card { min-height: 0; height: auto; gap: 12px; padding: 18px; margin-top: 6px; }
+      .join-card .jc-qr { width: 140px; height: 140px; padding: 8px; }
+      .join-card .jc-cta strong { font-size: 16px; }
       .familiar-grid { gap: 8px; margin-top: 20px; }
       .familiar { padding: 13px; }
       .familiar strong { font-size: 13px; }
@@ -779,7 +822,8 @@
       <article class="slide dark active">
         <div class="hero">
           <div class="hero-copy">
-            <span class="eyebrow reveal">Webinar · Colegio de Logopedas de Extremadura</span>
+            <div class="brand-chip reveal"><img src="assets/brand/cologex.png" alt="Colegio Profesional de Logopedas de Extremadura"></div>
+            <span class="eyebrow reveal" style="margin-top:16px">Webinar · Colegio de Logopedas de Extremadura</span>
             <h1 class="reveal">No vengo a hablarte de IA.<br><span class="serif mint">Vengo a enseñártela.</span></h1>
             <p class="intro reveal">En 30 minutos vas a ver funcionando lo que una logopeda puede construir <b class="yellow">sin escribir una sola línea de código</b>: un asistente que busca evidencia, materiales que no existían esta mañana, videojuegos con propósito y una comunidad que sigue contigo cuando acaba la clase.</p>
             <div class="promise-row reveal">
@@ -1004,7 +1048,14 @@
             <a class="closing-link reveal" href="https://colmenia-logoped-ia.fonia.chatgpt.site" target="_blank" rel="noopener" onclick="event.stopPropagation()">Conocer la nueva Colmenia ↗</a>
             <p class="soft reveal" style="margin-top:20px;font-size:12px">Colegio de Logopedas de Extremadura · José Aserraf Cohén</p>
           </div>
-          <div class="portrait-wrap"><img src="assets/fresh/portrait.png" alt="José Aserraf Cohén"></div>
+          <div class="join-card">
+            <img class="jc-logo" src="assets/brand/cologex.png" alt="Colegio Profesional de Logopedas de Extremadura">
+            <div class="jc-qr"><img src="assets/brand/telegram-qr.png" alt="Código QR de Telegram @LOGOPED_IA"></div>
+            <div class="jc-cta">
+              <strong>Únete a la comunidad</strong>
+              <span>Escanea y entra en Telegram · <b>@LOGOPED_IA</b></span>
+            </div>
+          </div>
         </div>
         <div class="foot"><span>LOGOPED-IA · GRACIAS</span><span>11</span></div>
       </article>
@@ -1056,7 +1107,7 @@
       { t: '24:30 – 28:00', title: 'Formación de Extremadura', demo: 'Sin demo. Señala los dos módulos.',
         say: '<b>Aquí conviertes.</b> Cierra el argumento del día: lo que impresiona es verlo, pero lo que te cambia el trabajo es hacerlo — y la diferencia no fue la tecnología, fue el criterio, y eso se aprende. Dos módulos: CONSTRUIR (de la idea al primer recurso) e INTEGRAR (del recurso a tu forma de trabajar). Nombra la metodología: directos con interacción, diferido, tutoriales, práctica guiada y revisión en grupo. Remata: te vas con materiales tuyos, no con apuntes.' },
       { t: '28:00 – 30:00', title: 'Cierre', demo: 'Sin demo. Contacto visual.',
-        say: 'No quiero que salgas pensando “qué bonito”, sino “yo puedo aprender a hacer esto”. Invita a conocer Colmenia y a la formación del Colegio, sin presión. Agradece y abre a preguntas.' }
+        say: 'No quiero que salgas pensando “qué bonito”, sino “yo puedo aprender a hacer esto”. Invita a conocer Colmenia y a la formación del Colegio, sin presión. <b>Señala el QR: “escanea y únete a la comunidad en Telegram, @LOGOPED_IA”.</b> Deja el QR en pantalla mientras respondes preguntas. Agradece.' }
     ];
 
     const notesEl = document.getElementById('notes');
