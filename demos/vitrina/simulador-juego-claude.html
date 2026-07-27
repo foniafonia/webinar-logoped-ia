@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creador de Juegos Educativos - Artículos en Morfosintaxis</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-light: #e0e7ff;
+            --primary-dark: #4f46e5;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --bg-main: #ffffff;
+            --bg-secondary: #f9fafb;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --border: #e5e7eb;
+            --accent-warm: #f97316;
+            --accent-cool: #06b6d4;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7ff 0%, #f0fdf4 100%);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* ===== CONTENEDOR PRINCIPAL ===== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px 0;
+            border-bottom: 2px solid var(--primary-light);
+            animation: slideDown 0.6s ease-out;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent-cool));
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        /* ===== PANTALLA GENÉRICA ===== */
+        .screen {
+            display: none;
+            opacity: 0;
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+
+        .screen.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* ===== PANTALLA 1: CHAT CON IA ===== */
+        #screen1 {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .chat-container {
+            background: var(--bg-main);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 20px;
+            height: 600px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+        }
+
+        .chat-message {
+            margin-bottom: 20px;
+            animation: slideInMessage 0.4s ease-out;
+        }
+
+        .message-ai {
+            display: flex;
+            gap: 12px;
+        }
+
+        .message-ai .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            flex-shrink: 0;
+            font-size: 1.2rem;
+        }
+
+        .message-ai .content {
+            background: var(--primary-light);
+            padding: 12px 16px;
+            border-radius: 12px;
+            color: var(--text-primary);
+            max-width: 90%;
+            line-height: 1.5;
+        }
+
+        .message-user {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        .message-user .content {
+            background: var(--primary);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 12px;
+            display: inline-block;
+            max-width: 90%;
+            line-height: 1.5;
+            margin-left: auto;
+        }
+
+        .typing-indicator {
+            display: inline-flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-secondary);
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        /* ===== OPCIONES DE RESPUESTA ===== */
+        .response-options {
+            display: grid;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 2px solid var(--border);
+            padding: 12px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            transform: translateX(4px);
+        }
+
+        /* ===== BOTONES PRINCIPALES ===== */
+        .btn-container {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 2px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+        }
+
+        /* ===== PANTALLA 2: PROMPT FINAL ===== */
+        #screen2 {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .prompt-box {
+            background: #1f2937;
+            color: #e5e7eb;
+            padding: 30px;
+            border-radius: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            overflow-x: auto;
+            margin-bottom: 30px;
+            border: 1px solid #374151;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .prompt-section {
+            margin-bottom: 20px;
+        }
+
+        .prompt-label {
+            color: #60a5fa;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .prompt-content {
+            color: #d1d5db;
+            margin-left: 16px;
+            border-left: 2px solid #4b5563;
+            padding-left: 12px;
+        }
+
+        /* ===== PANTALLA 3: GENERACIÓN DE CÓDIGO ===== */
+        #screen3 {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .code-generation {
+            background: var(--bg-main);
+            border-radius: 12px;
+            padding: 30px;
+            border: 1px solid var(--border);
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .code-status {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        .code-preview {
+            background: #1f2937;
+            color: #e5e7eb;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            overflow-x: auto;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #374151;
+        }
+
+        .code-line {
+            opacity: 0;
+            animation: codeType 0.05s ease-out forwards;
+        }
+
+        /* ===== PANTALLA 4: JUEGO FUNCIONAL ===== */
+        #screen4 {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .game-container {
+            background: var(--bg-main);
+            border-radius: 16px;
+            padding: 40px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .game-stats {
+            display: flex;
+            gap: 30px;
+            font-size: 0.95rem;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .difficulty-indicator {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .game-content {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .image-container {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 30px;
+            background: linear-gradient(135deg, var(--primary-light), #dbeafe);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5rem;
+            border: 2px solid var(--primary);
+        }
+
+        .question {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 30px;
+            min-height: 60px;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .option {
+            padding: 16px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 1rem;
+            background: white;
+            color: var(--text-primary);
+        }
+
+        .option:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            transform: translateY(-4px);
+        }
+
+        .option.correct {
+            background: var(--success);
+            color: white;
+            border-color: var(--success);
+            animation: correctPulse 0.6s ease;
+        }
+
+        .option.incorrect {
+            background: var(--error);
+            color: white;
+            border-color: var(--error);
+            animation: shake 0.4s ease;
+        }
+
+        .option:disabled {
+            cursor: not-allowed;
+        }
+
+        .feedback {
+            min-height: 40px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            animation: slideInFeedback 0.4s ease-out;
+        }
+
+        .feedback.correct {
+            color: var(--success);
+        }
+
+        .feedback.incorrect {
+            color: var(--error);
+        }
+
+        /* ===== PANTALLA 5: INFORME DE RESULTADOS ===== */
+        #screen5 {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .results-container {
+            background: var(--bg-main);
+            border-radius: 16px;
+            padding: 40px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            animation: scaleIn 0.5s ease-out;
+        }
+
+        .results-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .results-header h2 {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .score-display {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--success);
+            margin: 20px 0;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .result-card {
+            background: var(--bg-secondary);
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .result-card h3 {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .result-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .result-unit {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .analysis-section {
+            background: var(--primary-light);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .analysis-title {
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+        }
+
+        .analysis-content {
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .error-breakdown {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .error-item {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid var(--primary);
+        }
+
+        .error-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .error-count {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* ===== ANIMACIONES ===== */
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInMessage {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                opacity: 0.3;
+            }
+            30% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes codeType {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes correctPulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% {
+                transform: translateX(0);
+            }
+            25% {
+                transform: translateX(-5px);
+            }
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        @keyframes slideInFeedback {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .chat-container {
+                height: 400px;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .game-stats {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .options {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-container {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <h1>🎮 Creador de Juegos Educativos</h1>
+            <p>Descubre cómo se diseña un videojuego para morfosintaxis</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <!-- PANTALLA 1: CHAT CON IA -->
+        <div id="screen1" class="screen active">
+            <div class="chat-container" id="chatContainer">
+                <!-- Los mensajes se añaden aquí dinámicamente -->
+            </div>
+            <div class="btn-container">
+                <button class="btn btn-primary" onclick="goToScreen(2)">Ver Prompt Final</button>
+            </div>
+        </div>
+
+        <!-- PANTALLA 2: PROMPT FINAL -->
+        <div id="screen2" class="screen">
+            <h2 style="margin-bottom: 20px; text-align: center; color: var(--primary);">📋 Prompt Final Generado</h2>
+            <div class="prompt-box" id="promptBox"></div>
+            <div class="btn-container">
+                <button class="btn btn-secondary" onclick="goToScreen(1)">← Atrás</button>
+                <button class="btn btn-primary" onclick="goToScreen(3)">Generar Código →</button>
+            </div>
+        </div>
+
+        <!-- PANTALLA 3: GENERACIÓN DE CÓDIGO -->
+        <div id="screen3" class="screen">
+            <h2 style="margin-bottom: 20px; text-align: center; color: var(--primary);">⚙️ Generación de Código</h2>
+            <div class="code-generation">
+                <div class="code-header">
+                    <div class="code-status"></div>
+                    <span>Compilando componentes...</span>
+                </div>
+                <div class="code-preview" id="codePreview"></div>
+            </div>
+            <div class="btn-container">
+                <button class="btn btn-secondary" onclick="goToScreen(2)">← Atrás</button>
+                <button class="btn btn-primary" onclick="goToScreen(4)" id="btnPlayGame" style="display: none;">
+                    Probar Juego →
+                </button>
+            </div>
+        </div>
+
+        <!-- PANTALLA 4: VIDEOJUEGO -->
+        <div id="screen4" class="screen">
+            <div class="game-container">
+                <div class="game-header">
+                    <div class="game-stats">
+                        <div class="stat">
+                            <span class="stat-label">Puntuación</span>
+                            <span class="stat-value" id="gameScore">0</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Aciertos</span>
+                            <span class="stat-value" id="gameCorrect">0</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Errores</span>
+                            <span class="stat-value" id="gameErrors">0</span>
+                        </div>
+                    </div>
+                    <div class="difficulty-indicator" id="difficultyInfo">Nivel: Singular</div>
+                </div>
+
+                <div class="game-content">
+                    <div class="image-container" id="imageContainer">🏠</div>
+                    <div class="question" id="gameQuestion">___ casa</div>
+                    <div class="feedback" id="gameFeedback"></div>
+                    <div class="options" id="gameOptions"></div>
+                </div>
+
+                <div class="btn-container">
+                    <button class="btn btn-secondary" onclick="goToScreen(3)">← Volver</button>
+                    <button class="btn btn-success" onclick="completeGame()" id="btnFinishGame" style="display: none;">
+                        Ver Resultados
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANTALLA 5: RESULTADOS -->
+        <div id="screen5" class="screen">
+            <div class="results-container">
+                <div class="results-header">
+                    <h2>📊 Resultados de la Sesión</h2>
+                    <div class="score-display" id="finalScore">0%</div>
+                    <p style="color: var(--text-secondary);">Análisis completo del desempeño</p>
+                </div>
+
+                <div class="results-grid">
+                    <div class="result-card">
+                        <h3>Total Intentos</h3>
+                        <div class="result-value" id="totalAttempts">0</div>
+                        <div class="result-unit">preguntas</div>
+                    </div>
+                    <div class="result-card">
+                        <h3>Tasa de Acierto</h3>
+                        <div class="result-value" id="successRate">0%</div>
+                        <div class="result-unit">respuestas correctas</div>
+                    </div>
+                </div>
+
+                <div class="analysis-section">
+                    <div class="analysis-title">🔍 Análisis de Errores</div>
+                    <div class="analysis-content" id="errorAnalysis">
+                        Errores por categoría:
+                        <div class="error-breakdown" id="errorBreakdown">
+                            <div class="error-item">
+                                <div class="error-label">Género</div>
+                                <div class="error-count" id="errorGenre">0</div>
+                            </div>
+                            <div class="error-item">
+                                <div class="error-label">Número</div>
+                                <div class="error-count" id="errorNumber">0</div>
+                            </div>
+                            <div class="error-item">
+                                <div class="error-label">Determinado</div>
+                                <div class="error-count" id="errorArticleType">0</div>
+                            </div>
+                            <div class="error-item">
+                                <div class="error-label">Indeterminado</div>
+                                <div class="error-count" id="errorIndefined">0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="btn-container">
+                    <button class="btn btn-secondary" onclick="resetSession()">← Nueva Sesión</button>
+                    <button class="btn btn-primary" onclick="downloadResults()">📥 Descargar Resultados</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== ESTADO GLOBAL =====
+        const state = {
+            currentScreen: 1,
+            chatStep: 0,
+            gameData: {
+                score: 0,
+                correct: 0,
+                errors: 0,
+                attempts: 0,
+                difficulty: 0, // 0=singular, 1=plural, 2=mixed
+                questions: [],
+                responses: [],
+                errorBreakdown: {
+                    genre: 0,
+                    number: 0,
+                    articleType: 0,
+                    undefined: 0
+                }
+            }
+        };
+
+        // ===== BASE DE DATOS DE PREGUNTAS (CLÍNICAMENTE COHERENTE) =====
+        const gameQuestions = [
+            // NIVEL 0: Singular Determinado (femenino/masculino)
+            { 
+                image: '🏠', 
+                text: '___ casa', 
+                correct: 'la', 
+                options: ['la', 'el', 'una'],
+                level: 0,
+                type: 'determinado',
+                feature: 'género',
+                featureValue: 'femenino'
+            },
+            { 
+                image: '🐱', 
+                text: '___ gato', 
+                correct: 'el', 
+                options: ['el', 'la', 'un'],
+                level: 0,
+                type: 'determinado',
+                feature: 'género',
+                featureValue: 'masculino'
+            },
+            { 
+                image: '🌳', 
+                text: '___ árbol', 
+                correct: 'el', 
+                options: ['el', 'la', 'un'],
+                level: 0,
+                type: 'determinado',
+                feature: 'género',
+                featureValue: 'masculino'
+            },
+            { 
+                image: '🍎', 
+                text: '___ manzana', 
+                correct: 'la', 
+                options: ['la', 'el', 'una'],
+                level: 0,
+                type: 'determinado',
+                feature: 'género',
+                featureValue: 'femenino'
+            },
+
+            // NIVEL 0: Singular Indeterminado
+            { 
+                image: '🐕', 
+                text: '___ perro', 
+                correct: 'un', 
+                options: ['un', 'una', 'el'],
+                level: 0,
+                type: 'indeterminado',
+                feature: 'género',
+                featureValue: 'masculino'
+            },
+            { 
+                image: '🌺', 
+                text: '___ flor', 
+                correct: 'una', 
+                options: ['una', 'un', 'la'],
+                level: 0,
+                type: 'indeterminado',
+                feature: 'género',
+                featureValue: 'femenino'
+            },
+
+            // NIVEL 1: Plural Determinado
+            { 
+                image: '🏠🏠', 
+                text: '___ casas', 
+                correct: 'las', 
+                options: ['las', 'los', 'unas'],
+                level: 1,
+                type: 'determinado',
+                feature: 'número',
+                featureValue: 'plural'
+            },
+            { 
+                image: '🐱🐱', 
+                text: '___ gatos', 
+                correct: 'los', 
+                options: ['los', 'las', 'unos'],
+                level: 1,
+                type: 'determinado',
+                feature: 'número',
+                featureValue: 'plural'
+            },
+            { 
+                image: '🌳🌳', 
+                text: '___ árboles', 
+                correct: 'los', 
+                options: ['los', 'las', 'unos'],
+                level: 1,
+                type: 'determinado',
+                feature: 'número',
+                featureValue: 'plural'
+            },
+
+            // NIVEL 1: Plural Indeterminado
+            { 
+                image: '🐕🐕', 
+                text: '___ perros', 
+                correct: 'unos', 
+                options: ['unos', 'unas', 'los'],
+                level: 1,
+                type: 'indeterminado',
+                feature: 'número',
+                featureValue: 'plural'
+            },
+            { 
+                image: '🌺🌺', 
+                text: '___ flores', 
+                correct: 'unas', 
+                options: ['unas', 'unos', 'las'],
+                level: 1,
+                type: 'indeterminado',
+                feature: 'número',
+                featureValue: 'plural'
+            },
+
+            // NIVEL 2: Mixto con distractores
+            { 
+                image: '📚', 
+                text: '___ libro', 
+                correct: 'el', 
+                options: ['el', 'la', 'un'],
+                level: 2,
+                type: 'determinado',
+                feature: 'género',
+                featureValue: 'masculino'
+            },
+            { 
+                image: '✏️', 
+                text: '___ lápiz', 
+                correct: 'el', 
+                options: ['el', 'la', 'un'],
+                level: 2,
+                type: 'determinado',
+                feature: 'género',
+                featureValue: 'masculino'
+            },
+            { 
+                image: '🎒', 
+                text: '___ mochila', 
+                correct: 'la', 
+                options: ['la', 'el', 'una'],
+                level: 2,
+                type: 'determinado',
+                feature: 'género',
+                featureValue: 'femenino'
+            },
+            { 
+                image: '📚📚', 
+                text: '___ libros', 
+                correct: 'los', 
+                options: ['los', 'las', 'unos'],
+                level: 2,
+                type: 'determinado',
+                feature: 'número',
+                featureValue: 'plural'
+            }
+        ];
+
+        // ===== FUNCIONES DE NAVEGACIÓN =====
+        function goToScreen(screenNum) {
+            // Ocultar pantalla actual
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+
+            // Mostrar nueva pantalla
+            const newScreen = document.getElementById(`screen${screenNum}`);
+            newScreen.classList.add('active');
+
+            state.currentScreen = screenNum;
+
+            // Actualizar barra de progreso
+            updateProgress();
+
+            // Ejecutar acciones específicas según pantalla
+            if (screenNum === 2) initPromptScreen();
+            if (screenNum === 3) initCodeScreen();
+            if (screenNum === 4) initGameScreen();
+
+            // Scroll al inicio
+            window.scrollTo(0, 0);
+        }
+
+        function updateProgress() {
+            const progress = ((state.currentScreen - 1) / 4) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        // ===== PANTALLA 1: CHAT CON IA =====
+        function initChatScreen() {
+            const chatMessages = [
+                {
+                    type: 'ai',
+                    text: '¡Hola! Soy tu asistente educativo. Vamos a crear juntos un videojuego interactivo para trabajar los artículos en español.'
+                },
+                {
+                    type: 'ai',
+                    text: '¿Cuál es tu objetivo educativo principal? (Puedo ayudarte con: género, número, determinados, indeterminados o una combinación)'
+                },
+                {
+                    type: 'user',
+                    text: 'Me gustaría trabajar todos los artículos: género Y número en progresión'
+                },
+                {
+                    type: 'ai',
+                    text: '¡Excelente! Eso es coherente desde el punto de vista lingüístico. Ahora bien, ¿cuál es el rango de edad del usuario?'
+                },
+                {
+                    type: 'user',
+                    text: 'Niños entre 6-8 años, pero también nivel intermedio'
+                },
+                {
+                    type: 'ai',
+                    text: 'Perfecto. Usaremos una dificultad progresiva: singular simple → plural → mixto con distractores. ¿Qué tipo de estímulo prefieres?'
+                },
+                {
+                    type: 'user',
+                    text: 'Visual: emojis con elección múltiple'
+                },
+                {
+                    type: 'ai',
+                    text: '📋 Excelente. Entonces crearemos:\n✓ 14 ítems balanceados\n✓ Feedback inmediato\n✓ Análisis de errores (género/número/tipo)\n✓ Sistema de puntuación\n✓ Dificultad progresiva\n\n¿Generamos el prompt detallado?'
+                },
+                {
+                    type: 'user',
+                    text: 'Sí, adelante'
+                },
+                {
+                    type: 'ai',
+                    text: '✅ Prompt generado y listo. Verás el resultado en la siguiente pantalla.'
+                }
+            ];
+
+            const chatContainer = document.getElementById('chatContainer');
+            chatContainer.innerHTML = '';
+
+            chatMessages.forEach((msg, index) => {
+                setTimeout(() => {
+                    if (msg.type === 'ai') {
+                        const messageDiv = document.createElement('div');
+                        messageDiv.className = 'chat-message message-ai';
+                        messageDiv.innerHTML = `
+                            <div class="avatar">IA</div>
+                            <div class="content">${escapeHtml(msg.text)}</div>
+                        `;
+                        chatContainer.appendChild(messageDiv);
+                    } else {
+                        const messageDiv = document.createElement('div');
+                        messageDiv.className = 'chat-message message-user';
+                        messageDiv.innerHTML = `<div class="content">${escapeHtml(msg.text)}</div>`;
+                        chatContainer.appendChild(messageDiv);
+                    }
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                }, index * 800);
+            });
+        }
+
+        // ===== PANTALLA 2: PROMPT FINAL =====
+        function initPromptScreen() {
+            const promptContent = `
+ROL:
+Eres un especialista en logopedia y diseño instruccional de videojuegos educativos.
+
+OBJETIVO:
+Crear un componente interactivo (HTML5 + JavaScript vanilla) que sea un juego de 
+elección múltiple para trabajar artículos en español.
+
+INSTRUCCIONES DETALLADAS:
+
+1. ESTRUCTURA LINGÜÍSTICA:
+   - Trabajar: artículos determinados (el/la/los/las) e indeterminados (un/una/unos/unas)
+   - Enfoque: género y número
+   - Progresión: singular simple → plural → mixto con distractores
+
+2. DISEÑO DE ÍTEMS:
+   - 14 preguntas totales, clínicamente balanceadas
+   - Cada pregunta: 1 imagen (emoji) + 1 frase incompleta + 3 opciones
+   - Formato: "___ [sustantivo]"
+   - Niveles de dificultad:
+     * Nivel 0 (singular): 6 ítems
+     * Nivel 1 (plural): 5 ítems
+     * Nivel 2 (mixto): 3 ítems
+
+3. MECÁNICAS DE JUEGO:
+   - Feedback inmediato (visual y textual)
+   - Sistema de puntuación: +10 puntos por acierto
+   - Contador de aciertos/errores
+   - Registro de tipo de error (género, número, tipo de artículo)
+
+4. INTERFAZ:
+   - Diseño limpio y educativo (colores suaves)
+   - Animaciones suaves
+   - Responsive
+   - Accesible
+
+5. ANÁLISIS POST-SESIÓN:
+   - % de aciertos
+   - Desglose de errores (género/número)
+   - Recomendaciones clínicas
+
+OUTPUT:
+Un componente funcional, sin dependencias externas, listo para integrar.
+            `;
+
+            const promptBox = document.getElementById('promptBox');
+            promptBox.innerHTML = promptContent.trim();
+        }
+
+        // ===== PANTALLA 3: GENERACIÓN DE CÓDIGO =====
+        function initCodeScreen() {
+            const codeSnippets = [
+                'const gameQuestions = [',
+                '  {',
+                '    image: "🏠",',
+                '    text: "___ casa",',
+                '    correct: "la",',
+                '    options: ["la", "el", "una"],',
+                '    level: 0,',
+                '    type: "determinado"',
+                '  },',
+                '  // ... más 13 preguntas balanceadas clínicamente',
+                '];',
+                '',
+                'function processAnswer(userAnswer, correctAnswer) {',
+                '  if (userAnswer === correctAnswer) {',
+                '    state.gameData.score += 10;',
+                '    state.gameData.correct++;',
+                '    return "¡Correcto! ✓";',
+                '  } else {',
+                '    state.gameData.errors++;',
+                '    analyzeError(userAnswer, correctAnswer);',
+                '    return "Incorrecto. Intenta de nuevo.";',
+                '  }',
+                '}',
+                '',
+                'function analyzeError(user, correct) {',
+                '  // Detectar si el error es de género o número',
+                '  const errorType = categorizeError(user, correct);',
+                '  state.gameData.errorBreakdown[errorType]++;',
+                '}'
+            ];
+
+            const codePreview = document.getElementById('codePreview');
+            codePreview.innerHTML = '';
+
+            codeSnippets.forEach((line, index) => {
+                setTimeout(() => {
+                    const lineDiv = document.createElement('div');
+                    lineDiv.className = 'code-line';
+                    lineDiv.textContent = line || ' ';
+                    codePreview.appendChild(lineDiv);
+                    codePreview.scrollTop = codePreview.scrollHeight;
+                }, index * 50);
+            });
+
+            // Mostrar botón después de la animación
+            setTimeout(() => {
+                document.getElementById('btnPlayGame').style.display = 'inline-block';
+            }, codeSnippets.length * 50 + 500);
+        }
+
+        // ===== PANTALLA 4: JUEGO FUNCIONAL =====
+        function initGameScreen() {
+            state.gameData = {
+                score: 0,
+                correct: 0,
+                errors: 0,
+                attempts: 0,
+                difficulty: 0,
+                questions: [],
+                responses: [],
+                errorBreakdown: {
+                    genre: 0,
+                    number: 0,
+                    articleType: 0,
+                    undefined: 0
+                }
+            };
+
+            // Copiar todas las preguntas
+            state.gameData.questions = JSON.parse(JSON.stringify(gameQuestions));
+
+            // Desordenar
+            shuffleArray(state.gameData.questions);
+
+            renderQuestion(0);
+        }
+
+        function renderQuestion(index) {
+            if (index >= state.gameData.questions.length) {
+                document.getElementById('btnFinishGame').style.display = 'inline-block';
+                return;
+            }
+
+            const question = state.gameData.questions[index];
+            document.getElementById('imageContainer').textContent = question.image;
+            document.getElementById('gameQuestion').textContent = question.text;
+            document.getElementById('gameFeedback').textContent = '';
+            document.getElementById('gameFeedback').className = 'feedback';
+
+            const optionsContainer = document.getElementById('gameOptions');
+            optionsContainer.innerHTML = '';
+
+            // Desordenar opciones
+            const shuffledOptions = [...question.options];
+            shuffleArray(shuffledOptions);
+
+            shuffledOptions.forEach(option => {
+                const btn = document.createElement('button');
+                btn.className = 'option';
+                btn.textContent = option;
+                btn.onclick = () => selectAnswer(option, question, btn, index);
+                optionsContainer.appendChild(btn);
+            });
+
+            // Actualizar dificultad
+            const levels = ['Singular', 'Plural', 'Mixto'];
+            document.getElementById('difficultyInfo').textContent = `Nivel: ${levels[question.level]} (${index + 1}/${state.gameData.questions.length})`;
+
+            // Actualizar puntos
+            updateGameStats();
+        }
+
+        function selectAnswer(selected, question, buttonElement, index) {
+            const isCorrect = selected === question.correct;
+
+            state.gameData.attempts++;
+
+            if (isCorrect) {
+                state.gameData.score += 10;
+                state.gameData.correct++;
+                buttonElement.classList.add('correct');
+                document.getElementById('gameFeedback').textContent = '✓ ¡Correcto!';
+                document.getElementById('gameFeedback').classList.add('correct');
+            } else {
+                state.gameData.errors++;
+                buttonElement.classList.add('incorrect');
+                document.getElementById('gameFeedback').textContent = '✗ Incorrecto. La respuesta correcta es: ' + question.correct;
+                document.getElementById('gameFeedback').classList.add('incorrect');
+
+                // Análisis de error
+                analyzeError(selected, question);
+            }
+
+            // Guardar respuesta
+            state.gameData.responses.push({
+                question: question.text,
+                userAnswer: selected,
+                correctAnswer: question.correct,
+                isCorrect: isCorrect,
+                feature: question.feature,
+                type: question.type
+            });
+
+            // Desabilitar opciones
+            document.querySelectorAll('.option').forEach(btn => {
+                btn.disabled = true;
+            });
+
+            // Siguiente pregunta después de delay
+            setTimeout(() => {
+                renderQuestion(index + 1);
+            }, 1500);
+        }
+
+        function analyzeError(userAnswer, question) {
+            // Categorizar error
+            if (question.feature === 'género') {
+                state.gameData.errorBreakdown.genre++;
+            } else if (question.feature === 'número') {
+                state.gameData.errorBreakdown.number++;
+            }
+
+            if (question.type === 'determinado' && ['un', 'una', 'unos', 'unas'].includes(userAnswer)) {
+                state.gameData.errorBreakdown.articleType++;
+            } else if (question.type === 'indeterminado' && ['el', 'la', 'los', 'las'].includes(userAnswer)) {
+                state.gameData.errorBreakdown.articleType++;
+            }
+        }
+
+        function updateGameStats() {
+            document.getElementById('gameScore').textContent = state.gameData.score;
+            document.getElementById('gameCorrect').textContent = state.gameData.correct;
+            document.getElementById('gameErrors').textContent = state.gameData.errors;
+        }
+
+        function completeGame() {
+            goToScreen(5);
+            renderResults();
+        }
+
+        // ===== PANTALLA 5: RESULTADOS =====
+        function renderResults() {
+            const total = state.gameData.attempts;
+            const correct = state.gameData.correct;
+            const percentage = total > 0 ? Math.round((correct / total) * 100) : 0;
+
+            document.getElementById('finalScore').textContent = percentage + '%';
+            document.getElementById('totalAttempts').textContent = total;
+            document.getElementById('successRate').textContent = percentage + '%';
+
+            document.getElementById('errorGenre').textContent = state.gameData.errorBreakdown.genre;
+            document.getElementById('errorNumber').textContent = state.gameData.errorBreakdown.number;
+            document.getElementById('errorArticleType').textContent = state.gameData.errorBreakdown.articleType;
+            document.getElementById('errorIndefined').textContent = state.gameData.errorBreakdown.undefined;
+
+            // Generar recomendación clínica
+            let recommendation = '';
+            if (percentage >= 80) {
+                recommendation = '✓ Excelente desempeño. El usuario demuestra dominio de artículos en ambos géneros y números.';
+            } else if (percentage >= 60) {
+                recommendation = '◐ Desempeño bueno. Se detectan dificultades en algunas categorías. Recomendar refuerzo en: ';
+                if (state.gameData.errorBreakdown.genre > state.gameData.errorBreakdown.number) {
+                    recommendation += 'género (el/la, los/las).';
+                } else {
+                    recommendation += 'número (singular/plural).';
+                }
+            } else {
+                recommendation = '✗ Desempeño bajo. Recomendar intervención logopédica específica en morfosintaxis de artículos.';
+            }
+
+            const analysisDiv = document.querySelector('.analysis-content');
+            analysisDiv.innerHTML = `
+                <strong>${recommendation}</strong><br><br>
+                Errores por categoría:
+                <div class="error-breakdown" id="errorBreakdown">
+                    <div class="error-item">
+                        <div class="error-label">Género</div>
+                        <div class="error-count" id="errorGenre">${state.gameData.errorBreakdown.genre}</div>
+                    </div>
+                    <div class="error-item">
+                        <div class="error-label">Número</div>
+                        <div class="error-count" id="errorNumber">${state.gameData.errorBreakdown.number}</div>
+                    </div>
+                    <div class="error-item">
+                        <div class="error-label">Tipo Artículo</div>
+                        <div class="error-count" id="errorArticleType">${state.gameData.errorBreakdown.articleType}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function resetSession() {
+            state.currentScreen = 0;
+            goToScreen(1);
+            initChatScreen();
+        }
+
+        function downloadResults() {
+            const data = {
+                fecha: new Date().toLocaleDateString('es-ES'),
+                puntuación: state.gameData.score,
+                aciertos: state.gameData.correct,
+                errores: state.gameData.errors,
+                totalIntentos: state.gameData.attempts,
+                porcentajeAcierto: Math.round((state.gameData.correct / state.gameData.attempts) * 100),
+                desglose: state.gameData.errorBreakdown,
+                respuestas: state.gameData.responses
+            };
+
+            const json = JSON.stringify(data, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'resultados_articulos_' + Date.now() + '.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // ===== UTILIDADES =====
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ===== INICIALIZACIÓN =====
+        document.addEventListener('DOMContentLoaded', () => {
+            updateProgress();
+            initChatScreen();
+        });
+    </script>
+</body>
+</html>

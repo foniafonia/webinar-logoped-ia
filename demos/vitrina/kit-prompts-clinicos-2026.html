@@ -1,0 +1,2383 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kit de Prompts Clínicos 2026 · Logoped-IA</title>
+<meta name="description" content="20 prompts logopédicos auditados y mejorados para trabajo clínico real — Logoped-IA Mayo 2026">
+<meta property="og:title" content="Kit de Prompts Clínicos 2026 · Logoped-IA">
+<meta property="og:description" content="20 prompts auditados, reconstruidos y listos para el trabajo clínico real">
+<meta property="og:type" content="website">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#060f06;--card:#0a180a;--border:#1a3a1a;
+  --accent:#00c853;--text:#c8e6c8;--muted:#6b9a6b;
+  --white:#f0fff0;--code-bg:#030c03;--code-text:#a5d6a7;
+}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;line-height:1.6;font-size:18px}
+
+/* ── HERO ── */
+.hero{background:#030c03;border-bottom:1px solid var(--border);padding:80px 24px 60px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,200,83,.018) 2px,rgba(0,200,83,.018) 4px);pointer-events:none}
+.hero-tag{display:inline-block;background:var(--accent);color:#000;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:6px 18px;border-radius:20px;margin-bottom:32px}
+.hero h1{font-size:clamp(26px,5vw,52px);font-weight:800;color:var(--white);line-height:1.2;margin-bottom:12px}
+.hero h1 span{color:var(--accent)}
+.hero p{font-size:clamp(16px,2.2vw,24px);color:var(--muted);margin-bottom:48px}
+.stats{display:flex;justify-content:center;gap:48px;flex-wrap:wrap}
+.stat-num{display:block;font-size:38px;font-weight:800;color:var(--accent)}
+.stat-lbl{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+.hero-note{max-width:900px;margin:18px auto 0;padding:12px 16px;border:1px solid #1e4f1e;border-radius:10px;background:rgba(0,200,83,.08);font-size:17px;color:#d5f5d5;text-align:left}
+
+/* ── NAV ── */
+.sticky-nav{position:sticky;top:0;z-index:100;background:rgba(6,15,6,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
+.nav-inner{max-width:1100px;margin:0 auto;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding:12px 24px}
+.nav-inner::-webkit-scrollbar{display:none}
+.fbtn{white-space:nowrap;background:transparent;border:1px solid var(--border);color:var(--muted);padding:7px 16px;border-radius:20px;font-size:13px;cursor:pointer;transition:all .2s}
+.fbtn:hover{border-color:var(--accent);color:var(--accent)}
+.fbtn.on{background:var(--accent);border-color:var(--accent);color:#000;font-weight:600}
+
+/* ── MAIN ── */
+.main{max-width:1100px;margin:0 auto;padding:48px 24px}
+.cat-section{margin-bottom:72px}
+.cat-header{display:flex;align-items:center;gap:14px;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.cat-dot{width:14px;height:14px;border-radius:3px;flex-shrink:0}
+.cat-header h2{font-size:28px;font-weight:700;color:var(--white)}
+.cat-header .cnt{margin-left:auto;font-size:16px;color:var(--muted)}
+
+/* ── CARDS ── */
+.pcard{background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;overflow:hidden;transition:border-color .2s}
+.pcard:hover{border-color:#2a5a2a}
+.pcard.open{border-color:var(--accent)}
+.pcard-hd{display:flex;align-items:center;gap:16px;padding:18px 22px;cursor:pointer;user-select:none}
+.pnum{font-size:18px;font-weight:700;color:var(--accent);min-width:38px}
+.pmeta{flex:1;min-width:0}
+.ptitle{font-size:24px;font-weight:700;color:var(--white);margin-bottom:8px}
+.badges{display:flex;gap:6px;flex-wrap:wrap}
+.badge{font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:5px 10px;border-radius:10px}
+.bi{background:#1b5e20;color:#c8e6c9}
+.bp{background:#1565c0;color:#bbdefb}
+.bm{background:#bf360c;color:#ffe0b2}
+.bc{background:#4a148c;color:#e1bee7}
+.bd{background:#e65100;color:#ffe0b2}
+.bf{background:#0277bd;color:#b3e5fc}
+.ba{background:#b71c1c;color:#ffcdd2}
+.tgl{font-size:22px;color:var(--accent);transition:transform .2s;flex-shrink:0}
+.pcard.open .tgl{transform:rotate(45deg)}
+.pcard-bd{display:none;padding:0 22px 22px}
+.pcard.open .pcard-bd{display:block}
+
+/* ── SECTIONS WITHIN CARD ── */
+.sec-lbl{font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin:18px 0 10px}
+
+/* problems */
+.probs{list-style:none}
+.probs li{padding:8px 0 8px 24px;position:relative;font-size:18px;border-bottom:1px solid rgba(255,255,255,.04)}
+.probs li::before{content:'×';position:absolute;left:0;color:#ef5350;font-weight:700}
+
+/* prompt box */
+.pbox{background:var(--code-bg);border:1px solid var(--border);border-radius:8px}
+.pbox-top{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border)}
+.pbox-lbl{font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent)}
+.copy-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:6px;font-size:14px;cursor:pointer;transition:all .2s}
+.copy-btn:hover,.copy-btn.done{border-color:var(--accent);color:var(--accent)}
+.ptext{padding:18px;font-family:'JetBrains Mono','Fira Code',Consolas,monospace;font-size:16px;line-height:1.8;color:var(--code-text);white-space:pre-wrap;word-break:break-word;max-height:62vh;overflow-y:auto}
+.ptext::-webkit-scrollbar{width:3px}
+.ptext::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+/* escalado */
+.scale{list-style:none}
+.scale li{padding:6px 0 6px 22px;position:relative;font-size:13px;border-bottom:1px solid rgba(255,255,255,.04)}
+.scale li::before{content:'→';position:absolute;left:0;color:var(--accent)}
+
+/* guía simple */
+.quick-guide{max-width:1100px;margin:18px auto 0;padding:0 24px}
+.guide-box{border:1px solid #1f4f1f;border-radius:12px;background:#081408;padding:14px}
+.guide-title{font-size:24px;font-weight:800;color:#d9ffd9;margin-bottom:8px}
+.guide-sub{font-size:18px;color:#9ac89a;margin-bottom:10px}
+.guide-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px}
+.gstep{border:1px solid #1b3d1b;border-radius:10px;background:#061006;padding:10px}
+.gstep b{display:block;color:#7dff7d;font-size:16px;margin-bottom:4px}
+.gstep p{font-size:16px;color:#cae8ca}
+.guide-faq{margin-top:10px}
+.guide-faq details{border:1px solid #1b3d1b;border-radius:8px;background:#071107;padding:8px 10px}
+.guide-faq summary{cursor:pointer;color:#dff9df;font-weight:700;font-size:16px}
+.guide-faq p{font-size:16px;color:#b7dbb7;margin-top:6px}
+
+/* navegación compacta */
+.nav-compact{max-width:1100px;margin:14px auto 0;padding:0 24px}
+.nav-box{border:1px solid #1f4f1f;border-radius:12px;background:#071207;padding:12px}
+.nav-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.nav-pill{border:1px solid #2a5a2a;background:transparent;color:#bfe3bf;padding:10px 14px;border-radius:999px;font-size:15px;cursor:pointer}
+.nav-pill.on{background:var(--accent);color:#000;border-color:var(--accent);font-weight:700}
+.nav-prompt-list{display:none;margin-top:10px}
+.nav-prompt-list.show{display:block}
+.prompt-chip{border:1px solid #1f4f1f;background:#0a180a;color:#d5efd5;padding:9px 12px;border-radius:8px;font-size:15px;cursor:pointer}
+.prompt-chip:hover{border-color:var(--accent);color:var(--accent)}
+.nav-help{font-size:17px;color:#96bf96;margin-bottom:8px}
+
+/* ── FLOW HORIZONTAL (2025 -> ERRORES -> 2026) ── */
+.flow-wrap{margin-top:10px;border:1px solid var(--border);border-radius:10px;background:#071207;overflow:hidden}
+.flow-top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-bottom:1px solid var(--border);background:#050d05;flex-wrap:wrap}
+.flow-title{font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent)}
+.flow-tabs{display:flex;gap:8px;flex-wrap:wrap}
+.flow-tab{border:1px solid #2a5a2a;background:transparent;color:var(--muted);padding:9px 12px;border-radius:999px;font-size:15px;cursor:pointer}
+
+/* modal prompt */
+.prompt-modal{position:fixed;inset:0;background:rgba(0,0,0,.78);display:none;align-items:center;justify-content:center;z-index:9999;padding:18px}
+.prompt-modal.show{display:flex}
+.prompt-modal-card{width:min(1200px,96vw);max-height:92vh;overflow:auto;background:#081408;border:1px solid #2a5a2a;border-radius:14px;padding:14px}
+.prompt-modal-top{display:flex;gap:10px;justify-content:space-between;align-items:center;position:sticky;top:0;background:#081408;padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid #1f4f1f}
+.prompt-modal-actions{display:flex;gap:8px;flex-wrap:wrap}
+.pm-btn{border:1px solid #2a5a2a;background:transparent;color:#cde8cd;padding:8px 12px;border-radius:10px;font-size:14px;cursor:pointer}
+.pm-btn:hover{border-color:var(--accent);color:var(--accent)}
+.flow-tab.on{background:var(--accent);border-color:var(--accent);color:#000;font-weight:700}
+.flow-viewport{padding:12px}
+.flow-track{display:block}
+.flow-panel{display:none}
+.flow-panel.on{display:block}
+
+/* ── FOOTER ── */
+footer{border-top:1px solid var(--border);padding:40px 24px;text-align:center}
+.fbrand{font-size:20px;font-weight:800;color:var(--accent);margin-bottom:8px}
+footer p{font-size:12px;color:var(--muted);margin-top:4px}
+.tg-link{display:inline-block;margin-top:12px;padding:8px 14px;border:1px solid #2a5a2a;border-radius:999px;color:#c8e6c8;text-decoration:none;font-size:13px}
+.tg-link:hover{border-color:var(--accent);color:var(--accent)}
+
+/* telegram destacado */
+.telegram-spotlight{max-width:1100px;margin:22px auto 0;padding:0 24px}
+.tg-box{
+  position:relative;overflow:hidden;border-radius:16px;padding:24px;
+  border:2px solid #2eff7a;background:
+  radial-gradient(circle at 14% 18%, rgba(0,255,140,.16), transparent 42%),
+  radial-gradient(circle at 88% 16%, rgba(0,180,255,.12), transparent 38%),
+  linear-gradient(120deg,#08160d,#0a1d12 45%,#0a1b13);
+  box-shadow:0 0 14px rgba(0,255,140,.18), inset 0 0 14px rgba(0,255,140,.06);
+  animation:tgGlow 3.6s ease-in-out infinite alternate;
+  text-align:center;
+}
+.tg-box::before{
+  content:'';position:absolute;inset:-120% -30%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.09),transparent);
+  transform:rotate(14deg);animation:tgSweep 6.2s linear infinite;
+}
+.tg-head{position:relative;z-index:2;font-size:30px;font-weight:900;color:#ebffeb;line-height:1.15}
+.tg-sub{position:relative;z-index:2;font-size:18px;color:#d5ead9;margin-top:10px;max-width:860px;margin-left:auto;margin-right:auto}
+.tg-cta{
+  position:relative;z-index:2;display:inline-block;margin-top:16px;padding:12px 18px;
+  border-radius:999px;text-decoration:none;font-weight:900;font-size:18px;
+  color:#032413;background:linear-gradient(180deg,#9ff7c0,#56d995);
+  box-shadow:0 0 12px rgba(96,255,164,.34);transform:translateY(0);
+  animation:tgPulse 2.4s ease-in-out infinite;
+}
+.tg-cta:hover{filter:brightness(1.06);transform:translateY(-1px)}
+@keyframes tgGlow{from{box-shadow:0 0 10px rgba(0,255,140,.14), inset 0 0 10px rgba(0,255,140,.05)}to{box-shadow:0 0 18px rgba(0,255,140,.28), inset 0 0 16px rgba(0,255,140,.09)}}
+@keyframes tgSweep{0%{transform:translateX(-40%) rotate(14deg)}100%{transform:translateX(40%) rotate(14deg)}}
+@keyframes tgPulse{0%,100%{box-shadow:0 0 8px rgba(96,255,164,.26)}50%{box-shadow:0 0 16px rgba(96,255,164,.46)}}
+.tg-image-link{position:relative;z-index:2;display:inline-block;border-radius:14px;overflow:hidden;border:2px solid #63ffaf;box-shadow:0 0 14px rgba(96,255,164,.35)}
+.tg-image-link img{display:block;max-width:min(380px,74vw);height:auto}
+.tg-more{position:relative;z-index:2;margin-top:10px;font-size:16px;color:#cfe8d5}
+
+/* back to top */
+#btt{position:fixed;bottom:24px;right:24px;background:var(--accent);color:#000;border:none;width:44px;height:44px;border-radius:50%;font-size:18px;font-weight:700;cursor:pointer;opacity:0;transition:opacity .3s;display:flex;align-items:center;justify-content:center;z-index:50}
+#btt.show{opacity:1}
+
+@media(max-width:600px){
+  .pcard-hd{padding:14px 16px}
+  .pcard-bd{padding:0 16px 16px}
+  .ptext{font-size:14px}
+  .hero{padding:48px 16px 36px}
+  .stats{gap:24px}
+  .flow-tab{font-size:13px;padding:7px 10px}
+}
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-tag">● Logoped-IA · Kit Clínico · Mayo 2026</div>
+  <h1>Lo prometido es deuda.<br><span>Kit de Prompts Clínicos 2026</span></h1>
+  <p>20 prompts auditados, reconstruidos y listos para el trabajo clínico real</p>
+  <div class="stats">
+    <div><span class="stat-num">20</span><span class="stat-lbl">prompts auditados</span></div>
+    <div><span class="stat-num">4</span><span class="stat-lbl">categorías</span></div>
+    <div><span class="stat-num">2026</span><span class="stat-lbl">estándar clínico</span></div>
+  </div>
+</section>
+
+<section class="quick-guide">
+  <div class="guide-box">
+    <div class="guide-title">Modo guiado · Si es tu primera vez con IA</div>
+    <div class="guide-sub">Sigue estos 4 pasos y no te pierdes. Es copiar, rellenar y usar.</div>
+    <div class="guide-steps">
+      <div class="gstep"><b>Paso 1</b><p>Elige una categoría: Planificación, Materiales, Comunicación o Informes.</p></div>
+      <div class="gstep"><b>Paso 2</b><p>Abre un prompt y pulsa <strong>Prompt actualizado</strong>.</p></div>
+      <div class="gstep"><b>Paso 3</b><p>Rellena solo la <strong>VERSIÓN FINAL (RELLENABLE)</strong>.</p></div>
+      <div class="gstep"><b>Paso 4</b><p>Elige salida: <strong>Papel</strong>, <strong>Digital</strong>, <strong>Interactiva</strong> o <strong>Gamificada</strong>.</p></div>
+    </div>
+    <div class="guide-faq">
+      <details>
+        <summary>¿Qué pego en “SI TIENES MATERIAL PROPIO”?</summary>
+        <p>Tus notas, listas, ejercicios, objetivos o textos ya hechos. La IA los ordena y mejora sin romper tu criterio clínico.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="nav-compact">
+  <div class="nav-box">
+    <div class="nav-help"><strong>Navegación rápida:</strong> 1) Elige categoría 2) Elige prompt 3) Ves solo ese contenido.</div>
+    <div class="nav-row" id="catNav"></div>
+    <div class="nav-prompt-list" id="promptNav"></div>
+  </div>
+</section>
+
+<section class="telegram-spotlight">
+  <div class="tg-box">
+    <a class="tg-image-link" href="https://t.me/logoped_ia" target="_blank" rel="noreferrer" aria-label="Abrir Telegram @logoped_ia">
+      <img src="logoped-ia-telegram-link.png" alt="Logoped-IA en Telegram">
+    </a>
+    <div class="tg-more">Hay más casos, recursos y mejoras prácticas en el canal. Pulsa la imagen para entrar.</div>
+  </div>
+</section>
+
+<main class="main">
+<!-- ═══════════════════════════════════════
+     CATEGORÍA 1 · INFORMES
+═══════════════════════════════════════ -->
+<section class="cat-section" data-cat="informes">
+  <div class="cat-header">
+    <div class="cat-dot" style="background:#2e7d32"></div>
+    <h2>Informes</h2>
+    <span class="cnt">5 prompts · Evaluación, evolución, derivación y alta</span>
+  </div>
+
+  <!-- 1.1 -->
+  <div class="pcard">
+    <div class="pcard-hd" onclick="toggle(this)">
+      <span class="pnum">1.1</span>
+      <div class="pmeta">
+        <div class="ptitle">Informe de evaluación inicial</div>
+        <div class="badges"><span class="badge bi">Informes</span><span class="badge bd">Descubrimiento</span></div>
+      </div>
+      <span class="tgl">+</span>
+    </div>
+    <div class="pcard-bd">
+      <div class="sec-lbl">Prompt original 2025</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt 2025 · versión previa</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Actúa como logopeda clínico redactando un informe de evaluación inicial en español formal y técnico.
+
+Datos del paciente:
+- Nombre (iniciales): [P.G.L.]
+- Edad: [6 años 4 meses]
+- Motivo de consulta: [dificultades en la producción de /r/ y /rr/]
+- Pruebas administradas: [PLON-R, registro de muestra de habla, exploración oromotora]
+- Resultados principales: [percentil 35 en fonología. Dificultad en vibrante simple y múltiple]
+- Observaciones clínicas: [buena conciencia fonológica, motivación alta]
+
+Secciones del informe:
+1. Datos de identificación
+2. Motivo de consulta y derivación
+3. Antecedentes
+4. Pruebas administradas y resultados
+5. Impresión clínica y diagnóstico diferencial
+6. Conclusiones y propuesta de intervención
+7. Pronóstico</pre>
+      </div>
+      <div class="sec-lbl">Errores detectados (prompt 2025)</div>
+      <ul class="probs">
+        <li>Antecedentes pedidos como sección pero sin campos de input que los alimenten — la IA los inventa</li>
+        <li>El diagnóstico diferencial no se razona: "trastorno fonológico funcional" aparece sin proceso de descarte</li>
+        <li>Pronóstico sin fundamento: se pide como sección pero sin inputs de frecuencia, recursos o historia previa</li>
+        <li>Ignora el marco de la CIF: no recoge participación, actividad ni factores contextuales</li>
+        <li>Output estático: no genera datos rastreables ni sugiere códigos CIE-11</li>
+      </ul>
+      <div class="sec-lbl">Prompt mejorado · Mayo 2026</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt · copiar y pegar en Claude o ChatGPT</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Actúa como logopeda clínico. Redacta un informe de evaluación inicial en español formal y técnico, aplicando el marco de la CIF (Clasificación Internacional del Funcionamiento).
+
+DATOS DEL PACIENTE:
+- Iniciales: [P.G.L.] | Edad: [6 años 4 meses] | Nivel educativo: [1º Primaria]
+- Motivo de consulta: [dificultades en la producción de /r/ y /rr/]
+- Derivado por: [pediatra / familia / colegio — especificar]
+
+ANTECEDENTES (indica "no consta" si no dispones del dato):
+- Perinatales: [ninguno relevante / prematuro X semanas / hipoxia perinatal]
+- Desarrollo del lenguaje: [primeras palabras a los X meses; frases a los X meses]
+- Intervención logopédica previa: [sí — cuándo, motivo, resultado / no]
+- Contexto lingüístico: [monolingüe español / bilingüe con X lengua]
+- Comorbilidades conocidas: [ninguna / TDAH / hipoacusia / otro]
+
+EVALUACIÓN:
+- Pruebas y resultados: [PLON-R — percentil X en fonología / morfosintaxis / semántica; exploración oromotora — hallazgos; muestra de habla — N enunciados]
+- Errores específicos con ejemplos reales: [produce /t/ en lugar de /r/ en posición intervocálica: "cato" por "caro"]
+- Fortalezas: [conciencia fonológica conservada / motivación alta / comprensión preservada]
+
+HIPÓTESIS DIAGNÓSTICA (el logopeda la propone; la IA desarrolla el razonamiento):
+- Más probable: [trastorno fonológico funcional / retraso fonológico / TDAP]
+- Descartar: [apraxia del habla / causa orgánica]
+
+FRECUENCIA PREVISTA: [X sesiones/semana de X minutos]
+RECURSOS FAMILIARES: [alta implicación / disponibilidad limitada / bilingüe en casa]
+
+ESTRUCTURA DEL INFORME:
+1. Datos de identificación y motivo de consulta
+2. Antecedentes relevantes
+3. Pruebas y resultados (con percentiles y descripción de muestras)
+4. Perfil funcional según la CIF: actividad, participación, factores contextuales
+5. Impresión clínica y diagnóstico diferencial razonado (por qué este diagnóstico y no otro)
+6. Propuesta de intervención jerarquizada
+7. Pronóstico (basado en factores protectores y de riesgo identificados)
+8. Criterios de revisión y condiciones de alta
+
+========================================
+**VERSION FINAL (RELLENABLE):**
+SI TIENES MATERIAL PROPIO: [PEGA AQUI TU MATERIAL CLINICO PROPIO]
+SI NO TIENES MATERIAL PROPIO: [INDICA: GENERAR DESDE CERO]
+TIPO DE TAREA: [EVALUACION / TERAPIA / PLANIFICACION / COMUNICACION]
+TIPO DE SALIDA FINAL: [PAPEL (IMPRIMIBLE) / ACTIVIDAD DIGITAL / ACTIVIDAD INTERACTIVA / ACTIVIDAD GAMIFICADA (VIDEOJUEGO BASICO)]
+
+**SI ES EVALUACION O INFORME:**
+DIGITALIZA EL CONTENIDO EN FORMATO CLARO, TRAZABLE Y FACIL DE COMPARTIR (SIN GAMIFICAR).
+
+========================================</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1.2 -->
+  <div class="pcard">
+    <div class="pcard-hd" onclick="toggle(this)">
+      <span class="pnum">1.2</span>
+      <div class="pmeta">
+        <div class="ptitle">Informe de evolución / seguimiento</div>
+        <div class="badges"><span class="badge bi">Informes</span><span class="badge bd">Descubrimiento</span></div>
+      </div>
+      <span class="tgl">+</span>
+    </div>
+    <div class="pcard-bd">
+      <div class="sec-lbl">Prompt original 2025</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt 2025 · versión previa</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Redacta un informe de evolución y seguimiento en español formal.
+
+Período: [septiembre 2025 – enero 2026 · 18 sesiones]
+Perfil: [niño de 7 años con trastorno del lenguaje expresivo]
+Objetivos: [ampliar vocabulario, mejorar LME y reducir errores morfosintácticos]
+Situación al inicio: [LME de 3,2 morfemas. Oraciones simples. Vocabulario limitado]
+Situación actual: [LME de 4,8 morfemas. Produce oraciones coordinadas. Persisten dificultades con concordancia de género]
+
+Secciones:
+1. Resumen del período
+2. Objetivos y grado de consecución
+3. Áreas de progreso notable
+4. Áreas con dificultades persistentes
+5. Ajustes para el próximo período
+6. Orientaciones para la familia</pre>
+      </div>
+      <div class="sec-lbl">Errores detectados (prompt 2025)</div>
+      <ul class="probs">
+        <li>LME sin metodología: "de 3.2 a 4.8 morfemas" no dice cómo se midió — sin valor para otro profesional</li>
+        <li>Objetivos sin criterio de consecución previo: la IA no puede evaluar el logro sin saber cuál era el umbral</li>
+        <li>Dificultades persistentes sin análisis: "concordancia de género" sin especificar en qué estructuras ni si es sistemática</li>
+        <li>Sin revisión de estrategias: no documenta qué técnicas funcionaron mejor para informar la siguiente fase</li>
+      </ul>
+      <div class="sec-lbl">Prompt mejorado · Mayo 2026</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt · copiar y pegar en Claude o ChatGPT</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Redacta un informe de evolución y seguimiento en español formal.
+
+PERÍODO Y ASISTENCIA:
+- Período: [septiembre 2025 – enero 2026]
+- Sesiones realizadas / previstas: [18 / 20] | Causas de ausencia: [2 por enfermedad]
+
+PERFIL: [Niño de 7 años, trastorno del lenguaje expresivo (TEL/DLD), sin comorbilidades]
+
+OBJETIVOS DEL PERÍODO CON CRITERIO DE LOGRO PREVIO:
+- Obj. 1: [Aumentar LME hasta ≥4.5 morfemas — medido en muestra de 50 enunciados espontáneos en juego simbólico — criterio: 80% de sesiones de evaluación]
+- Obj. 2: [Reducir errores de concordancia de género a <20% en discurso narrativo — medido en descripción de láminas]
+- Obj. 3: [Ampliar vocabulario de emociones a 15 palabras en producción espontánea]
+
+DATOS DE EVALUACIÓN COMPARADOS:
+- LME inicial: [3.2 morfemas — muestra 50 enunciados, juego simbólico]
+- LME actual: [4.8 morfemas — misma metodología]
+- Concordancia de género: [inicial 60% errores → actual 35% — persiste en SN con adjetivo]
+- Evidencia cualitativa (producción real con fecha y contexto): ["porque el oso estaba triste" — sesión 14, cuento]
+
+ESTRATEGIAS UTILIZADAS:
+- Más eficaces: [modelado expansivo en juego simbólico — mejor generalización que tarjetas]
+- Menos eficaces: [repetición directa — sin generalización a habla espontánea]
+
+AJUSTES PARA EL SIGUIENTE PERÍODO (indica los tuyos; la IA los desarrolla con justificación):
+- [Introducir narrativa estructurada / reforzar concordancia con adjetivos]
+
+SECCIONES DEL INFORME:
+1. Resumen del período (asistencia, metodología de evaluación usada)
+2. Objetivos y grado de consecución con datos cuantitativos y % de logro
+3. Análisis clínico del progreso (interpretación, no solo descripción)
+4. Factores que han facilitado o dificultado la evolución
+5. Ajustes propuestos con justificación clínica
+6. Orientaciones específicas y realistas para la familia
+7. Recomendaciones para el centro escolar (si procede)
+
+========================================
+**VERSION FINAL (RELLENABLE):**
+SI TIENES MATERIAL PROPIO: [PEGA AQUI TU MATERIAL CLINICO PROPIO]
+SI NO TIENES MATERIAL PROPIO: [INDICA: GENERAR DESDE CERO]
+TIPO DE TAREA: [EVALUACION / TERAPIA / PLANIFICACION / COMUNICACION]
+TIPO DE SALIDA FINAL: [PAPEL (IMPRIMIBLE) / ACTIVIDAD DIGITAL / ACTIVIDAD INTERACTIVA / ACTIVIDAD GAMIFICADA (VIDEOJUEGO BASICO)]
+
+**SI ES EVALUACION O INFORME:**
+DIGITALIZA EL CONTENIDO EN FORMATO CLARO, TRAZABLE Y FACIL DE COMPARTIR (SIN GAMIFICAR).
+
+========================================</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1.3 -->
+  <div class="pcard">
+    <div class="pcard-hd" onclick="toggle(this)">
+      <span class="pnum">1.3</span>
+      <div class="pmeta">
+        <div class="ptitle">Informe de alta logopédica</div>
+        <div class="badges"><span class="badge bi">Informes</span><span class="badge bf">Uso funcional</span></div>
+      </div>
+      <span class="tgl">+</span>
+    </div>
+    <div class="pcard-bd">
+      <div class="sec-lbl">Prompt original 2025</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt 2025 · versión previa</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Redacta un informe de alta logopédica en español formal y técnico.
+
+Datos del caso:
+- Perfil: [adulto de 42 años con disfonía funcional, profesora de secundaria]
+- Período: [marzo–noviembre 2025 · 24 sesiones]
+- Motivo inicial: [fatiga vocal crónica, VHI-10 de 28/40]
+- Motivo del alta: [consecución de todos los objetivos terapéuticos]
+- Estado en el alta: [VHI-10 de 4/40. Técnica de voz proyectada consolidada]
+- Recomendaciones: [revisión a los 6 meses. Continuar con higiene vocal]
+
+Estructura:
+1. Datos del proceso de intervención
+2. Situación en el momento del alta
+3. Criterios clínicos que justifican el alta
+4. Recomendaciones y pautas de mantenimiento
+5. Criterios de re-consulta</pre>
+      </div>
+      <div class="sec-lbl">Errores detectados (prompt 2025)</div>
+      <ul class="probs">
+        <li>Solo medida subjetiva (VHI-10) — sin evaluación perceptiva objetiva ni análisis acústico si disponible</li>
+        <li>No incluye factores de riesgo de recaída — críticos en una docente con disfonía funcional</li>
+        <li>No menciona si se coordinó el alta con ORL — tiene implicaciones médico-legales</li>
+        <li>Criterios de re-consulta al final como trámite, cuando deberían ser el núcleo del documento</li>
+      </ul>
+      <div class="sec-lbl">Prompt mejorado · Mayo 2026</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt · copiar y pegar en Claude o ChatGPT</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Redacta un informe de alta logopédica en español formal y técnico.
+
+DATOS DEL PROCESO:
+- Perfil: [adulta de 42 años, profesora de secundaria, disfonía funcional por sobrecarga vocal]
+- Período: [marzo–noviembre 2025 · 24 sesiones]
+- Coordinación con ORL al cierre: [sí — confirmado / pendiente / no procede]
+
+EVALUACIÓN INICIAL:
+- VHI-10 inicial: [28/40]
+- Evaluación perceptiva si disponible (GRBAS): [G1 R1 B0 A0 S0]
+- Descripción clínica: [voz ronca, fatiga vocal a las 2h de docencia, afonías ocasionales]
+
+EVALUACIÓN EN EL ALTA:
+- VHI-10 en el alta: [4/40]
+- Evaluación perceptiva: [G0 R0 B0 A0 S0]
+- Técnicas consolidadas (describe cómo verificaste la consolidación):
+  [resonancia vocal, voz proyectada con apoyo abdominal, calentamiento pre-clase]
+
+CRITERIOS CLÍNICOS DE ALTA:
+- [Consecución de todos los objetivos funcionales + estabilidad en últimas 4 sesiones + VHI-10 <10]
+
+FACTORES DE RIESGO DE RECAÍDA IDENTIFICADOS:
+- [Trimestres de exámenes con alta carga lectiva]
+- [Aulas con mala acústica o ruido elevado]
+- [Épocas de elevado estrés emocional]
+
+PAUTAS DE MANTENIMIENTO (específicas para su contexto laboral, no genéricas):
+- [Rutina de calentamiento vocal pre-clase de 3 minutos — descripción]
+- [Técnica de voz proyectada vs. técnica en espacio reducido — cuándo usar cada una]
+
+SEMÁFORO DE ALERTA — CRITERIOS DE RE-CONSULTA (sección principal, no cierre de trámite):
+ROJO — Consultar esta semana: [cambio súbito de voz, dolor, disfagia, hemoptisis]
+AMARILLO — Consultar en <2 semanas: [VHI-10 >15, fatiga vocal antes de 3h durante >2 semanas consecutivas]
+VERDE — Seguimiento programado: [revisión a los 6 meses — fecha orientativa: ___]
+
+========================================
+**VERSION FINAL (RELLENABLE):**
+SI TIENES MATERIAL PROPIO: [PEGA AQUI TU MATERIAL CLINICO PROPIO]
+SI NO TIENES MATERIAL PROPIO: [INDICA: GENERAR DESDE CERO]
+TIPO DE TAREA: [EVALUACION / TERAPIA / PLANIFICACION / COMUNICACION]
+TIPO DE SALIDA FINAL: [PAPEL (IMPRIMIBLE) / ACTIVIDAD DIGITAL / ACTIVIDAD INTERACTIVA / ACTIVIDAD GAMIFICADA (VIDEOJUEGO BASICO)]
+
+**SI ES EVALUACION O INFORME:**
+DIGITALIZA EL CONTENIDO EN FORMATO CLARO, TRAZABLE Y FACIL DE COMPARTIR (SIN GAMIFICAR).
+
+========================================</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1.4 -->
+  <div class="pcard">
+    <div class="pcard-hd" onclick="toggle(this)">
+      <span class="pnum">1.4</span>
+      <div class="pmeta">
+        <div class="ptitle">Informe de derivación a otro profesional</div>
+        <div class="badges"><span class="badge bi">Informes</span><span class="badge bd">Descubrimiento</span></div>
+      </div>
+      <span class="tgl">+</span>
+    </div>
+    <div class="pcard-bd">
+      <div class="sec-lbl">Prompt original 2025</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt 2025 · versión previa</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Redacta un informe de derivación logopédica en español formal.
+
+De: [Logopeda · Nombre del centro]
+A: [Servicio de Neuropsicología Infantil]
+Motivo: [sospecha de perfil de TEA o TDAH asociado a dificultades de lenguaje pragmático]
+Paciente: [niña de 9 años, derivada inicialmente por retraso lector]
+Tiempo en seguimiento: [14 meses]
+Hallazgos: [dificultades marcadas en pragmática, teoría de la mente, inflexibilidad comunicativa]
+Intervención realizada: [conciencia fonológica, comprensión lectora, pragmática básica]
+Información solicitada: [valoración neuropsicológica para descartar o confirmar perfil diagnóstico]</pre>
+      </div>
+      <div class="sec-lbl">Errores detectados (prompt 2025)</div>
+      <ul class="probs">
+        <li>"Sospecha de TEA o TDAH" mezclados: son hipótesis con instrumentos distintos — el receptor necesita saber cuál priorizar</li>
+        <li>No incluye qué se ha descartado desde logopedia — la información más valiosa para el especialista receptor</li>
+        <li>14 meses de seguimiento sin datos de evolución — sin saber si hubo progreso, estancamiento o regresión</li>
+        <li>Sin campo de urgencia — ¿hay plazo de escolarización? ¿es revisión rutinaria?</li>
+      </ul>
+      <div class="sec-lbl">Prompt mejorado · Mayo 2026</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt · copiar y pegar en Claude o ChatGPT</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Redacta un informe de derivación logopédica en español formal.
+
+EMISOR: [Logopeda · Nombre · Centro · Teléfono/email]
+RECEPTOR: [Servicio de Neuropsicología Infantil / ORL / Pediatría — especificar]
+URGENCIA: [Alta — plazo escolarización / Media — evaluación complementaria / Baja]
+AUTORIZACIÓN FAMILIAR: [Sí, por escrito / Sí, verbal / Pendiente de firmar]
+
+DATOS DEL PACIENTE:
+- [Niña de 9 años, iniciales M.R.L., derivada inicialmente por retraso lector]
+
+RESUMEN DEL PROCESO LOGOPÉDICO:
+- Período: [14 meses, 2 sesiones semanales]
+- Motivo inicial: [retraso lector — trabajo de conciencia fonológica]
+- Evolución: [progreso en decodificación; aparición progresiva de dificultades en pragmática y comunicación social no explicadas por el perfil lector]
+
+HALLAZGOS QUE MOTIVAN LA DERIVACIÓN:
+- [Pragmática: dificultad en toma de turnos, comprensión de ironía, respuestas tangenciales]
+- [Inflexibilidad comunicativa: insistencia en temas propios, resistencia al cambio de tópico]
+- [Teoría de la mente: dificultades en tareas de atribución de primer y segundo orden]
+- Instrumentos aplicados desde logopedia: [PLON-R, PROLEC-R — sin instrumentos de TEA, fuera de competencia logopédica]
+
+HIPÓTESIS A CONTRASTAR:
+- Principal: [TEA nivel 1 con afectación en comunicación social]
+- Alternativa: [DLD con compromiso pragmático severo]
+- Descartadas desde logopedia: [TDAH — no observado en múltiples contextos según informe del colegio; valoración formal no realizada desde logopedia]
+
+LO QUE SE SOLICITA AL RECEPTOR:
+- [Evaluación neuropsicológica con ADOS-2 / ADI-R para confirmar o descartar TEA]
+- [Valoración de funciones ejecutivas]
+- [Retroalimentación para coordinar el enfoque de la intervención logopédica]
+
+ADJUNTOS: [Informe de evaluación inicial · Último informe de seguimiento]
+DISPONIBILIDAD PARA COORDINACIÓN: [Sí — indicar medio preferido]
+
+========================================
+**VERSION FINAL (RELLENABLE):**
+SI TIENES MATERIAL PROPIO: [PEGA AQUI TU MATERIAL CLINICO PROPIO]
+SI NO TIENES MATERIAL PROPIO: [INDICA: GENERAR DESDE CERO]
+TIPO DE TAREA: [EVALUACION / TERAPIA / PLANIFICACION / COMUNICACION]
+TIPO DE SALIDA FINAL: [PAPEL (IMPRIMIBLE) / ACTIVIDAD DIGITAL / ACTIVIDAD INTERACTIVA / ACTIVIDAD GAMIFICADA (VIDEOJUEGO BASICO)]
+
+**SI ES EVALUACION O INFORME:**
+DIGITALIZA EL CONTENIDO EN FORMATO CLARO, TRAZABLE Y FACIL DE COMPARTIR (SIN GAMIFICAR).
+
+========================================</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1.5 -->
+  <div class="pcard">
+    <div class="pcard-hd" onclick="toggle(this)">
+      <span class="pnum">1.5</span>
+      <div class="pmeta">
+        <div class="ptitle">Nota clínica de sesión (registro rápido)</div>
+        <div class="badges"><span class="badge bi">Informes</span><span class="badge bf">Uso funcional</span></div>
+      </div>
+      <span class="tgl">+</span>
+    </div>
+    <div class="pcard-bd">
+      <div class="sec-lbl">Prompt original 2025</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt 2025 · versión previa</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Convierte estas notas en una nota clínica estructurada, en español formal (máx. 200 palabras).
+
+Fecha: [15/01/2026]
+Paciente: [niño 5 años, TEL]
+Actividades: [juego simbólico, nombramiento de acciones, cuento "el oso que no era"]
+Observaciones: [hoy más activo, inició 3 turnos espontáneos, dificultad con palabras de +3 sílabas]
+Logros: [usó por primera vez "porque" para explicar por qué el oso estaba triste]
+Próxima sesión: [trabajar palabras polisílabas con apoyo visual y ritmo]
+Formato: fecha, objetivos, desarrollo, observaciones, logros, próximos pasos.</pre>
+      </div>
+      <div class="sec-lbl">Errores detectados (prompt 2025)</div>
+      <ul class="probs">
+        <li>200 palabras es insuficiente para nota con valor legal — sin datos cuantitativos no sostiene nada en una inspección</li>
+        <li>Sin nivel de ayuda registrado: "3 turnos espontáneos" no dice si fueron sin modelo, tras modelo o tras pregunta directa</li>
+        <li>Sin datos de rendimiento en tarea: "dificultad con trisilábicos" sin % de acierto ni condiciones de ayuda</li>
+        <li>No sigue el estándar SOAP internacional — formato ad hoc sin estructura defensible</li>
+      </ul>
+      <div class="sec-lbl">Prompt mejorado · Mayo 2026</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt · copiar y pegar en Claude o ChatGPT</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Convierte estas notas en una nota clínica en formato SOAP, en español formal (máx. 300 palabras).
+
+DATOS DE ENTRADA:
+Fecha: [15/01/2026] | Sesión nº: [23] | Paciente: [niño 5 años, TEL expresivo]
+Objetivo de esta sesión: [usar conectores causales ("porque") en contexto de juego simbólico]
+Actividades: [juego simbólico con osos, cuento "el oso que no era"]
+Observaciones:
+- [hoy activo, inició 3 turnos espontáneos SIN modelo previo]
+- [usó "porque" 1 vez de forma espontánea, no elicitada]
+- [trisilábicos: acierto 3/10 con modelo + gesto, 0/5 sin apoyo]
+- [necesitó 3–4 repeticiones del modelo antes de producción independiente]
+Logros: [conector "porque" en emergencia — 1 producción espontánea; turnos conversacionales en consolidación — 3/3]
+Plan siguiente: [palabras trisilábicas con apoyo visual + ritmo]
+
+FORMATO DE SALIDA SOAP:
+S — Subjetivo: [actitud, estado anímico, cooperación, información de la familia si la hay]
+O — Objetivo: [datos cuantitativos — % aciertos por tarea, nivel de ayuda, producciones exactas registradas]
+A — Análisis: [interpretación clínica de los datos — qué indica el rendimiento observado]
+P — Plan: [objetivo y criterio de la próxima sesión; señal de alerta si hay regresión]
+
+Además, genera un bloque JSON con los datos clave de la sesión:
+{
+  "fecha": "",
+  "sesion_numero": 0,
+  "objetivo_sesion": "",
+  "aciertos_con_apoyo": 0,
+  "aciertos_sin_apoyo": 0,
+  "nivel_ayuda_requerido": "",
+  "logro_emergente": "",
+  "logro_consolidado": "",
+  "decision_proxima_sesion": ""
+}
+
+========================================
+**VERSION FINAL (RELLENABLE):**
+SI TIENES MATERIAL PROPIO: [PEGA AQUI TU MATERIAL CLINICO PROPIO]
+SI NO TIENES MATERIAL PROPIO: [INDICA: GENERAR DESDE CERO]
+TIPO DE TAREA: [EVALUACION / TERAPIA / PLANIFICACION / COMUNICACION]
+TIPO DE SALIDA FINAL: [PAPEL (IMPRIMIBLE) / ACTIVIDAD DIGITAL / ACTIVIDAD INTERACTIVA / ACTIVIDAD GAMIFICADA (VIDEOJUEGO BASICO)]
+
+**SI ES EVALUACION O INFORME:**
+DIGITALIZA EL CONTENIDO EN FORMATO CLARO, TRAZABLE Y FACIL DE COMPARTIR (SIN GAMIFICAR).
+
+========================================</pre>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ═══════════════════════════════════════
+     CATEGORÍA 2 · PLANIFICACIÓN
+═══════════════════════════════════════ -->
+<section class="cat-section" data-cat="planificacion">
+  <div class="cat-header">
+    <div class="cat-dot" style="background:#1565c0"></div>
+    <h2>Planificación de sesiones</h2>
+    <span class="cnt">5 prompts · Del diagnóstico a la sesión lista</span>
+  </div>
+
+  <!-- 2.1 -->
+  <div class="pcard">
+    <div class="pcard-hd" onclick="toggle(this)">
+      <span class="pnum">2.1</span>
+      <div class="pmeta">
+        <div class="ptitle">Plan completo de sesión individual</div>
+        <div class="badges"><span class="badge bp">Planificación</span><span class="badge bd">Descubrimiento</span></div>
+      </div>
+      <span class="tgl">+</span>
+    </div>
+    <div class="pcard-bd">
+      <div class="sec-lbl">Prompt original 2025</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt 2025 · versión previa</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Diseña un plan de sesión completo de [45 minutos].
+
+Perfil:
+- Edad: [8 años]
+- Diagnóstico: [dislexia, dificultades en conciencia fonológica y velocidad lectora]
+- Motivaciones: [le encantan los superhéroes, especialmente Spider-Man]
+- Materiales disponibles: [tablero blanco, tarjetas de sílabas, textos adaptados]
+
+Objetivos de la sesión:
+[1. Segmentación silábica con apoyo gestual
+2. Lectura fluida de frases cortas
+3. Identificación de sílaba tónica]
+
+Material ya diseñado por la logopeda: [pega aquí tu lista, ficha o secuencia ya decidida para que se adapte y se reutilice]
+
+Plan:
+- Calentamiento (5 min)
+- Actividad principal 1 (15 min)
+- Actividad principal 2 (15 min)
+- Cierre y refuerzo (10 min)
+
+Integra la temática de superhéroes de forma natural.</pre>
+      </div>
+      <div class="sec-lbl">Errores detectados (prompt 2025)</div>
+      <ul class="probs">
+        <li>"Dislexia, dificultades en conciencia fonológica y velocidad lectora" son tres cosas distintas — la IA no sabe cuál priorizar sin jerarquía clínica</li>
+        <li>Sin nivel lector actual: sin palabras/minuto ni tipo de lectura, las actividades no tienen anclaje real</li>
+        <li>Sin criterio de éxito por actividad: el logopeda no sabe cuándo puede pasar a la siguiente</li>
+        <li>Sin plan B: en pediatría es imprescindible — ¿qué ocurre si el niño llega cansado o sin cooperación?</li>
+      </ul>
+      <div class="sec-lbl">Prompt mejorado · Mayo 2026</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt · copiar y pegar en Claude o ChatGPT</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Diseña un plan de sesión de [45 minutos] con criterios de éxito y plan de contingencia.
+
+PERFIL:
+- Edad: [8 años] | Diagnóstico: [dislexia fonológica — dificultad primaria en decodificación]
+- Nivel lector actual: [25 palabras/minuto, lectura silábica, exactitud >90%]
+- Sesión nº: [12] — Fase: [práctica — adquisición de CVC ya superada]
+- Motivaciones: [superhéroes — Spider-Man especialmente]
+- Estado habitual a esta hora: [puede llegar cansado del colegio los lunes]
+- Materiales disponibles: [tablero blanco, tarjetas de sílabas, textos adaptados nivel 1, tablet]
+
+OBJETIVOS DE LA SESIÓN (máx. 3, ordenados por prioridad clínica):
+1. [Segmentación silábica CVCV con apoyo gestual — de ≥7/10 con modelo a ≥7/10 sin modelo]
+2. [Lectura fluida de frases cortas CVCV — objetivo: 30 palabras/minuto sin regresiones]
+3. [Conciencia de sílaba tónica en bisilábicos — en emergencia]
+
+JERARQUÍA DE AYUDAS (para cada actividad si el paciente falla):
+Visual (tarjeta) → Modelo directo → Modelo + gesto → Respuesta conjunta
+Criterio para retirar una ayuda: [2 aciertos consecutivos sin ella]
+
+CRITERIO DE ÉXITO PARA PASAR AL SIGUIENTE OBJETIVO:
+- Obj. 1 → Obj. 2: [≥7/10 segmentación sin modelo en 2 intentos]
+- Obj. 2 → Obj. 3: [lectura sin regresiones en 3/5 frases]
+
+PLAN PRINCIPAL:
+- Calentamiento (5 min): [activar con temática Spider-Man]
+- Actividad principal 1 (15 min): [descripción y materiales]
+- Actividad principal 2 (15 min): [descripción y materiales]
+- Cierre y refuerzo (10 min): [autoevaluación + refuerzo]
+
+PLAN B (activar si a los 10 min no responde al calentamiento):
+- Solo Objetivo 1 en versión lúdica reducida — 20 min totales
+
+DATOS A REGISTRAR EN SESIÓN:
+- [% aciertos Tarea 1 con/sin apoyo | velocidad lectora en frases | nivel de ayuda necesitado]
+
+========================================
+**VERSION FINAL (RELLENABLE):**
+SI TIENES MATERIAL PROPIO: [PEGA AQUI TU MATERIAL CLINICO PROPIO]
+SI NO TIENES MATERIAL PROPIO: [INDICA: GENERAR DESDE CERO]
+TIPO DE TAREA: [EVALUACION / TERAPIA / PLANIFICACION / COMUNICACION]
+TIPO DE SALIDA FINAL: [PAPEL (IMPRIMIBLE) / ACTIVIDAD DIGITAL / ACTIVIDAD INTERACTIVA / ACTIVIDAD GAMIFICADA (VIDEOJUEGO BASICO)]
+
+**SI ES EVALUACION O INFORME:**
+DIGITALIZA EL CONTENIDO EN FORMATO CLARO, TRAZABLE Y FACIL DE COMPARTIR (SIN GAMIFICAR).
+
+**SI ES TERAPIA O MATERIALES DE INTERVENCION:**
+INDICA SI QUIERES: [DIGITALIZAR] O [GAMIFICAR / VIDEOJUEGO BASICO].
+SI MARCAS GAMIFICAR, PROPON MECANICA SIMPLE (NIVELES, PUNTOS, TURNOS, REFUERZO) ADAPTADA AL PERFIL DEL PACIENTE.
+========================================</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2.2 -->
+  <div class="pcard">
+    <div class="pcard-hd" onclick="toggle(this)">
+      <span class="pnum">2.2</span>
+      <div class="pmeta">
+        <div class="ptitle">Objetivos de intervención por período</div>
+        <div class="badges"><span class="badge bp">Planificación</span><span class="badge bf">Uso funcional</span></div>
+      </div>
+      <span class="tgl">+</span>
+    </div>
+    <div class="pcard-bd">
+      <div class="sec-lbl">Prompt original 2025</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt 2025 · versión previa</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Formula objetivos de intervención para el siguiente período.
+
+Perfil: [adulto de 67 años, afasia de Broca leve-moderada post-ictus hace 8 meses]
+Situación actual: [comprensión conservada. Anomia frecuente. LME de 3-4 palabras]
+Contexto vital: [jubilado, quiere hablar con nietos y leer el periódico]
+Frecuencia: [2 sesiones semanales de 45 minutos]
+Período: [enero–junio 2026]
+
+Formula:
+1. Objetivo general del período
+2. 4-5 objetivos específicos (formato SMART)
+3. Indicadores de logro medibles
+4. Jerarquía de trabajo (qué primero y por qué)</pre>
+      </div>
+      <div class="sec-lbl">Errores detectados (prompt 2025)</div>
+      <ul class="probs">
+        <li>LME de afasia sin contexto de producción: varía enormemente entre habla espontánea, repetición y descripción</li>
+        <li>Sin información sobre apraxia del habla asociada — comorbilidad frecuente en Broca que cambia toda la jerarquía</li>
+        <li>SMART sin guía de umbrales realistas: la IA formula objetivos técnicamente correctos pero clínicamente poco calibrados</li>
+        <li>Sin objetivos para el cuidador: la generalización fuera de la sesión es donde ocurre el 80% de la recuperación funcional</li>
+      </ul>
+      <div class="sec-lbl">Prompt mejorado · Mayo 2026</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt · copiar y pegar en Claude o ChatGPT</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Formula objetivos de intervención logopédica para el siguiente período.
+
+PERFIL CLÍNICO:
+- [Adulto de 67 años, afasia de Broca leve-moderada, ictus isquémico hace 8 meses]
+- Apraxia del habla asociada: [sí — leve / no / no explorada aún]
+- Comprensión: [conservada para frases simples; dificultad con reversibles pasivas y 3 pasos]
+- Expresión espontánea: [LME 3–4 palabras, anomia frecuente, circunloquios]
+- Tipo de anomia predominante: [fonológica / semántica / mixta]
+- Estrategias compensadoras que ya usa: [señalar, circunloquios, escritura parcial]
+
+METAS FUNCIONALES DEL PACIENTE Y FAMILIA:
+- [Hablar con los nietos sobre sus actividades del día]
+- [Leer titulares del periódico]
+- [Llamar por teléfono sin intermediario]
+
+FRECUENCIA Y CONTEXTO:
+- [2 sesiones/semana de 45 min · Esposa muy implicada — asiste a 1 sesión de cada 3]
+- Período: [enero–junio 2026]
+
+FORMULA:
+1. Objetivo funcional del período (en lenguaje del paciente, no terminología clínica)
+2. 4–5 objetivos SMART — cada uno con: conducta observable + condición (con/sin ayuda) + criterio numérico de ejecución (ej. 8/10 en 3 sesiones consecutivas)
+3. Jerarquía clínica: qué antes y por qué (considera fase post-ictus y neuroplasticidad)
+4. Objetivos para el cuidador/familia: qué practicar en casa y cómo registrarlo
+5. Indicadores de que el pronóstico se cumple / señales de estancamiento que requieren revisar el plan
+6. Criterio de reducción de frecuencia: qué objetivos permiten pasar de 2 a 1 sesión semanal
+
+========================================
+**VERSION FINAL (RELLENABLE):**
+SI TIENES MATERIAL PROPIO: [PEGA AQUI TU MATERIAL CLINICO PROPIO]
+SI NO TIENES MATERIAL PROPIO: [INDICA: GENERAR DESDE CERO]
+TIPO DE TAREA: [EVALUACION / TERAPIA / PLANIFICACION / COMUNICACION]
+TIPO DE SALIDA FINAL: [PAPEL (IMPRIMIBLE) / ACTIVIDAD DIGITAL / ACTIVIDAD INTERACTIVA / ACTIVIDAD GAMIFICADA (VIDEOJUEGO BASICO)]
+
+**SI ES EVALUACION O INFORME:**
+DIGITALIZA EL CONTENIDO EN FORMATO CLARO, TRAZABLE Y FACIL DE COMPARTIR (SIN GAMIFICAR).
+
+**SI ES TERAPIA O MATERIALES DE INTERVENCION:**
+INDICA SI QUIERES: [DIGITALIZAR] O [GAMIFICAR / VIDEOJUEGO BASICO].
+SI MARCAS GAMIFICAR, PROPON MECANICA SIMPLE (NIVELES, PUNTOS, TURNOS, REFUERZO) ADAPTADA AL PERFIL DEL PACIENTE.
+========================================</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2.3 -->
+  <div class="pcard">
+    <div class="pcard-hd" onclick="toggle(this)">
+      <span class="pnum">2.3</span>
+      <div class="pmeta">
+        <div class="ptitle">Ideas de actividades para un perfil diagnóstico</div>
+        <div class="badges"><span class="badge bp">Planificación</span><span class="badge bd">Descubrimiento</span></div>
+      </div>
+      <span class="tgl">+</span>
+    </div>
+    <div class="pcard-bd">
+      <div class="sec-lbl">Prompt original 2025</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt 2025 · versión previa</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Dame ideas de actividades para:
+- Paciente: [adolescente de 14 años con tartamudez]
+- Objetivo: [reducir la evitación comunicativa y aumentar la confianza en situaciones sociales]
+- Contexto: [presencial, consulta, sin materiales especiales]
+- Restricciones: [le da vergüenza leer en voz alta; prefiere no hacer role-plays muy explícitos]
+
+Dame 8 ideas graduadas de menor a mayor dificultad. Para cada una:
+1. Nombre de la actividad
+2. Descripción en 2-3 líneas
+3. Por qué es útil para este perfil
+4. Variante más fácil y más difícil
+
+Material ya diseñado por la logopeda: [si ya tienes actividades pensadas, pégalas aquí y adáptalas en vez de crear otras nuevas]</pre>
+      </div>
+      <div class="sec-lbl">Errores detectados (prompt 2025)</div>
+      <ul class="probs">
+        <li>"Tartamudez" sin especificar enfoque terapéutico: fluency shaping vs. stuttering modification vs. ACT generan actividades incompatibles entre sí</li>
+        <li>Sin etapa del tratamiento: las actividades para toma de conciencia son opuestas a las de transferencia</li>
+        <li>Falta el componente de identidad como tartamudo: en adolescentes es frecuentemente más prioritario que las técnicas de fluencia</li>
+      </ul>
+      <div class="sec-lbl">Prompt mejorado · Mayo 2026</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt · copiar y pegar en Claude o ChatGPT</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Dame ideas de actividades para intervención en tartamudez.
+
+PERFIL:
+- [Adolescente de 14 años, tartamudez crónica desde los 5 años]
+- Severidad: [moderada — bloqueos y prolongaciones, principalmente en vocales iniciales]
+- Nivel de evitación: [alto — evita leer en voz alta, pedir en tiendas, llamar por teléfono]
+- Actitud hacia la tartamudez: [vergüenza; quiere "curarla"; sin trabajo de aceptación previo]
+- Restricciones: [no leer en voz alta directamente; no role-plays explícitos]
+
+ENFOQUE TERAPÉUTICO ADOPTADO (elige el que aplicas):
+[Stuttering Modification (Van Riper) / Fluency Shaping / Enfoque integrado con ACT / Otro — especificar]
+
+ETAPA DEL TRATAMIENTO:
+[Toma de conciencia y desensibilización / Técnicas de modificación / Transferencia / Mantenimiento]
+
+CONTEXTO: [Presencial · Sin materiales especiales · 30 min disponibles para estas actividades]
+
+Dame 6–8 actividades graduadas coherentes con el enfoque y etapa indicados.
+Para cada actividad incluye:
+1. Nombre y descripción breve
+2. Justificación clínica específica para este perfil (no genérica)
+3. Indicador de que va bien / señal para parar o ajustar
+4. Variante más fácil (días de alta ansiedad) y más difícil (días de buena disposición)
+5. Componente de trabajo de identidad / valores comunicativos / desensibilización (si aplica)
+
+========================================
+**VERSION FINAL (RELLENABLE):**
+SI TIENES MATERIAL PROPIO: [PEGA AQUI TU MATERIAL CLINICO PROPIO]
+SI NO TIENES MATERIAL PROPIO: [INDICA: GENERAR DESDE CERO]
+TIPO DE TAREA: [EVALUACION / TERAPIA / PLANIFICACION / COMUNICACION]
+TIPO DE SALIDA FINAL: [PAPEL (IMPRIMIBLE) / ACTIVIDAD DIGITAL / ACTIVIDAD INTERACTIVA / ACTIVIDAD GAMIFICADA (VIDEOJUEGO BASICO)]
+
+**SI ES EVALUACION O INFORME:**
+DIGITALIZA EL CONTENIDO EN FORMATO CLARO, TRAZABLE Y FACIL DE COMPARTIR (SIN GAMIFICAR).
+
+**SI ES TERAPIA O MATERIALES DE INTERVENCION:**
+INDICA SI QUIERES: [DIGITALIZAR] O [GAMIFICAR / VIDEOJUEGO BASICO].
+SI MARCAS GAMIFICAR, PROPON MECANICA SIMPLE (NIVELES, PUNTOS, TURNOS, REFUERZO) ADAPTADA AL PERFIL DEL PACIENTE.
+========================================</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2.4 -->
+  <div class="pcard">
+    <div class="pcard-hd" onclick="toggle(this)">
+      <span class="pnum">2.4</span>
+      <div class="pmeta">
+        <div class="ptitle">Adaptar una actividad al nivel del paciente</div>
+        <div class="badges"><span class="badge bp">Planificación</span><span class="badge bf">Uso funcional</span></div>
+      </div>
+      <span class="tgl">+</span>
+    </div>
+    <div class="pcard-bd">
+      <div class="sec-lbl">Prompt original 2025</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt 2025 · versión previa</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Adapta esta actividad al perfil del paciente.
+
+Actividad original:
+["Lee un texto de 150 palabras y responde 5 preguntas de comprensión" (4º de primaria)]
+
+Perfil del paciente:
+- Edad: [10 años]
+- Dificultades: [dislexia moderada. Lectura silábica lenta. Comprensión oral preservada]
+- Puntos fuertes: [muy visual. Le gustan los esquemas]
+
+Adapta de tres formas:
+1. Versión mínima (máximo apoyo)
+2. Versión ajustada (su nivel actual)
+3. Versión desafío (para días buenos)
+
+Material ya diseñado por la logopeda: [pega la actividad exacta que ya usas para no perder tu criterio clínico]</pre>
+      </div>
+      <div class="sec-lbl">Errores detectados (prompt 2025)</div>
+      <ul class="probs">
+        <li>"Dislexia moderada" sin tipo: fonológica, superficial o mixta — la adaptación de comprensión es muy distinta según el origen</li>
+        <li>"Comprensión oral preservada" sin nivel de complejidad: sin especificar hasta dónde llega, la versión de apoyo oral puede sobrestimar al paciente</li>
+        <li>No incluye qué hacer si ninguna de las 3 versiones funciona ese día</li>
+        <li>No se mencionan modalidades alternativas de representación (visual, auditiva, táctil) — ignora los principios del DUA</li>
+      </ul>
+      <div class="sec-lbl">Prompt mejorado · Mayo 2026</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt · copiar y pegar en Claude o ChatGPT</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Adapta esta actividad al perfil del paciente aplicando el marco del Diseño Universal para el Aprendizaje (DUA).
+
+ACTIVIDAD ORIGINAL:
+["Lee un texto de 150 palabras y responde 5 preguntas de comprensión" — 4º de Primaria]
+
+PERFIL DEL PACIENTE:
+- Edad: [10 años] | Tipo de dislexia: [fonológica — dificultad en decodificación, no en vocabulario]
+- Velocidad lectora actual: [25 palabras/minuto, lectura silábica]
+- Comprensión oral: [conservada hasta párrafos de 6–7 frases con vocabulario conocido; falla en inferencias complejas]
+- Fortalezas: [muy visual, retiene con esquemas, buena memoria semántica]
+- Estado anímico en sesión: [variable — los viernes llega agotado]
+
+ADAPTA EN TRES VERSIONES:
+1. Versión mínima (máximo apoyo) — especifica: ayudas técnicas, modificaciones al texto, formato de respuesta, quién ayuda y cómo
+2. Versión ajustada (nivel actual) — la que usarás la mayoría de días
+3. Versión desafío (días de buena energía) — qué andamio se retira y en qué condiciones
+
+Para cada versión especifica:
+- Modificaciones al texto (longitud, complejidad, formato visual, tipografía)
+- Modificaciones a las preguntas (tipo: literal / inferencial / vocabulario; formato: oral / escrita / múltiple opción)
+- Modalidades alternativas de representación (visual, auditiva, táctil)
+- Criterio de éxito y señal para avanzar a la versión siguiente
+
+Incluye también: qué hacer si ninguna de las 3 versiones funciona ese día.
+
+========================================
+**VERSION FINAL (RELLENABLE):**
+SI TIENES MATERIAL PROPIO: [PEGA AQUI TU MATERIAL CLINICO PROPIO]
+SI NO TIENES MATERIAL PROPIO: [INDICA: GENERAR DESDE CERO]
+TIPO DE TAREA: [EVALUACION / TERAPIA / PLANIFICACION / COMUNICACION]
+TIPO DE SALIDA FINAL: [PAPEL (IMPRIMIBLE) / ACTIVIDAD DIGITAL / ACTIVIDAD INTERACTIVA / ACTIVIDAD GAMIFICADA (VIDEOJUEGO BASICO)]
+
+**SI ES EVALUACION O INFORME:**
+DIGITALIZA EL CONTENIDO EN FORMATO CLARO, TRAZABLE Y FACIL DE COMPARTIR (SIN GAMIFICAR).
+
+**SI ES TERAPIA O MATERIALES DE INTERVENCION:**
+INDICA SI QUIERES: [DIGITALIZAR] O [GAMIFICAR / VIDEOJUEGO BASICO].
+SI MARCAS GAMIFICAR, PROPON MECANICA SIMPLE (NIVELES, PUNTOS, TURNOS, REFUERZO) ADAPTADA AL PERFIL DEL PACIENTE.
+========================================</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2.5 -->
+  <div class="pcard">
+    <div class="pcard-hd" onclick="toggle(this)">
+      <span class="pnum">2.5</span>
+      <div class="pmeta">
+        <div class="ptitle">Secuencia de trabajo para un mes</div>
+        <div class="badges"><span class="badge bp">Planificación</span><span class="badge bf">Uso funcional</span></div>
+      </div>
+      <span class="tgl">+</span>
+    </div>
+    <div class="pcard-bd">
+      <div class="sec-lbl">Prompt original 2025</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt 2025 · versión previa</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Diseña una secuencia de trabajo para 1 mes de intervención logopédica.
+
+Datos:
+- Paciente: [niña de 5 años con retraso fonológico moderado]
+- Sesiones: [8 sesiones de 30 minutos, 2 por semana]
+- Fonemas objetivo: [/s/ y /ch/, en ese orden]
+- Nivel de partida: [/s/ inconsistente en posición inicial; /ch/ ausente]
+- Recursos: [tarjetas de imágenes, espejo, fichas de soplo]
+
+Semana 1 (sesiones 1-2): objetivo + actividades
+Semana 2 (sesiones 3-4): progresión + criterio para avanzar
+Semana 3 (sesiones 5-6): generalización + nuevas posiciones
+Semana 4 (sesiones 7-8): consolidación + evaluación informal
+Incluye el criterio de progresión entre fases.
+
+Material ya diseñado por la logopeda: [pega aquí tus ejercicios ya preparados y organiza la secuencia mensual sobre ese material].</pre>
+      </div>
+      <div class="sec-lbl">Errores detectados (prompt 2025)</div>
+      <ul class="probs">
+        <li>"Retraso fonológico moderado" sin procesos de simplificación activos: la secuencia depende de cuáles son</li>
+        <li>El orden /s/ → /ch/ puede no ser óptimo sin conocer el inventario fonético completo</li>
+        <li>El criterio de progresión se pide pero no se da umbral: la IA lo inventará</li>
+        <li>Sin plan de contingencia: ¿qué ocurre si en semana 2 no se alcanza el criterio de avance?</li>
+      </ul>
+      <div class="sec-lbl">Prompt mejorado · Mayo 2026</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt · copiar y pegar en Claude o ChatGPT</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Diseña una Ruta de Aprendizaje Logopédico de 1 mes para intervención en fonología.
+
+DATOS DEL PACIENTE:
+- [Niña de 5 años, retraso fonológico moderado, sin comorbilidades]
+- Procesos de simplificación activos: [sustitución /s/→/t/, omisión /ch/, metátesis en bisilábicos]
+- Inventario fonético actual: [/p/, /b/, /m/, /t/, /d/, /n/, /f/, /l/, /j/ — sin fricativas alveolares ni africadas]
+- Conciencia fonológica: [rima: sí / sílaba: sí / fonema: en emergencia]
+
+SESIONES: [8 sesiones de 30 minutos, 2 por semana]
+INTERRUPCIONES PREVISTAS: [ninguna / festivo día X]
+RECURSOS: [tarjetas de imágenes, espejo, fichas de soplo, tablet si disponible]
+FONEMAS OBJETIVO: [/s/ → /ch/ en ese orden — si el inventario lo justifica; si no, la IA propone alternativa razonada]
+
+CRITERIO DE MAESTRÍA para avanzar entre fases (indica el tuyo o deja que la IA proponga):
+[Propuesta de referencia: ≥80% de corrección en posición inicial en 2 sesiones consecutivas antes de avanzar a posición medial]
+
+DISEÑA:
+- Semana 1 (ses. 1–2): objetivo específico + actividades + qué registrar en sesión
+- Semana 2 (ses. 3–4): progresión + criterio de avance con umbral numérico exacto
+- Semana 3 (ses. 5–6): generalización + indicadores de generalización espontánea fuera de sesión
+- Semana 4 (ses. 7–8): consolidación + evaluación informal + decisión sobre el mes siguiente
+
+PLAN DE CONTINGENCIA:
+- Si en semana 2 no se alcanza el criterio: [propón ajuste — no avanzar sin base]
+- Si hay regresión respecto a la sesión anterior: [protocolo de recuperación]
+
+ORIENTACIONES PARA LA FAMILIA:
+Coherentes con la etapa de cada semana. Integradas en rutinas diarias (baño, cena, camino al colegio). Máx. 10 min al día. No "deberes de logopedia" — oportunidades comunicativas naturales.
+
+========================================
+**VERSION FINAL (RELLENABLE):**
+SI TIENES MATERIAL PROPIO: [PEGA AQUI TU MATERIAL CLINICO PROPIO]
+SI NO TIENES MATERIAL PROPIO: [INDICA: GENERAR DESDE CERO]
+TIPO DE TAREA: [EVALUACION / TERAPIA / PLANIFICACION / COMUNICACION]
+TIPO DE SALIDA FINAL: [PAPEL (IMPRIMIBLE) / ACTIVIDAD DIGITAL / ACTIVIDAD INTERACTIVA / ACTIVIDAD GAMIFICADA (VIDEOJUEGO BASICO)]
+
+**SI ES EVALUACION O INFORME:**
+DIGITALIZA EL CONTENIDO EN FORMATO CLARO, TRAZABLE Y FACIL DE COMPARTIR (SIN GAMIFICAR).
+
+**SI ES TERAPIA O MATERIALES DE INTERVENCION:**
+INDICA SI QUIERES: [DIGITALIZAR] O [GAMIFICAR / VIDEOJUEGO BASICO].
+SI MARCAS GAMIFICAR, PROPON MECANICA SIMPLE (NIVELES, PUNTOS, TURNOS, REFUERZO) ADAPTADA AL PERFIL DEL PACIENTE.
+========================================</pre>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ═══════════════════════════════════════
+     CATEGORÍA 3 · MATERIALES
+═══════════════════════════════════════ -->
+<section class="cat-section" data-cat="materiales">
+  <div class="cat-header">
+    <div class="cat-dot" style="background:#bf360c"></div>
+    <h2>Materiales clínicos</h2>
+    <span class="cnt">5 prompts · Fichas, listas, cuentos, AAC</span>
+  </div>
+
+  <!-- 3.1 -->
+  <div class="pcard">
+    <div class="pcard-hd" onclick="toggle(this)">
+      <span class="pnum">3.1</span>
+      <div class="pmeta">
+        <div class="ptitle">Lista de palabras controladas por fonema</div>
+        <div class="badges"><span class="badge bm">Materiales</span><span class="badge bd">Descubrimiento</span></div>
+      </div>
+      <span class="tgl">+</span>
+    </div>
+    <div class="pcard-bd">
+      <div class="sec-lbl">Prompt original 2025</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt 2025 · versión previa</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Crea listas de palabras para terapia logopédica.
+
+Fonema objetivo: [/k/]
+Paciente: [niño de 6 años con sustitución k→t]
+
+Listas de 10 palabras cada una:
+1. Bisilábicas con /k/ en posición inicial (familiares para el niño, representables con dibujo)
+2. Bisilábicas con /k/ en posición medial o final
+3. Pares mínimos /k/ - /t/ (para discriminación auditiva)
+
+Ordena de menor a mayor dificultad articulatoria.
+Añade 3 frases sencillas con 2+ palabras con /k/.
+
+Material ya diseñado por la logopeda: [si ya tienes lista de palabras, pégala y ordénala por dificultad en vez de generar una nueva].</pre>
+      </div>
+      <div class="sec-lbl">Errores detectados (prompt 2025)</div>
+      <ul class="probs">
+        <li>No controla el entorno vocálico: /k/ ante /a/ es más fácil que ante /e/ o /i/ — la lista debería ordenarse también por coarticulación</li>
+        <li>Sin control de frecuencia léxica — puede incluir palabras desconocidas para el niño de 6 años</li>
+        <li>La IA comete errores fonológicos frecuentes — puede incluir palabras con fonema objetivo mal categorizado</li>
+        <li>Sin control dialectal: algunas palabras varían fonológicamente según la variante del español</li>
+      </ul>
+      <div class="sec-lbl">Prompt mejorado · Mayo 2026</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt · copiar y pegar en Claude o ChatGPT</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Crea listas de palabras controladas para terapia logopédica.
+
+FONEMA OBJETIVO: [/k/]
+PACIENTE: [niño de 6 años, sustitución k→t sistemática en todos los contextos]
+VARIANTE DIALECTAL: [español peninsular / español de América — especificar región]
+
+LISTAS DE 10 PALABRAS CADA UNA:
+1. Bisilábicas con /k/ en posición inicial + vocal posterior (/a/, /o/, /u/) — alta frecuencia, representables con imagen, conocidas por un niño de 6 años [CONTEXTO MÁS FÁCIL]
+2. Bisilábicas con /k/ en posición inicial + vocal anterior (/e/, /i/) — mismo criterio [MÁS DIFÍCIL por coarticulación]
+3. Bisilábicas con /k/ en posición medial o final
+4. Pares mínimos /k/ – /t/ para discriminación auditiva [mismo nº de sílabas, misma estructura, diferencia en un solo rasgo fonológico]
+
+FILTROS DE CALIDAD OBLIGATORIOS:
+- Solo palabras de alta frecuencia léxica (vocabulario esperado en niño de 6 años)
+- Representables con imagen simple (para tarjetas)
+- Sin variación dialectal que altere el fonema objetivo — marca con * las que pueden variar
+- Verifica que los pares mínimos sean fonológicamente válidos
+
+Ordena cada lista de menor a mayor dificultad articulatoria.
+Añade 5 frases graduadas (posición inicial → medial/final → grupos consonánticos) con 2+ palabras con /k/.
+Al final incluye: 3 advertencias sobre palabras que la IA tiende a generar incorrectamente en este fonema.
+
+========================================
+**VERSION FINAL (RELLENABLE):**
+SI TIENES MATERIAL PROPIO: [PEGA AQUI TU MATERIAL CLINICO PROPIO]
+SI NO TIENES MATERIAL PROPIO: [INDICA: GENERAR DESDE CERO]
+TIPO DE TAREA: [EVALUACION / TERAPIA / PLANIFICACION / COMUNICACION]
+TIPO DE SALIDA FINAL: [PAPEL (IMPRIMIBLE) / ACTIVIDAD DIGITAL / ACTIVIDAD INTERACTIVA / ACTIVIDAD GAMIFICADA (VIDEOJUEGO BASICO)]
+
+**SI ES EVALUACION O INFORME:**
+DIGITALIZA EL CONTENIDO EN FORMATO CLARO, TRAZABLE Y FACIL DE COMPARTIR (SIN GAMIFICAR).
+
+**SI ES TERAPIA O MATERIALES DE INTERVENCION:**
+INDICA SI QUIERES: [DIGITALIZAR] O [GAMIFICAR / VIDEOJUEGO BASICO].
+SI MARCAS GAMIFICAR, PROPON MECANICA SIMPLE (NIVELES, PUNTOS, TURNOS, REFUERZO) ADAPTADA AL PERFIL DEL PACIENTE.
+========================================</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3.2 -->
+  <div class="pcard">
+    <div class="pcard-hd" onclick="toggle(this)">
+      <span class="pnum">3.2</span>
+      <div class="pmeta">
+        <div class="ptitle">Cuento adaptado con vocabulario controlado</div>
+        <div class="badges"><span class="badge bm">Materiales</span><span class="badge bf">Uso funcional</span></div>
+      </div>
+      <span class="tgl">+</span>
+    </div>
+    <div class="pcard-bd">
+      <div class="sec-lbl">Prompt original 2025</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt 2025 · versión previa</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Escribe un cuento breve adaptado para terapia logopédica.
+
+Paciente: [niño de 8 años con dislexia y comprensión oral preservada]
+Objetivo: [vocabulario de emociones + conectores temporales: "primero", "luego", "después", "al final"]
+Temática: [perros y animales de granja]
+
+Restricciones:
+- Máximo 180 palabras
+- Frases de máximo 8 palabras
+- Sin palabras de más de 3 sílabas (excepto los conectores)
+
+Incluye al final:
+- 4 preguntas de comprensión oral
+- Descripción de 3 ilustraciones para actividad de narración inversa
+
+Material ya diseñado por la logopeda: [si ya tienes cuento/base de vocabulario, pégalo y adáptalo]</pre>
+      </div>
+      <div class="sec-lbl">Errores detectados (prompt 2025)</div>
+      <ul class="probs">
+        <li>Las preguntas de comprensión no se especifican por tipo — pueden ser todas literales, perdiendo valor clínico</li>
+        <li>"Narración inversa" es una técnica específica — sin instrucciones de aplicación el logopeda puede usarla mal</li>
+        <li>Los conectores objetivo no están marcados en el texto para facilitar su señalización en sesión</li>
+      </ul>
+      <div class="sec-lbl">Prompt mejorado · Mayo 2026</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt · copiar y pegar en Claude o ChatGPT</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Escribe un cuento breve adaptado para terapia logopédica.
+
+PACIENTE: [niño de 8 años, dislexia fonológica, comprensión oral conservada hasta párrafos de 6–7 frases]
+OBJETIVO LINGÜÍSTICO: [practicar conectores temporales: "primero", "luego", "después", "al final"]
+TEMÁTICA: [perros y animales de granja]
+
+RESTRICCIONES:
+- Máximo 180 palabras
+- Frases de máximo 8 palabras
+- Vocabulario: bisilábicos y trisilábicos de alta frecuencia (excepto los conectores objetivo)
+- Estructura clara: inicio – nudo – desenlace
+
+INCLUYE AL FINAL:
+1. Preguntas de comprensión por tipo (no todas del mismo tipo):
+   - 2 literales (respuesta explícita en el texto)
+   - 1 inferencial simple (requiere deducción lógica básica)
+   - 1 de vocabulario (significado de una palabra del cuento en contexto)
+
+2. Descripciones de 3 ilustraciones para secuencia narrativa:
+   - Cada descripción debe incluir: escena, personajes presentes, acción principal, información narrativa clave
+   - Indica qué momento de la historia representa (inicio / nudo / desenlace)
+
+3. Marca en el texto todos los conectores temporales con [CONECTOR] para facilitar su señalización en sesión
+
+4. Genera 3 prompts de imagen para DALL-E o Midjourney que produzcan las ilustraciones con estilo coherente, fondo blanco, apto para imprimir
+
+========================================
+**VERSION FINAL (RELLENABLE):**
+SI TIENES MATERIAL PROPIO: [PEGA AQUI TU MATERIAL CLINICO PROPIO]
+SI NO TIENES MATERIAL PROPIO: [INDICA: GENERAR DESDE CERO]
+TIPO DE TAREA: [EVALUACION / TERAPIA / PLANIFICACION / COMUNICACION]
+TIPO DE SALIDA FINAL: [PAPEL (IMPRIMIBLE) / ACTIVIDAD DIGITAL / ACTIVIDAD INTERACTIVA / ACTIVIDAD GAMIFICADA (VIDEOJUEGO BASICO)]
+
+**SI ES EVALUACION O INFORME:**
+DIGITALIZA EL CONTENIDO EN FORMATO CLARO, TRAZABLE Y FACIL DE COMPARTIR (SIN GAMIFICAR).
+
+**SI ES TERAPIA O MATERIALES DE INTERVENCION:**
+INDICA SI QUIERES: [DIGITALIZAR] O [GAMIFICAR / VIDEOJUEGO BASICO].
+SI MARCAS GAMIFICAR, PROPON MECANICA SIMPLE (NIVELES, PUNTOS, TURNOS, REFUERZO) ADAPTADA AL PERFIL DEL PACIENTE.
+========================================</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3.3 -->
+  <div class="pcard">
+    <div class="pcard-hd" onclick="toggle(this)">
+      <span class="pnum">3.3</span>
+      <div class="pmeta">
+        <div class="ptitle">Ficha de actividad clínica</div>
+        <div class="badges"><span class="badge bm">Materiales</span><span class="badge bf">Uso funcional</span></div>
+      </div>
+      <span class="tgl">+</span>
+    </div>
+    <div class="pcard-bd">
+      <div class="sec-lbl">Prompt original 2025</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt 2025 · versión previa</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Diseña el contenido de una ficha de actividad para logopedia.
+
+Objetivo: [conciencia fonológica: identificar el fonema inicial de palabras]
+Paciente: [niño de 5-6 años, nivel preescolar]
+Uso: [en sesión con el logopeda]
+Temática: [animales de la selva]
+
+La ficha incluye:
+1. Título atractivo para el niño
+2. Instrucciones para el logopeda (breves, en cursiva)
+3. Actividad principal: 12 palabras de animales, identificar letra inicial
+4. Actividad de refuerzo: 3 grupos de 3 imágenes, identificar la que empieza igual
+5. Espacio para pegatina de refuerzo positivo
+
+Dame el contenido de texto completo, listo para maquetar.
+
+Material ya diseñado por la logopeda: [si ya tienes palabras o estructura de ficha, pégalas y respétalas]</pre>
+      </div>
+      <div class="sec-lbl">Errores detectados (prompt 2025)</div>
+      <ul class="probs">
+        <li>Error conceptual: "identificar la letra inicial" vs. "identificar el fonema inicial" son tareas distintas — el prompt pide la primera cuando el objetivo clínico es la segunda</li>
+        <li>No especifica si el niño ya lee: si no lee, las palabras deben presentarse con imagen, no con texto escrito</li>
+        <li>No incluye sistema de registro integrado: el logopeda no puede anotar directamente en la ficha</li>
+      </ul>
+      <div class="sec-lbl">Prompt mejorado · Mayo 2026</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt · copiar y pegar en Claude o ChatGPT</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Diseña el contenido de una ficha de actividad para logopedia.
+
+OBJETIVO CLÍNICO (elige según el nivel del paciente):
+- Si el niño NO lee aún: [identificar el SONIDO inicial de palabras presentadas oralmente con apoyo de imagen — tarea fonológica pura, sin texto escrito]
+- Si el niño SÍ lee: [identificar la letra inicial de palabras escritas — tarea grafema-fonema]
+
+DATOS DE LA FICHA:
+- Paciente: [niño/a de 5–6 años, nivel preescolar, sin lectura convencional aún]
+- Uso: [en sesión con el logopeda / para casa — especificar, porque cambian las instrucciones]
+- Temática motivadora: [animales de la selva]
+
+LA FICHA INCLUYE:
+1. Título atractivo para el niño (máx. 5 palabras)
+2. Instrucciones para el logopeda (breves, en cursiva): cómo presentar la tarea, qué decir exactamente, cuántas oportunidades dar por ítem
+3. Instrucciones para el niño (lenguaje simple, sin tecnicismo)
+4. Actividad principal: 12 palabras/imágenes de animales — identificar el sonido inicial (oralmente)
+5. Actividad de refuerzo: 3 grupos de 3 imágenes — identificar cuál empieza con el mismo sonido
+6. Sistema de registro integrado en la ficha: casilla por ítem [✓ acierto / × error / A con ayuda]
+7. Espacio para pegatina de refuerzo positivo
+
+FORMATO DE SALIDA:
+- Texto completo listo para maquetar en Word o Canva
+- 4 prompts de imagen para DALL-E/Midjourney: animales con estilo coherente, fondo blanco, línea clara, apto para imprimir en blanco y negro
+
+========================================
+**VERSION FINAL (RELLENABLE):**
+SI TIENES MATERIAL PROPIO: [PEGA AQUI TU MATERIAL CLINICO PROPIO]
+SI NO TIENES MATERIAL PROPIO: [INDICA: GENERAR DESDE CERO]
+TIPO DE TAREA: [EVALUACION / TERAPIA / PLANIFICACION / COMUNICACION]
+TIPO DE SALIDA FINAL: [PAPEL (IMPRIMIBLE) / ACTIVIDAD DIGITAL / ACTIVIDAD INTERACTIVA / ACTIVIDAD GAMIFICADA (VIDEOJUEGO BASICO)]
+
+**SI ES EVALUACION O INFORME:**
+DIGITALIZA EL CONTENIDO EN FORMATO CLARO, TRAZABLE Y FACIL DE COMPARTIR (SIN GAMIFICAR).
+
+**SI ES TERAPIA O MATERIALES DE INTERVENCION:**
+INDICA SI QUIERES: [DIGITALIZAR] O [GAMIFICAR / VIDEOJUEGO BASICO].
+SI MARCAS GAMIFICAR, PROPON MECANICA SIMPLE (NIVELES, PUNTOS, TURNOS, REFUERZO) ADAPTADA AL PERFIL DEL PACIENTE.
+========================================</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3.4 -->
+  <div class="pcard">
+    <div class="pcard-hd" onclick="toggle(this)">
+      <span class="pnum">3.4</span>
+      <div class="pmeta">
+        <div class="ptitle">Texto adaptado para AAC / comunicación aumentativa</div>
+        <div class="badges"><span class="badge bm">Materiales</span><span class="badge ba">Avanzado</span></div>
+      </div>
+      <span class="tgl">+</span>
+    </div>
+    <div class="pcard-bd">
+      <div class="sec-lbl">Prompt original 2025</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt 2025 · versión previa</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Actúa como logopeda especialista en comunicación aumentativa (AAC).
+
+Usuario: [adolescente de 15 años con parálisis cerebral, usa tablero ARASAAC + tablet con voz]
+Situación a trabajar: [pedir ayuda y expresar preferencias en la cafetería del instituto]
+
+Necesito:
+1. 15 palabras/conceptos núcleo (vocabulario de alta frecuencia)
+2. 10 palabras/conceptos periféricos (específicos de la cafetería)
+3. 8 frases funcionales completas (de más sencilla a más compleja)
+4. Guión de role-play: 3 escenarios posibles con respuestas esperadas
+5. Pautas para el personal del instituto (lenguaje no técnico, para imprimir)</pre>
+      </div>
+      <div class="sec-lbl">Errores detectados (prompt 2025)</div>
+      <ul class="probs">
+        <li>No especifica el método de acceso motor al dispositivo: el diseño del tablero y la complejidad de las frases depende de si usa toque directo, switch o eye-gaze</li>
+        <li>Las "respuestas esperadas" en el role-play son solo la respuesta ideal — sin variaciones aceptables ni errores típicos de comunicación</li>
+        <li>Falta el guión de modelado (Aided Language Stimulation): qué hace exactamente el logopeda y cómo</li>
+      </ul>
+      <div class="sec-lbl">Prompt mejorado · Mayo 2026</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt · copiar y pegar en Claude o ChatGPT</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Actúa como logopeda especialista en Comunicación Aumentativa y Alternativa (CAA/AAC).
+
+USUARIO:
+- [Adolescente de 15 años con parálisis cerebral, GMFCS nivel III]
+- Sistema AAC: [tablero ARASAAC en tablet con voz sintetizada]
+- Método de acceso: [toque directo / barrido con switch / eye-gaze — especificar]
+- Velocidad de producción aproximada: [lenta: 1–2 símbolos/min / media / rápida]
+- Configuración actual del tablero: [vocabulario de alta frecuencia en primera pantalla / organizado por categorías]
+
+SITUACIÓN A TRABAJAR:
+- [Pedir ayuda y expresar preferencias en la cafetería del instituto]
+
+GENERA:
+1. 15 palabras de Vocabulario Núcleo (Core Vocabulary) — alta frecuencia en cualquier contexto; justifica la selección de cada una
+2. 10 palabras de Vocabulario Periférico — específicas de la cafetería
+3. 8 frases funcionales completas, de más sencilla a más compleja, con la estructura de símbolo(s) del tablero
+4. Guión de modelado para el logopeda (Aided Language Stimulation):
+   - Qué modela el logopeda y cómo en cada intercambio
+   - Variaciones aceptables de respuesta (no solo la respuesta ideal)
+   - Errores comunicativos frecuentes en este contexto y cómo manejarlos sin interrumpir la comunicación
+5. Guión de role-play: 3 escenarios posibles con respuestas esperadas y alternativas válidas
+6. Pautas para el personal del instituto: máx. 1 página, lenguaje no técnico, para imprimir y tener a mano
+
+========================================
+**VERSION FINAL (RELLENABLE):**
+SI TIENES MATERIAL PROPIO: [PEGA AQUI TU MATERIAL CLINICO PROPIO]
+SI NO TIENES MATERIAL PROPIO: [INDICA: GENERAR DESDE CERO]
+TIPO DE TAREA: [EVALUACION / TERAPIA / PLANIFICACION / COMUNICACION]
+TIPO DE SALIDA FINAL: [PAPEL (IMPRIMIBLE) / ACTIVIDAD DIGITAL / ACTIVIDAD INTERACTIVA / ACTIVIDAD GAMIFICADA (VIDEOJUEGO BASICO)]
+
+**SI ES EVALUACION O INFORME:**
+DIGITALIZA EL CONTENIDO EN FORMATO CLARO, TRAZABLE Y FACIL DE COMPARTIR (SIN GAMIFICAR).
+
+**SI ES TERAPIA O MATERIALES DE INTERVENCION:**
+INDICA SI QUIERES: [DIGITALIZAR] O [GAMIFICAR / VIDEOJUEGO BASICO].
+SI MARCAS GAMIFICAR, PROPON MECANICA SIMPLE (NIVELES, PUNTOS, TURNOS, REFUERZO) ADAPTADA AL PERFIL DEL PACIENTE.
+========================================</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3.5 -->
+  <div class="pcard">
+    <div class="pcard-hd" onclick="toggle(this)">
+      <span class="pnum">3.5</span>
+      <div class="pmeta">
+        <div class="ptitle">Trabalenguas, rimas y canciones clínicas</div>
+        <div class="badges"><span class="badge bm">Materiales</span><span class="badge bf">Uso funcional</span></div>
+      </div>
+      <span class="tgl">+</span>
+    </div>
+    <div class="pcard-bd">
+      <div class="sec-lbl">Prompt original 2025</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt 2025 · versión previa</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Crea materiales articulatorios para terapia logopédica.
+
+Fonema objetivo: [/l/]
+Paciente: [niño de 7 años, le encantan los superhéroes]
+Dificultad: [/l/ en posición inicial correcta; dificultad intervocálica y en grupos /bl/, /fl/, /pl/]
+
+Crea:
+1. Trabalenguas gracioso con superhéroe + /l/ intervocálica (15-20 palabras, absurdo y divertido)
+2. Canción (4 estrofas de 4 versos, melodía de cumpleaños feliz):
+   estrofa 1: /l/ inicial · estrofa 2: /l/ intervocálica · estrofa 3: /bl/ · estrofa 4: /fl/ o /pl/
+3. Frase trabalenguas con grupos /bl/, /fl/ y /pl/ juntos
+
+Marca en negrita las sílabas con el fonema objetivo.
+
+Material ya diseñado por la logopeda: [si ya tienes rimas/trabalenguas propios, pégalos para adaptar dificultad sin perder contenido].</pre>
+      </div>
+      <div class="sec-lbl">Errores detectados (prompt 2025)</div>
+      <ul class="probs">
+        <li>Los grupos /bl/, /fl/ y /pl/ en el mismo trabalenguas es exceso de carga articulatoria — funciona como evaluación, no como práctica terapéutica</li>
+        <li>No incluye indicaciones de tempo: en logopedia articulatoria la práctica va siempre lento → normal → rápido</li>
+        <li>Sin asociación gestual: los gestos orofaciales o corporales facilitan la consolidación articulatoria especialmente en niños</li>
+      </ul>
+      <div class="sec-lbl">Prompt mejorado · Mayo 2026</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt · copiar y pegar en Claude o ChatGPT</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Crea materiales articulatorios para terapia logopédica.
+
+FONEMA OBJETIVO: [/l/]
+PACIENTE: [niño de 7 años, le encantan los superhéroes]
+PERFIL DE ERROR:
+- /l/ en posición inicial: [correcta — ya consolidada]
+- /l/ intervocálica: [dificultad — sustituye por /j/ o elisión]
+- Grupos consonánticos /bl/, /fl/, /pl/: [ausentes]
+
+IMPORTANTE: Genera materiales SEPARADOS para cada posición y grupo.
+No combines /bl/, /fl/ y /pl/ en el mismo trabalenguas — trabaja uno hasta criterio antes de introducir el siguiente.
+
+MATERIALES A CREAR:
+1. Trabalenguas para /l/ intervocálica (15–20 palabras, temática de superhéroes, absurdo y divertido)
+   — Indicaciones de tempo de práctica: lento / normal / rápido
+   — Gesto orofacial o corporal sugerido para las sílabas de máxima exigencia
+
+2. Para cada grupo consonántico (/bl/, /fl/, /pl/) por separado — un trabalenguas breve (8–12 palabras)
+   — Indicaciones de tempo: lento / normal / rápido para cada uno
+   — Gesto asociado
+
+3. Canción de 4 estrofas (melodía de Cumpleaños Feliz):
+   - Estrofa 1: /l/ inicial (repaso de lo consolidado — velocidad normal)
+   - Estrofa 2: /l/ intervocálica (objetivo principal — tempo lento)
+   - Estrofa 3: /bl/
+   - Estrofa 4: /fl/ o /pl/
+
+Para todos los materiales:
+- Marca en negrita las sílabas con el fonema objetivo
+- Indica el criterio de éxito para pasar del tempo lento al normal y del normal al rápido
+
+========================================
+**VERSION FINAL (RELLENABLE):**
+SI TIENES MATERIAL PROPIO: [PEGA AQUI TU MATERIAL CLINICO PROPIO]
+SI NO TIENES MATERIAL PROPIO: [INDICA: GENERAR DESDE CERO]
+TIPO DE TAREA: [EVALUACION / TERAPIA / PLANIFICACION / COMUNICACION]
+TIPO DE SALIDA FINAL: [PAPEL (IMPRIMIBLE) / ACTIVIDAD DIGITAL / ACTIVIDAD INTERACTIVA / ACTIVIDAD GAMIFICADA (VIDEOJUEGO BASICO)]
+
+**SI ES EVALUACION O INFORME:**
+DIGITALIZA EL CONTENIDO EN FORMATO CLARO, TRAZABLE Y FACIL DE COMPARTIR (SIN GAMIFICAR).
+
+**SI ES TERAPIA O MATERIALES DE INTERVENCION:**
+INDICA SI QUIERES: [DIGITALIZAR] O [GAMIFICAR / VIDEOJUEGO BASICO].
+SI MARCAS GAMIFICAR, PROPON MECANICA SIMPLE (NIVELES, PUNTOS, TURNOS, REFUERZO) ADAPTADA AL PERFIL DEL PACIENTE.
+========================================</pre>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ═══════════════════════════════════════
+     CATEGORÍA 4 · COMUNICACIÓN
+═══════════════════════════════════════ -->
+<section class="cat-section" data-cat="comunicacion">
+  <div class="cat-header">
+    <div class="cat-dot" style="background:#4a148c"></div>
+    <h2>Comunicación</h2>
+    <span class="cnt">5 prompts · Familias, colegios y otros profesionales</span>
+  </div>
+
+  <!-- 4.1 -->
+  <div class="pcard">
+    <div class="pcard-hd" onclick="toggle(this)">
+      <span class="pnum">4.1</span>
+      <div class="pmeta">
+        <div class="ptitle">Email / nota de progreso para la familia</div>
+        <div class="badges"><span class="badge bc">Comunicación</span><span class="badge bd">Descubrimiento</span></div>
+      </div>
+      <span class="tgl">+</span>
+    </div>
+    <div class="pcard-bd">
+      <div class="sec-lbl">Prompt original 2025</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt 2025 · versión previa</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Redacta un email de seguimiento mensual para la familia.
+
+Tono: [cercano y cálido, pero profesional]
+Información:
+- Paciente: [Lucía, 6 años, trastorno fonológico]
+- Período: [enero 2026]
+- Avances: [ya produce /s/ en palabras y frases. Ha empezado a autocorregirse espontáneamente]
+- Dificultades: [/s/ en posición final todavía inconsistente. El cansancio del colegio afecta]
+- Pautas para casa: [practicar 5 min al día el juego del "sapo soplón". No corregir en conversación]
+- Próximo mes: [empezaremos a trabajar /s/ en grupos consonánticos]
+
+Formato: email, 3-4 párrafos, máx. 250 palabras, sin jerga técnica.</pre>
+      </div>
+      <div class="sec-lbl">Errores detectados (prompt 2025)</div>
+      <ul class="probs">
+        <li>"Tono cercano y cálido pero profesional" es ambiguo — el tono óptimo depende del perfil de la familia</li>
+        <li>"No corregir en conversación" aparece sin justificación — las familias que no entienden el por qué no la siguen</li>
+        <li>La comunicación es de un solo sentido: no invita a la familia a reportar lo que observa en casa</li>
+      </ul>
+      <div class="sec-lbl">Prompt mejorado · Mayo 2026</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt · copiar y pegar en Claude o ChatGPT</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Redacta un email de seguimiento mensual para la familia.
+
+PERFIL DE LA FAMILIA (adapta el tono y el nivel de detalle según esto):
+[Muy implicados con formación / Ansiosos que necesitan tranquilización / Distantes / Quieren datos concretos / Prefieren ejemplos cotidianos]
+
+DATOS CLÍNICOS:
+- Paciente: [Lucía, 6 años, trastorno fonológico]
+- Período: [enero 2026]
+- Avances: [ya produce /s/ en palabras y frases; ha empezado a autocorregirse espontáneamente]
+- Dificultades persistentes: [/s/ en posición final todavía inconsistente; el cansancio del colegio afecta]
+- Pautas para casa: [practicar 5 min/día el "juego del sapo soplón"; no corregir directamente en conversación]
+- Próximo mes: [empezaremos a trabajar /s/ en grupos consonánticos]
+
+ESTRUCTURA DEL EMAIL (técnica del Sándwich):
+1. Logro concreto del mes — arranca con algo específico y positivo
+2. Área de trabajo actual con justificación breve del enfoque (el "por qué" motiva el cumplimiento)
+3. Pautas para casa: paso a paso, con justificación clínica en lenguaje cotidiano para cada pauta
+4. Horizonte del próximo mes: qué trabajaremos y qué pueden observar en casa
+
+FORMATO: Email, 3–4 párrafos, máx. 250 palabras, sin jerga técnica.
+Traduce cualquier término técnico que uses a lenguaje cotidiano.
+Al final incluye una pregunta abierta a la familia: qué han observado en casa este mes.
+
+========================================
+**VERSION FINAL (RELLENABLE):**
+SI TIENES MATERIAL PROPIO: [PEGA AQUI TU MATERIAL CLINICO PROPIO]
+SI NO TIENES MATERIAL PROPIO: [INDICA: GENERAR DESDE CERO]
+TIPO DE TAREA: [EVALUACION / TERAPIA / PLANIFICACION / COMUNICACION]
+TIPO DE SALIDA FINAL: [PAPEL (IMPRIMIBLE) / ACTIVIDAD DIGITAL / ACTIVIDAD INTERACTIVA / ACTIVIDAD GAMIFICADA (VIDEOJUEGO BASICO)]
+
+**SI ES EVALUACION O INFORME:**
+DIGITALIZA EL CONTENIDO EN FORMATO CLARO, TRAZABLE Y FACIL DE COMPARTIR (SIN GAMIFICAR).
+
+**SI ES TERAPIA O MATERIALES DE INTERVENCION:**
+INDICA SI QUIERES: [DIGITALIZAR] O [GAMIFICAR / VIDEOJUEGO BASICO].
+SI MARCAS GAMIFICAR, PROPON MECANICA SIMPLE (NIVELES, PUNTOS, TURNOS, REFUERZO) ADAPTADA AL PERFIL DEL PACIENTE.
+========================================</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4.2 -->
+  <div class="pcard">
+    <div class="pcard-hd" onclick="toggle(this)">
+      <span class="pnum">4.2</span>
+      <div class="pmeta">
+        <div class="ptitle">Pautas para la familia (trabajo en casa)</div>
+        <div class="badges"><span class="badge bc">Comunicación</span><span class="badge bd">Descubrimiento</span></div>
+      </div>
+      <span class="tgl">+</span>
+    </div>
+    <div class="pcard-bd">
+      <div class="sec-lbl">Prompt original 2025</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt 2025 · versión previa</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Redacta una hoja de pautas para la familia sobre logopedia en casa.
+
+El documento debe ser: claro, motivador, práctico y fácil de seguir.
+Caso:
+- Paciente: [Marco, 4 años, retraso simple del lenguaje]
+- Objetivo: [ampliar vocabulario y estimular frases de 3 palabras]
+- Tiempo disponible: [10-15 minutos al día, integrado en la rutina]
+
+Incluye:
+1. Qué estamos trabajando y por qué (3-4 líneas)
+2. Tres actividades concretas para casa (paso a paso)
+3. Qué NO hacer (errores comunes)
+4. Señales de progreso que pueden observar
+5. Cuándo contactar con la logopeda</pre>
+      </div>
+      <div class="sec-lbl">Errores detectados (prompt 2025)</div>
+      <ul class="probs">
+        <li>Las actividades paso a paso no incluyen qué hacer si el niño no responde o está cansado — la familia se queda sin recurso</li>
+        <li>Sin expectativas de tiempo realistas: las familias necesitan saber cuándo es normal empezar a ver cambios</li>
+        <li>El formato es de "deberes de logopedia" cuando debería ser de "oportunidades comunicativas en la rutina"</li>
+      </ul>
+      <div class="sec-lbl">Prompt mejorado · Mayo 2026</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt · copiar y pegar en Claude o ChatGPT</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Redacta una Guía de Integración Comunicativa en Rutinas Diarias para la familia.
+
+CRITERIO CLAVE: No diseñes "deberes de logopedia". Diseña oportunidades comunicativas naturales integradas en la vida diaria — baño, cena, camino al colegio, juego libre.
+
+CASO:
+- Paciente: [Marco, 4 años — diagnóstico original: retraso simple del lenguaje / actualizado a TEL expresivo leve si cumple criterios DLD; verificar con evaluación]
+- Objetivo: [ampliar vocabulario y estimular frases de 3 palabras]
+- Tiempo real disponible: [10–15 minutos al día, fragmentados en momentos de rutina]
+
+INCLUYE:
+1. Qué estamos trabajando y por qué (3–4 líneas, sin jerga técnica)
+
+2. Tres momentos del día donde integrar el trabajo (no actividades adicionales):
+   - Momento 1 (ej. baño): qué hace la familia exactamente, paso a paso + ejemplo de frase que puede decir
+   - Momento 2 (ej. cena): ídem
+   - Momento 3 (ej. juego libre): ídem
+   Para cada momento: cómo responder si el niño no habla / qué hacer si está cansado o sin ganas
+
+3. Qué NO hacer — errores comunes con explicación de por qué son contraproducentes
+
+4. Señales de progreso observables en casa (sin test, solo observación cotidiana)
+
+5. Expectativas realistas de tiempo: cuándo es normal empezar a ver cambios y de qué tipo
+
+6. Cuándo contactar con la logopeda: señales de alarma vs. variación normal del proceso
+
+========================================
+**VERSION FINAL (RELLENABLE):**
+SI TIENES MATERIAL PROPIO: [PEGA AQUI TU MATERIAL CLINICO PROPIO]
+SI NO TIENES MATERIAL PROPIO: [INDICA: GENERAR DESDE CERO]
+TIPO DE TAREA: [EVALUACION / TERAPIA / PLANIFICACION / COMUNICACION]
+TIPO DE SALIDA FINAL: [PAPEL (IMPRIMIBLE) / ACTIVIDAD DIGITAL / ACTIVIDAD INTERACTIVA / ACTIVIDAD GAMIFICADA (VIDEOJUEGO BASICO)]
+
+**SI ES EVALUACION O INFORME:**
+DIGITALIZA EL CONTENIDO EN FORMATO CLARO, TRAZABLE Y FACIL DE COMPARTIR (SIN GAMIFICAR).
+
+**SI ES TERAPIA O MATERIALES DE INTERVENCION:**
+INDICA SI QUIERES: [DIGITALIZAR] O [GAMIFICAR / VIDEOJUEGO BASICO].
+SI MARCAS GAMIFICAR, PROPON MECANICA SIMPLE (NIVELES, PUNTOS, TURNOS, REFUERZO) ADAPTADA AL PERFIL DEL PACIENTE.
+========================================</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4.3 -->
+  <div class="pcard">
+    <div class="pcard-hd" onclick="toggle(this)">
+      <span class="pnum">4.3</span>
+      <div class="pmeta">
+        <div class="ptitle">Informe para el centro escolar / orientador</div>
+        <div class="badges"><span class="badge bc">Comunicación</span><span class="badge bf">Uso funcional</span></div>
+      </div>
+      <span class="tgl">+</span>
+    </div>
+    <div class="pcard-bd">
+      <div class="sec-lbl">Prompt original 2025</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt 2025 · versión previa</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Redacta un informe logopédico para el centro escolar (tutor y orientador).
+
+El informe debe ser: comprensible para docentes, centrado en el aula, con recomendaciones accionables.
+Caso:
+- Alumno: [Andrés, 9 años, 4º de Primaria]
+- Diagnóstico: [TEL — perfil mixto, afectación expresiva y comprensiva]
+- Intervención: [sesiones semanales desde los 5 años. Actualmente: comprensión de inferencias y narrativa]
+- En el aula: [dificultades con instrucciones largas, mejor en matemáticas que en lengua]
+
+Incluye:
+1. Qué es el TEL (en términos sencillos)
+2. Cómo se manifiesta en el aula
+3. Adaptaciones metodológicas concretas (5-7 medidas)
+4. Adaptaciones en la evaluación (3-4 propuestas)
+5. Cómo puede apoyar el tutor el trabajo de logopedia
+6. Señales de alerta</pre>
+      </div>
+      <div class="sec-lbl">Errores detectados (prompt 2025)</div>
+      <ul class="probs">
+        <li>Las adaptaciones son genéricas para TEL — no tienen en cuenta si el alumno tiene más afectación comprensiva o expresiva, lo que determina medidas completamente distintas</li>
+        <li>"Dificultades con instrucciones largas" sin especificar la causa: memoria verbal, procesamiento auditivo o comprensión — la adaptación es diferente en cada caso</li>
+        <li>No diferencia adaptaciones de acceso, metodológicas y de evaluación — la clasificación que usan los docentes y orientadores</li>
+      </ul>
+      <div class="sec-lbl">Prompt mejorado · Mayo 2026</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt · copiar y pegar en Claude o ChatGPT</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Redacta un informe logopédico para el centro escolar.
+
+DESTINATARIO (el tono varía según esto):
+[Orientador — técnico] / [Tutor/a — práctico] / [Equipo directivo — estratégico] / [Los tres]
+
+CASO:
+- Alumno: [Andrés, 9 años, 4º Primaria]
+- Diagnóstico: [TEL — perfil mixto con predominio de afectación comprensiva]
+- Intervención: [sesiones semanales desde los 5 años; actualmente: comprensión de inferencias y narrativa]
+- Manifestaciones en el aula: [dificultades con instrucciones de más de 2 pasos, mejor en matemáticas que en lengua]
+- Causa de las dificultades con instrucciones largas: [procesamiento auditivo lento / memoria verbal / comprensión — especificar]
+
+ESTRUCTURA:
+1. Qué es el TEL (lenguaje comprensible para docentes, no clínico)
+2. Cómo se manifiesta en el aula en este alumno concreto (específico, no genérico)
+3. Adaptaciones de ACCESO (cómo presentar la información para que Andrés la reciba correctamente)
+4. Adaptaciones METODOLÓGICAS (cómo enseñar) — 5–7 medidas concretas
+5. Adaptaciones de EVALUACIÓN (cómo examinar para que pueda demostrar lo que sabe) — 3–4 propuestas
+6. Cómo puede el tutor reforzar el trabajo logopédico (acciones concretas sin formación especializada)
+7. Señales de alerta a comunicar a la logopeda (cuándo, cómo y a quién)
+
+ENTREGABLE ADICIONAL:
+Genera un "One-Page Profile" — tarjeta resumen de 1 página para que el tutor tenga en su mesa:
+3 cosas que Andrés hace bien / 3 cosas que le cuestan / 5 estrategias clave para el día a día
+
+========================================
+**VERSION FINAL (RELLENABLE):**
+SI TIENES MATERIAL PROPIO: [PEGA AQUI TU MATERIAL CLINICO PROPIO]
+SI NO TIENES MATERIAL PROPIO: [INDICA: GENERAR DESDE CERO]
+TIPO DE TAREA: [EVALUACION / TERAPIA / PLANIFICACION / COMUNICACION]
+TIPO DE SALIDA FINAL: [PAPEL (IMPRIMIBLE) / ACTIVIDAD DIGITAL / ACTIVIDAD INTERACTIVA / ACTIVIDAD GAMIFICADA (VIDEOJUEGO BASICO)]
+
+**SI ES EVALUACION O INFORME:**
+DIGITALIZA EL CONTENIDO EN FORMATO CLARO, TRAZABLE Y FACIL DE COMPARTIR (SIN GAMIFICAR).
+
+**SI ES TERAPIA O MATERIALES DE INTERVENCION:**
+INDICA SI QUIERES: [DIGITALIZAR] O [GAMIFICAR / VIDEOJUEGO BASICO].
+SI MARCAS GAMIFICAR, PROPON MECANICA SIMPLE (NIVELES, PUNTOS, TURNOS, REFUERZO) ADAPTADA AL PERFIL DEL PACIENTE.
+========================================</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4.4 -->
+  <div class="pcard">
+    <div class="pcard-hd" onclick="toggle(this)">
+      <span class="pnum">4.4</span>
+      <div class="pmeta">
+        <div class="ptitle">Preparar una reunión de seguimiento con la familia</div>
+        <div class="badges"><span class="badge bc">Comunicación</span><span class="badge bf">Uso funcional</span></div>
+      </div>
+      <span class="tgl">+</span>
+    </div>
+    <div class="pcard-bd">
+      <div class="sec-lbl">Prompt original 2025</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt 2025 · versión previa</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Prepara el guión de una reunión de seguimiento logopédico con la familia.
+
+Contexto:
+- Paciente: [Sofía, 11 años, tartamudez]
+- Duración: [30 minutos]
+- Familia: [muy implicados, a veces ansiosos, tienden a comparar con otros niños]
+
+Puntos a tratar:
+1. Progreso: [mejora en contextos controlados; dificultades en situaciones de presión social]
+2. Cambio de enfoque: [pasar de centrado en la fluencia a un enfoque integrado con aceptación]
+3. Implicación familiar: [pedirles que reduzcan la presión cuando Sofía habla]
+
+Necesito:
+- Estructura de la reunión (bloques de tiempo)
+- Frases clave para introducir el cambio sin que suene a retroceso
+- Cómo responder si preguntan "¿cuándo dejará de tartamudear?"
+- Cierre motivador con tareas concretas para casa</pre>
+      </div>
+      <div class="sec-lbl">Errores detectados (prompt 2025)</div>
+      <ul class="probs">
+        <li>El guión es muy unidireccional: no prevé tiempo para que la familia hable antes de que hable el logopeda</li>
+        <li>El cambio de enfoque fluencia→aceptación es un giro terapéutico mayor — el prompt pide frases clave pero no anticipa qué hacer si la familia lo rechaza</li>
+        <li>No incluye documentar los acuerdos de la reunión: qué se compromete cada parte, cuándo se revisa</li>
+      </ul>
+      <div class="sec-lbl">Prompt mejorado · Mayo 2026</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt · copiar y pegar en Claude o ChatGPT</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Prepara el guión de una reunión de seguimiento logopédico con la familia.
+
+CONTEXTO:
+- Paciente: [Sofía, 11 años, tartamudez]
+- Duración: [30 minutos]
+- Perfil familiar: [muy implicados, a veces ansiosos, tienden a comparar con otros niños]
+- Contenido difícil: [cambio de enfoque: de centrado en fluencia a enfoque integrado con aceptación]
+
+PUNTOS A TRATAR:
+1. Progreso: [mejora en contextos controlados; dificultades en situaciones de presión social]
+2. Cambio de enfoque: [trabajar la relación de Sofía con su tartamudez, no solo la fluencia]
+3. Implicación familiar: [reducir la presión cuando Sofía habla]
+
+ESTRUCTURA DEL GUIÓN CON BLOQUES DE TIEMPO:
+1. Apertura (5 min): cómo arrancar con escucha activa — pregunta a la familia qué han observado ellos antes de hablar tú
+2. Progreso (7 min): cómo presentar los datos sin comparar con "lo normal"
+3. Cambio de enfoque (10 min):
+   - Frases clave para introducirlo sin que suene a retroceso o rendición
+   - Cómo responder si preguntan "¿cuándo dejará de tartamudear?" — proporciona 2–3 respuestas empáticas y honestas
+   - Cómo manejar el rechazo si la familia no acepta el cambio de enfoque
+4. Implicación familiar (5 min): cómo pedirles que cambien comportamientos sin que se sientan culpados
+5. Cierre (3 min): acuerdos concretos + próxima revisión + cómo documentar lo acordado
+
+OBJECIONES A ANTICIPAR:
+- "¿Por qué no mejora más rápido?" → respuesta empática + información sobre curva real
+- "¿Hay algún tratamiento más eficaz?" → respuesta honesta sin devaluar el proceso
+- "Nosotros ya no le corregimos" → cómo explorar sin acusar si hay inconsistencia en casa
+
+========================================
+**VERSION FINAL (RELLENABLE):**
+SI TIENES MATERIAL PROPIO: [PEGA AQUI TU MATERIAL CLINICO PROPIO]
+SI NO TIENES MATERIAL PROPIO: [INDICA: GENERAR DESDE CERO]
+TIPO DE TAREA: [EVALUACION / TERAPIA / PLANIFICACION / COMUNICACION]
+TIPO DE SALIDA FINAL: [PAPEL (IMPRIMIBLE) / ACTIVIDAD DIGITAL / ACTIVIDAD INTERACTIVA / ACTIVIDAD GAMIFICADA (VIDEOJUEGO BASICO)]
+
+**SI ES EVALUACION O INFORME:**
+DIGITALIZA EL CONTENIDO EN FORMATO CLARO, TRAZABLE Y FACIL DE COMPARTIR (SIN GAMIFICAR).
+
+**SI ES TERAPIA O MATERIALES DE INTERVENCION:**
+INDICA SI QUIERES: [DIGITALIZAR] O [GAMIFICAR / VIDEOJUEGO BASICO].
+SI MARCAS GAMIFICAR, PROPON MECANICA SIMPLE (NIVELES, PUNTOS, TURNOS, REFUERZO) ADAPTADA AL PERFIL DEL PACIENTE.
+========================================</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4.5 -->
+  <div class="pcard">
+    <div class="pcard-hd" onclick="toggle(this)">
+      <span class="pnum">4.5</span>
+      <div class="pmeta">
+        <div class="ptitle">Coordinación con otro profesional (equipo multidisciplinar)</div>
+        <div class="badges"><span class="badge bc">Comunicación</span><span class="badge ba">Avanzado</span></div>
+      </div>
+      <span class="tgl">+</span>
+    </div>
+    <div class="pcard-bd">
+      <div class="sec-lbl">Prompt original 2025</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt 2025 · versión previa</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Redacta una comunicación formal entre profesionales para coordinar un caso compartido.
+
+De: [Logopeda · Consulta privada]
+Para: [Terapeuta Ocupacional · mismo centro]
+Paciente: [Pablo, 7 años, TEA nivel 1 con dificultades de integración sensorial]
+Desde logopedia: [comunicación funcional, pragmática, apoyos visuales. 8 meses]
+
+Necesito coordinar:
+[Pautas de regulación sensorial para aplicar antes de empezar la sesión.
+Alinear el vocabulario de los apoyos visuales para no crear confusión]
+
+Lo que puedo ofrecer: [compartir el banco de pictogramas y el vocabulario de emociones]
+
+Formato: email profesional, máx. 300 palabras, con propuesta de reunión de coordinación.</pre>
+      </div>
+      <div class="sec-lbl">Errores detectados (prompt 2025)</div>
+      <ul class="probs">
+        <li>300 palabras no permiten desarrollar lo que logopedia ha observado con rigor suficiente para que el receptor ajuste su intervención</li>
+        <li>No hay campo para "objetivo compartido": la coordinación sin un objetivo transversal común es solo intercambio de información</li>
+        <li>Sin indicadores que rastreará cada profesional: sin esto hay duplicidades o lagunas entre intervenciones</li>
+      </ul>
+      <div class="sec-lbl">Prompt mejorado · Mayo 2026</div>
+      <div class="pbox">
+        <div class="pbox-top">
+          <span class="pbox-lbl">Prompt · copiar y pegar en Claude o ChatGPT</span>
+          <button class="copy-btn" onclick="cp(this)">Copiar</button>
+        </div>
+        <pre class="ptext">Redacta una comunicación de coordinación entre profesionales para un caso compartido.
+
+EMISOR: [Logopeda · Consulta privada · Contacto]
+RECEPTOR: [Terapeuta Ocupacional · mismo centro / externo]
+PACIENTE: [Pablo, 7 años, TEA nivel 1 con dificultades de integración sensorial]
+AUTORIZACIÓN PARA COMPARTIR INFORMACIÓN: [Sí, por escrito / Sí, verbal / Pendiente]
+
+DESDE LOGOPEDIA — RESUMEN DE LA INTERVENCIÓN:
+- Período: [8 meses, 2 sesiones semanales]
+- Áreas: [comunicación funcional, pragmática, vocabulario de emociones, apoyos visuales]
+- Progresos: [vocabulario emocional de 3 a 12 palabras; inicio de peticiones espontáneas]
+- Observación que requiere coordinación: [los estados de alta activación sensorial al inicio de sesión reducen significativamente la ventana de aprendizaje comunicativo]
+
+OBJETIVO COMPARTIDO PROPUESTO (transversal a ambas intervenciones):
+[Reducir el nivel de activación sensorial en los 10 min previos a la sesión de logopedia para maximizar la disponibilidad comunicativa]
+
+LO QUE NECESITO COORDINAR:
+- [Pautas de regulación sensorial aplicables antes de la sesión de logopedia]
+- [Alinear el vocabulario y los pictogramas de emociones para evitar inconsistencias entre las dos intervenciones]
+
+LO QUE PUEDO OFRECER:
+- [Banco de pictogramas y vocabulario de emociones ya trabajado]
+- [Registro del nivel de activación observado al inicio de cada sesión]
+
+INDICADORES QUE RASTREARÁ CADA PROFESIONAL (para evitar duplicidades):
+- Logopedia: [nivel de activación al inicio de sesión / nº de peticiones espontáneas]
+- TO: [tolerancia sensorial / tiempo hasta regulación]
+
+FORMATO: Genera dos versiones:
+A) Email profesional informal (mismo centro) — máx. 300 palabras + propuesta de reunión mensual de 20 min
+B) Nota de interconsulta estructurada (para historia clínica compartida o derivación formal) — con secciones: motivo, antecedentes, hipótesis, propuesta concreta
+
+========================================
+**VERSION FINAL (RELLENABLE):**
+SI TIENES MATERIAL PROPIO: [PEGA AQUI TU MATERIAL CLINICO PROPIO]
+SI NO TIENES MATERIAL PROPIO: [INDICA: GENERAR DESDE CERO]
+TIPO DE TAREA: [EVALUACION / TERAPIA / PLANIFICACION / COMUNICACION]
+TIPO DE SALIDA FINAL: [PAPEL (IMPRIMIBLE) / ACTIVIDAD DIGITAL / ACTIVIDAD INTERACTIVA / ACTIVIDAD GAMIFICADA (VIDEOJUEGO BASICO)]
+
+**SI ES EVALUACION O INFORME:**
+DIGITALIZA EL CONTENIDO EN FORMATO CLARO, TRAZABLE Y FACIL DE COMPARTIR (SIN GAMIFICAR).
+
+**SI ES TERAPIA O MATERIALES DE INTERVENCION:**
+INDICA SI QUIERES: [DIGITALIZAR] O [GAMIFICAR / VIDEOJUEGO BASICO].
+SI MARCAS GAMIFICAR, PROPON MECANICA SIMPLE (NIVELES, PUNTOS, TURNOS, REFUERZO) ADAPTADA AL PERFIL DEL PACIENTE.
+========================================</pre>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+</main>
+
+<div class="prompt-modal" id="promptModal">
+  <div class="prompt-modal-card">
+    <div class="prompt-modal-top">
+      <strong>Vista del prompt</strong>
+      <div class="prompt-modal-actions">
+        <button class="pm-btn" type="button" id="modalBackBtn">← Volver</button>
+        <button class="pm-btn" type="button" id="modalCloseBtn">Cerrar ✕</button>
+      </div>
+    </div>
+    <div id="modalPromptContent"></div>
+  </div>
+</div>
+
+<button id="btt" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<footer>
+  <div class="fbrand">LOGOPED-IA</div>
+  <p>Kit de Prompts Clínicos · Actualizado Mayo 2026 · Canal Telegram · Acceso abierto</p>
+  <p>La IA es una herramienta de apoyo. Revisa siempre el resultado antes de usarlo clínicamente.</p>
+  <a class="tg-link" href="https://t.me/logoped_ia" target="_blank" rel="noreferrer">Saber más sobre IA en Telegram: @logoped_ia</a>
+</footer>
+
+<script>
+function toggle(hd) {
+  const card = hd.closest('.pcard');
+  const wasOpen = card.classList.contains('open');
+  document.querySelectorAll('.pcard.open').forEach(c => c.classList.remove('open'));
+  if (!wasOpen) {
+    card.classList.add('open');
+    const flow = card.querySelector('.flow-wrap');
+    if (flow) setFlowStep(flow, 0);
+  }
+}
+
+function filter(cat, btn) {
+  document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  document.querySelectorAll('.cat-section').forEach(s => {
+    s.style.display = (cat === 'all' || s.dataset.cat === cat) ? '' : 'none';
+  });
+}
+
+function cp(btn) {
+  const pre = btn.closest('.pbox').querySelector('.ptext');
+  const text = pre.textContent.trim();
+  const done = () => {
+    btn.textContent = '✓ Copiado';
+    btn.classList.add('done');
+    setTimeout(() => { btn.textContent = 'Copiar'; btn.classList.remove('done'); }, 2000);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(done).catch(() => fallback(text, done));
+  } else {
+    fallback(text, done);
+  }
+}
+function fallback(text, done) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;opacity:0';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); done(); } catch(e) {}
+  document.body.removeChild(ta);
+}
+
+window.addEventListener('scroll', () => {
+  document.getElementById('btt').classList.toggle('show', window.scrollY > 300);
+});
+
+function setFlowStep(flow, step) {
+  const max = Number(flow.dataset.max || 2);
+  const safeStep = Math.max(0, Math.min(max, step));
+  const panels = flow.querySelectorAll('.flow-panel');
+  const tabs = flow.querySelectorAll('.flow-tab');
+  flow.dataset.step = String(safeStep);
+  panels.forEach((p, i) => p.classList.toggle('on', i === safeStep));
+  tabs.forEach((t, i) => t.classList.toggle('on', i === safeStep));
+}
+
+function buildHorizontalFlow() {
+  document.querySelectorAll('.pcard-bd').forEach((bd) => {
+    const oldLbl = [...bd.querySelectorAll('.sec-lbl')].find(e => e.textContent.trim().toLowerCase().includes('prompt original'));
+    const errLbl = [...bd.querySelectorAll('.sec-lbl')].find(e => e.textContent.trim().toLowerCase().includes('errores detectados'));
+    const newLbl = [...bd.querySelectorAll('.sec-lbl')].find(e => e.textContent.trim().toLowerCase().includes('prompt mejorado'));
+    if (!oldLbl || !errLbl || !newLbl) return;
+
+    errLbl.textContent = 'Errores detectados';
+
+    const oldBox = oldLbl.nextElementSibling;
+    const errList = errLbl.nextElementSibling;
+    const newBox = newLbl.nextElementSibling;
+    if (!oldBox || !errList || !newBox) return;
+    if (!oldBox.classList.contains('pbox') || !errList.classList.contains('probs') || !newBox.classList.contains('pbox')) return;
+    if (bd.querySelector('.flow-wrap')) return;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'flow-wrap';
+    wrap.dataset.step = '0';
+    wrap.dataset.max = '2';
+    wrap.innerHTML = `
+      <div class="flow-top">
+        <div class="flow-title">Vista simple del prompt</div>
+        <div class="flow-tabs">
+          <button class="flow-tab on" type="button">1. Antiguo 2025</button>
+          <button class="flow-tab" type="button">2. Errores claros</button>
+          <button class="flow-tab" type="button">3. Prompt actualizado</button>
+        </div>
+      </div>
+      <div class="flow-viewport">
+        <div class="flow-track">
+          <div class="flow-panel on"></div>
+          <div class="flow-panel"></div>
+          <div class="flow-panel"></div>
+        </div>
+      </div>
+    `;
+
+    const panels = wrap.querySelectorAll('.flow-panel');
+    panels[0].appendChild(oldLbl);
+    panels[0].appendChild(oldBox);
+    panels[1].appendChild(errLbl);
+    panels[1].appendChild(errList);
+    panels[2].appendChild(newLbl);
+    panels[2].appendChild(newBox);
+
+    const firstScaleLbl = [...bd.querySelectorAll('.sec-lbl')].find(e => e.textContent.trim().toLowerCase().includes('cómo escalarlo'));
+    if (firstScaleLbl) {
+      bd.insertBefore(wrap, firstScaleLbl);
+    } else {
+      bd.appendChild(wrap);
+    }
+
+    wrap.querySelectorAll('.flow-tab').forEach((tab, i) => tab.addEventListener('click', () => setFlowStep(wrap, i)));
+    setFlowStep(wrap, 0);
+  });
+}
+
+function reorderCategories() {
+  const main = document.querySelector('.main');
+  if (!main) return;
+  const desired = ['planificacion', 'materiales', 'comunicacion', 'informes'];
+  const sections = [...main.querySelectorAll('.cat-section')];
+  desired.forEach((cat) => {
+    const sec = sections.find(s => s.dataset.cat === cat);
+    if (sec) main.appendChild(sec);
+  });
+}
+
+function openPromptModalFromCard(card) {
+  const modal = document.getElementById('promptModal');
+  const body = document.getElementById('modalPromptContent');
+  if (!modal || !body || !card) return;
+
+  const clone = card.cloneNode(true);
+  clone.classList.add('open');
+  clone.querySelectorAll('.flow-wrap').forEach((flow) => {
+    flow.querySelectorAll('.flow-tab').forEach((tab, i) => {
+      tab.addEventListener('click', () => setFlowStep(flow, i));
+    });
+    setFlowStep(flow, 0);
+  });
+
+  body.innerHTML = '';
+  body.appendChild(clone);
+  modal.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closePromptModal() {
+  const modal = document.getElementById('promptModal');
+  const body = document.getElementById('modalPromptContent');
+  if (!modal || !body) return;
+  modal.classList.remove('show');
+  body.innerHTML = '';
+  document.body.style.overflow = '';
+}
+
+function buildCompactNavigator() {
+  const catNav = document.getElementById('catNav');
+  const promptNav = document.getElementById('promptNav');
+  if (!catNav || !promptNav) return;
+
+  const catOrder = ['planificacion', 'materiales', 'comunicacion', 'informes'];
+  const catLabels = {
+    planificacion: 'Planificación',
+    materiales: 'Materiales',
+    comunicacion: 'Comunicación',
+    informes: 'Informes'
+  };
+
+  catNav.innerHTML = '';
+  promptNav.innerHTML = '';
+
+  const allBtn = document.createElement('button');
+  allBtn.className = 'nav-pill on';
+  allBtn.type = 'button';
+  allBtn.textContent = 'Inicio';
+  allBtn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-pill').forEach(b => b.classList.remove('on'));
+    allBtn.classList.add('on');
+    document.querySelectorAll('.cat-section').forEach(s => s.style.display = 'none');
+    promptNav.classList.add('show');
+    promptNav.innerHTML = '<button class="prompt-chip" type="button">Selecciona una categoría para empezar</button>';
+  });
+  catNav.appendChild(allBtn);
+
+  catOrder.forEach((cat) => {
+    const section = document.querySelector(`.cat-section[data-cat="${cat}"]`);
+    if (!section) return;
+    const btn = document.createElement('button');
+    btn.className = 'nav-pill';
+    btn.type = 'button';
+    btn.textContent = catLabels[cat] || cat;
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.nav-pill').forEach(b => b.classList.remove('on'));
+      btn.classList.add('on');
+      document.querySelectorAll('.cat-section').forEach(s => s.style.display = 'none');
+
+      promptNav.innerHTML = '';
+      const back = document.createElement('button');
+      back.className = 'prompt-chip';
+      back.type = 'button';
+      back.textContent = '← Volver';
+      back.addEventListener('click', () => allBtn.click());
+      promptNav.appendChild(back);
+
+      section.querySelectorAll('.pcard').forEach((card) => {
+        const t = card.querySelector('.ptitle')?.textContent?.trim() || 'Prompt';
+        const n = card.querySelector('.pnum')?.textContent?.trim() || '';
+        const chip = document.createElement('button');
+        chip.className = 'prompt-chip';
+        chip.type = 'button';
+        chip.textContent = `${n} ${t}`.trim();
+        chip.addEventListener('click', () => openPromptModalFromCard(card));
+        promptNav.appendChild(chip);
+      });
+      promptNav.classList.add('show');
+    });
+    catNav.appendChild(btn);
+  });
+
+  document.querySelectorAll('.cat-section').forEach(s => s.style.display = 'none');
+  promptNav.classList.add('show');
+  promptNav.innerHTML = '<button class="prompt-chip" type="button">Selecciona una categoría para empezar</button>';
+
+  const closeBtn = document.getElementById('modalCloseBtn');
+  const backBtn = document.getElementById('modalBackBtn');
+  const modal = document.getElementById('promptModal');
+  if (closeBtn) closeBtn.addEventListener('click', closePromptModal);
+  if (backBtn) backBtn.addEventListener('click', closePromptModal);
+  if (modal) modal.addEventListener('click', (e) => {
+    if (e.target === modal) closePromptModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closePromptModal();
+  });
+}
+
+reorderCategories();
+buildHorizontalFlow();
+buildCompactNavigator();
+</script>
+</body>
+</html>

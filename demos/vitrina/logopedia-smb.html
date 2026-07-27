@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SMB — Análisis Facial Biométrico · Logoped-IA</title>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:#f5f3ff;color:#1e1b4b;height:100vh;overflow:hidden}
+#app{display:grid;grid-template-columns:260px 1fr 340px;height:100vh}
+/* LEFT */
+#left{background:#fff;border-right:1px solid #e8e3ff;display:flex;flex-direction:column;overflow:hidden}
+#left header{padding:14px 16px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;flex-shrink:0}
+#left header h2{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;opacity:.85}
+#left header p{font-size:14px;font-weight:600;margin-top:2px}
+.patient-list{flex:1;overflow-y:auto;padding:8px}
+.patient-item{padding:10px 12px;border-radius:8px;cursor:pointer;margin-bottom:4px;transition:background .15s}
+.patient-item:hover{background:#f5f3ff}
+.patient-item.active{background:#ede9fe}
+.patient-name{font-size:13px;font-weight:600;color:#4c1d95}
+.patient-meta{font-size:11px;color:#6b7280;margin-top:2px}
+.hist-section{border-top:1px solid #e8e3ff;padding:8px;flex-shrink:0}
+.hist-title{font-size:10px;font-weight:700;color:#9ca3af;text-transform:uppercase;padding:4px 4px 5px}
+.hist-item{padding:7px 8px;border-radius:6px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;margin-bottom:2px}
+.hist-item:hover{background:#f5f3ff}
+.hist-date{font-size:10px;color:#4c1d95;font-weight:600}
+.hist-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px}
+.btn-add{margin:8px;padding:10px;border:2px dashed #c4b5fd;border-radius:8px;background:none;cursor:pointer;color:#7c3aed;font-size:12px;font-weight:600;width:calc(100% - 16px);flex-shrink:0}
+.btn-add:hover{background:#f5f3ff}
+/* MODAL */
+#patient-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center}
+#patient-modal.open{display:flex}
+.modal-card{background:#fff;border-radius:16px;padding:24px;width:360px;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal-card h3{font-size:16px;font-weight:700;margin-bottom:16px;color:#4c1d95}
+.form-row{margin-bottom:12px}
+.form-row label{display:block;font-size:11px;font-weight:600;color:#6b7280;text-transform:uppercase;margin-bottom:4px}
+.form-row input,.form-row select{width:100%;padding:8px 10px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;outline:none;transition:border-color .15s}
+.form-row input:focus,.form-row select:focus{border-color:#7c3aed}
+.modal-actions{display:flex;gap:8px;margin-top:16px}
+.btn-primary{flex:1;padding:10px;background:#7c3aed;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer}
+.btn-secondary{flex:1;padding:10px;background:#f3f4f6;color:#374151;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer}
+/* CENTER */
+#center{background:#1e1b4b;display:flex;flex-direction:column;overflow:hidden}
+/* Exercise bar */
+#exercise-bar{padding:10px 12px 8px;background:#160f3b;flex-shrink:0}
+#ex-buttons{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.ex-btn{padding:5px 11px;border:1.5px solid #4c1d95;border-radius:20px;background:none;color:#a78bfa;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap}
+.ex-btn:hover{background:#4c1d95;color:#fff}
+.ex-btn.active{background:#7c3aed;border-color:#7c3aed;color:#fff}
+#ex-instruction{margin-top:8px;padding:8px 12px;background:rgba(124,58,237,.18);border-radius:8px;border-left:3px solid #7c3aed}
+#ex-instruction .ex-name{font-size:10px;font-weight:700;color:#a78bfa;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px}
+#ex-instruction .ex-text{font-size:12px;color:#e9d5ff;line-height:1.4}
+#ex-instruction .ex-eval{font-size:10px;color:#7c3aed;margin-top:4px;font-style:italic}
+/* Camera */
+#cam-wrap{flex:1;display:flex;align-items:center;justify-content:center;min-height:0;padding:8px 12px 0}
+#video-wrap{position:relative;width:100%;max-width:580px;aspect-ratio:4/3}
+#video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1);border-radius:10px;display:block;background:#000}
+#canvas{position:absolute;top:0;left:0;width:100%;height:100%;transform:scaleX(-1);pointer-events:none;border-radius:10px}
+#face-badge{position:absolute;top:9px;left:50%;transform:translateX(-50%);padding:4px 12px;border-radius:16px;font-size:11px;font-weight:700;background:rgba(0,0,0,.6);color:#fff;white-space:nowrap;transition:background .3s}
+#face-badge.ok{background:rgba(5,150,105,.85)}
+#face-badge.warn{background:rgba(217,119,6,.85)}
+#no-face{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);background:#fef3c7;border:1px solid #fbbf24;color:#92400e;padding:5px 12px;border-radius:6px;font-size:11px;display:none;white-space:nowrap}
+/* countdown overlay */
+#countdown{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.45);border-radius:10px;z-index:10}
+#countdown-num{font-size:80px;font-weight:900;color:#fff;text-shadow:0 0 30px #7c3aed}
+/* Controls */
+#calib-bar{padding:6px 12px;background:#fffbeb;font-size:11px;color:#78350f;display:none;align-items:center;gap:8px;flex-shrink:0}
+#calib-bar input{width:52px;padding:3px 6px;border:1px solid #fbbf24;border-radius:4px;font-size:11px}
+#calib-bar button{padding:3px 9px;background:#f59e0b;color:#fff;border:none;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer}
+#controls-bar{padding:10px 12px;display:flex;gap:8px;justify-content:center;flex-shrink:0}
+.btn-cam{padding:10px 20px;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s}
+#btn-start{background:#7c3aed;color:#fff}
+#btn-start:hover{background:#6d28d9}
+#btn-capture{background:#059669;color:#fff}
+#btn-capture:hover:not(:disabled){background:#047857}
+#btn-capture:disabled{background:#374151;color:#6b7280;cursor:not-allowed}
+#btn-stop{background:#dc2626;color:#fff;display:none}
+#btn-stop:hover{background:#b91c1c}
+/* RIGHT */
+#right{background:#fff;border-left:1px solid #e8e3ff;display:flex;flex-direction:column;overflow:hidden}
+#right header{padding:12px 14px;background:#f5f3ff;border-bottom:1px solid #e8e3ff;flex-shrink:0}
+#right header h2{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#6d28d9}
+#right-patient{font-size:11px;color:#6b7280;margin-top:2px}
+/* View tabs */
+#view-tabs{display:flex;border-bottom:1px solid #e8e3ff;flex-shrink:0}
+.vtab{flex:1;padding:8px;font-size:11px;font-weight:600;text-align:center;cursor:pointer;color:#9ca3af;border-bottom:2px solid transparent;transition:all .15s}
+.vtab.active{color:#7c3aed;border-bottom-color:#7c3aed}
+#metrics-panel{flex:1;overflow-y:auto;padding:8px;display:block}
+#family-panel{flex:1;overflow-y:auto;padding:10px;display:none}
+/* Metric items */
+.metric-item{margin-bottom:6px;border-radius:8px;border:1px solid #e8e3ff;overflow:hidden}
+.metric-head{padding:8px 10px;cursor:pointer;transition:background .15s}
+.metric-head:hover{background:#f9f8ff}
+.metric-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px}
+.metric-name{font-size:11px;font-weight:600;color:#374151}
+.badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:16px}
+.badge-normal{background:#d1fae5;color:#065f46}
+.badge-revisar{background:#fef3c7;color:#92400e}
+.badge-significativo{background:#fee2e2;color:#991b1b}
+.metric-value{font-size:10px;color:#6b7280}
+.metric-bar{height:3px;background:#e5e7eb;border-radius:2px;margin-top:5px;overflow:hidden}
+.metric-bar-fill{height:100%;border-radius:2px;transition:width .4s}
+.fill-normal{background:#10b981}.fill-revisar{background:#f59e0b}.fill-significativo{background:#ef4444}
+.metric-expand{display:none;padding:0 10px 10px;background:#f9f8ff;border-top:1px solid #ede9fe}
+.metric-expand.open{display:block}
+.exp-section{margin-top:8px}
+.exp-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#9ca3af;margin-bottom:3px}
+.exp-text{font-size:11px;color:#374151;line-height:1.5}
+.exp-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.exp-tag{font-size:9px;padding:2px 6px;background:#ede9fe;color:#6d28d9;border-radius:10px;font-weight:600}
+.chevron{font-size:9px;color:#9ca3af;transition:transform .2s;margin-left:4px}
+.chevron.open{transform:rotate(180deg)}
+/* Family panel */
+.family-card{background:#fff;border:1px solid #e8e3ff;border-radius:10px;padding:12px;margin-bottom:8px}
+.family-card-title{font-size:12px;font-weight:700;color:#4c1d95;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.family-card-title .icon{font-size:16px}
+.family-text{font-size:12px;color:#374151;line-height:1.6}
+.family-action{margin-top:8px;padding:8px 10px;background:#f5f3ff;border-radius:6px;font-size:11px;color:#4c1d95;border-left:3px solid #7c3aed}
+/* Summary */
+#summary{padding:10px;border-top:1px solid #e8e3ff;background:#fafafa;flex-shrink:0}
+.summary-score{display:flex;align-items:center;gap:10px;padding:8px 10px;background:#fff;border-radius:8px;margin-bottom:8px;border:1.5px solid #e8e3ff}
+.score-number{font-size:32px;font-weight:800;color:#7c3aed;line-height:1}
+.score-right{flex:1}
+.score-label{font-size:9px;color:#9ca3af;text-transform:uppercase;letter-spacing:.3px}
+.score-desc{font-size:11px;font-weight:600;color:#374151;margin-top:2px;line-height:1.3}
+#export-btns{display:flex;gap:6px}
+.btn-export{flex:1;padding:9px;border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s}
+#btn-pdf{background:#7c3aed;color:#fff}
+#btn-pdf:hover:not(:disabled){background:#6d28d9}
+#btn-pdf:disabled,#btn-txt:disabled{background:#f3f4f6;color:#9ca3af;cursor:not-allowed}
+#btn-txt{background:#ede9fe;color:#6d28d9}
+#btn-txt:hover:not(:disabled){background:#ddd6fe}
+/* empty */
+.empty-msg{text-align:center;color:#9ca3af;font-size:12px;padding:28px 14px;line-height:1.6}
+/* warn */
+#browser-warn{position:fixed;top:0;left:0;right:0;padding:10px;background:#7c3aed;color:#fff;font-size:13px;font-weight:600;text-align:center;z-index:2000;display:none}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#c4b5fd;border-radius:2px}
+</style>
+</head>
+<body>
+
+<div id="browser-warn">SMB requiere Chrome/Edge con cámara activada</div>
+
+<div id="patient-modal">
+  <div class="modal-card">
+    <h3>Nuevo paciente</h3>
+    <div class="form-row"><label>Nombre completo</label><input id="p-name" type="text" placeholder="Apellidos, Nombre"></div>
+    <div class="form-row"><label>Fecha de nacimiento</label><input id="p-dob" type="date"></div>
+    <div class="form-row"><label>Motivo / especialidad</label>
+      <select id="p-specialty">
+        <option>Disfagia</option><option>Dislalia</option><option>Maloclusión</option>
+        <option>Deglución atípica</option><option>Respiración oral</option>
+        <option>Parálisis facial</option><option>Disfonía</option><option>General</option>
+      </select>
+    </div>
+    <div class="form-row"><label>Nº historia clínica</label><input id="p-hc" type="text" placeholder="Opcional"></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closePatientModal()">Cancelar</button>
+      <button class="btn-primary" onclick="savePatient()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div id="app">
+  <!-- LEFT -->
+  <div id="left">
+    <header>
+      <h2>SMB · Logoped-IA</h2>
+      <p>Análisis facial biométrico</p>
+    </header>
+    <div class="patient-list" id="patient-list">
+      <div class="empty-msg">Sin pacientes.<br>Añade el primero.</div>
+    </div>
+    <div class="hist-section" id="hist-section" style="display:none">
+      <div class="hist-title">Análisis anteriores</div>
+      <div id="hist-list"></div>
+    </div>
+    <button class="btn-add" onclick="openPatientModal()">+ Nuevo paciente</button>
+  </div>
+
+  <!-- CENTER -->
+  <div id="center">
+    <div id="exercise-bar">
+      <div id="ex-buttons"></div>
+      <div id="ex-instruction">
+        <div class="ex-name" id="ex-name-label">Ejercicio</div>
+        <div class="ex-text" id="ex-text-label">Inicia la cámara para comenzar</div>
+        <div class="ex-eval" id="ex-eval-label"></div>
+      </div>
+    </div>
+    <div id="cam-wrap">
+      <div id="video-wrap">
+        <video id="video" autoplay muted playsinline></video>
+        <canvas id="canvas"></canvas>
+        <div id="face-badge">Sin cámara</div>
+        <div id="no-face">No se detecta ninguna cara</div>
+        <div id="countdown"><div id="countdown-num">3</div></div>
+      </div>
+    </div>
+    <div id="calib-bar">
+      <span>Dist. interpupilar:</span>
+      <input id="ipd-input" type="number" value="63" min="45" max="80"> mm
+      <button onclick="applyIPD()">Aplicar</button>
+      <span id="ipd-ok" style="color:#059669;font-weight:600"></span>
+    </div>
+    <div id="controls-bar">
+      <button id="btn-start" class="btn-cam" onclick="startCamera()">Iniciar cámara</button>
+      <button id="btn-capture" class="btn-cam" onclick="startCountdown()" disabled>Capturar (3s)</button>
+      <button id="btn-stop" class="btn-cam" onclick="stopCamera()">Detener cámara</button>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div id="right">
+    <header>
+      <h2>Diagnóstico biométrico</h2>
+      <div id="right-patient">Sin paciente seleccionado</div>
+    </header>
+    <div id="view-tabs">
+      <div class="vtab active" onclick="showTab('clinic')">Clínico</div>
+      <div class="vtab" onclick="showTab('family')">Para familias</div>
+    </div>
+    <div id="metrics-panel">
+      <div class="empty-msg">Selecciona un paciente,<br>inicia la cámara y captura.</div>
+    </div>
+    <div id="family-panel"></div>
+    <div id="summary">
+      <div class="summary-score">
+        <div class="score-number" id="score-num">—</div>
+        <div class="score-right">
+          <div class="score-label">Puntuación global / 100</div>
+          <div class="score-desc" id="score-desc">Sin análisis</div>
+        </div>
+      </div>
+      <div id="export-btns">
+        <button class="btn-export" id="btn-pdf" onclick="exportPDF()" disabled>PDF completo</button>
+        <button class="btn-export" id="btn-txt" onclick="exportTXT()" disabled>TXT</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+// DATOS CLÍNICOS
+// ══════════════════════════════════════════════════════════
+const EXERCISES = [
+  {id:'reposo',   label:'Reposo',      icon:'😐',
+   inst:'Mantén la boca cerrada, labios juntos con suavidad, lengua tocando el paladar.',
+   eval:'Postura orofacial en reposo · Competencia labial espontánea'},
+  {id:'cierre',   label:'Cierre labial', icon:'🤐',
+   inst:'Aprieta los labios con fuerza mantenida. Aguanta 5 segundos.',
+   eval:'Tonicidad y fuerza muscular orbicular · Simetría en contracción'},
+  {id:'sonrisa',  label:'Sonrisa',     icon:'😄',
+   inst:'Sonríe ampliamente mostrando los dientes superiores e inferiores.',
+   eval:'Simetría facial en movimiento · Función del VII par craneal'},
+  {id:'protrusion',label:'Protrusión', icon:'💋',
+   inst:'Estira los labios hacia adelante como si fueras a dar un beso.',
+   eval:'Movilidad labial anterior · Función del músculo orbicular'},
+  {id:'apertura', label:'Apertura',    icon:'😮',
+   inst:'Abre la boca todo lo que puedas y mantenla abierta.',
+   eval:'Rango de apertura mandibular · Desviación en apertura · ATM'},
+  {id:'lengua',   label:'Lengua',      icon:'👅',
+   inst:'Saca la lengua recta hacia adelante sin desviación. Mantén.',
+   eval:'Simetría lingual · Función del XII par craneal · Protrusión'}
+];
+
+const METRIC_INFO = {
+  tSup:{name:'Tercio superior',
+    clinic:{normal:'Proporción adecuada del tercio superior (frente y zona glabelar). Sin alteraciones observables.',revisar:'El tercio superior muestra cierta desproporción. Puede ser una variante normal o indicar asimetrías de desarrollo frontal leve.',significativo:'Desproporción significativa del tercio superior. Valorar asimetrías craneales, frontal prominente o déficits de crecimiento frontal.'},
+    family:{normal:'La parte superior de la cara tiene una proporción normal.',revisar:'La parte superior de la cara es algo diferente en tamaño al resto. Suele ser una variación normal, pero vale mencionarlo.',significativo:'La parte superior de la cara es notablemente más grande o pequeña. Conviene que lo evalúe un especialista.'},
+    tags:['Asimetría craneal','Desarrollo frontal','Variante normal'],
+    exercise_tip:null},
+  tMid:{name:'Tercio medio',
+    clinic:{normal:'Proporción del tercio medio (nariz, mejillas) dentro del rango normal.',revisar:'Leve desproporción del tercio medio. Valorar en contexto clínico completo.',significativo:'Desproporción significativa del tercio medio. Puede asociarse a hipoplasia maxilar, clase III esquelética o déficits de crecimiento del macizo facial.'},
+    family:{normal:'La parte media de la cara (nariz y mejillas) tiene una proporción normal.',revisar:'La parte media de la cara muestra alguna diferencia de proporción. En la mayoría de casos es una variación normal.',significativo:'La parte media de la cara es notablemente diferente en tamaño. Puede ser relevante consultar con un ortodoncista o maxilofacial.'},
+    tags:['Hipoplasia maxilar','Clase III esquelética','Déficit de crecimiento facial'],
+    exercise_tip:null},
+  tInf:{name:'Tercio inferior',
+    clinic:{normal:'Proporción adecuada del tercio inferior (labios y mentón).',revisar:'El tercio inferior muestra ligera desproporción. Investigar postura mandibular, hábitos orales y patrón de deglución.',significativo:'Desproporción significativa del tercio inferior. Si está aumentado: respiración oral habitual, deglución atípica, mordida abierta anterior, hábitos de succión. Si está disminuido: clase II profunda o retrognatia mandibular.'},
+    family:{normal:'La parte inferior de la cara (labios y mentón) tiene una proporción normal.',revisar:'La parte inferior de la cara es algo diferente en tamaño. Puede estar relacionado con la postura de la boca o con algunos hábitos.',significativo:'La parte inferior de la cara presenta una diferencia notable. Si la zona de labios y mentón parece más larga, puede estar relacionado con respirar habitualmente por la boca. Esto puede afectar el desarrollo dental y la forma de tragar. Es importante valorarlo con el logopeda.'},
+    tags:['Respiración oral','Deglución atípica','Mordida abierta','Hábitos de succión','Clase II'],
+    exercise_tip:'Observar en ejercicio "Reposo": ¿se mantiene el cierre labial espontáneo?'},
+  sym:{name:'Simetría bilateral',
+    clinic:{normal:'Simetría facial dentro del rango normal. Sin asimetrías significativas.',revisar:'Ligera asimetría bilateral. Puede ser funcional, postural o estructural leve. Valorar en movimiento (sonrisa, protrusión).',significativo:'Asimetría facial significativa. Investigar origen: muscular (paresia/parálisis facial), óseo (hemifacial microsomia, asimetría mandibular) o postural. Si es de aparición reciente, derivar a neurología con carácter urgente.'},
+    family:{normal:'Los dos lados de la cara son bastante simétricos. Esto es normal.',revisar:'Hay una pequeña diferencia entre los dos lados de la cara. Muchas personas tienen cierta asimetría natural, especialmente en fotografías.',significativo:'Se observa una diferencia notable entre los dos lados de la cara. Puede deberse a los músculos, a los huesos o a los nervios de la cara. Si es algo que ha aparecido recientemente o de forma rápida, consulta pronto con el médico.'},
+    tags:['Parálisis facial','Hemifacial microsomia','ACV','Parálisis cerebral','Tortícolis'],
+    exercise_tip:'Comparar simetría en "Sonrisa" y "Protrusión" para distinguir origen muscular vs estructural.'},
+  lip:{name:'Apertura labial en reposo',
+    clinic:{normal:'Competencia labial: los labios se mantienen cerrados en reposo sin esfuerzo.',revisar:'Ligera separación labial en reposo. Investigar: respiración oral parcial, hipotonicidad orbicular, clase II con biprotrusion, hábitos orales.',significativo:'Incompetencia labial: labios claramente abiertos en reposo. Indicador primario de respiración oral habitual. Alta correlación con: deglución atípica, postura lingual baja, maloclusiones, hipertrofia adenoidea/amigdalar y síndrome de boca abierta.'},
+    family:{normal:'Los labios se mantienen cerrados con naturalidad cuando la cara está en reposo.',revisar:'Los labios tienden a separarse un poco cuando la cara está en reposo. Puede indicar que el niño respira por la boca con más frecuencia de lo normal. Vale la pena revisarlo.',significativo:'Los labios están abiertos cuando la cara está en reposo, sin hablar ni comer. Esto es un signo importante: generalmente indica que el niño respira habitualmente por la boca en lugar de por la nariz. Respirar por la boca puede afectar el desarrollo de los dientes, la postura de la lengua, la forma de tragar e incluso la calidad del sueño. Es importante hacer una valoración completa con el logopeda y posiblemente con el pediatra u otorrino.'},
+    tags:['Respiración oral','Deglución atípica','Hipotonicidad labial','Maloclusión clase II','Hipertrofia adenoidea'],
+    exercise_tip:'Evaluar también con ejercicio "Cierre labial": medir fuerza y duración de cierre mantenido.'},
+  com:{name:'Simetría de comisuras',
+    clinic:{normal:'Las comisuras labiales a la misma altura. Sin alteraciones.',revisar:'Ligera diferencia de altura entre comisuras. Puede ser postural o asimetría muscular leve.',significativo:'Diferencia significativa de altura entre comisuras. Evaluar paresia/parálisis del VII par craneal, afectación del músculo risorio o cigomático. Si es de aparición súbita: urgencia neurológica (posible ACV).'},
+    family:{normal:'Las dos esquinas de los labios están a la misma altura. Esto es normal.',revisar:'Hay una pequeña diferencia en la altura de las dos esquinas de la boca. Puede ser una pequeña asimetría muscular.',significativo:'Una esquina de la boca está notablemente más baja que la otra. Puede estar relacionado con el nervio facial o con los músculos de la cara. Si este cambio ha aparecido de repente o recientemente, consulta con el médico lo antes posible.'},
+    tags:['Parálisis facial','VII par craneal','ACV','Asimetría muscular orofacial'],
+    exercise_tip:'Comparar reposo vs "Sonrisa forzada": en parálisis central la asimetría aumenta en movimiento.'},
+  nas:{name:'Desviación nasal',
+    clinic:{normal:'La nariz está centrada en la línea media facial.',revisar:'Ligera desviación nasal respecto a la línea media.',significativo:'Desviación nasal significativa. Puede indicar desviación del tabique nasal con posible obstrucción nasal parcial, lo que favorece la respiración oral compensatoria. Valorar con otorrino si hay síntomas asociados.'},
+    family:{normal:'La nariz está bien centrada en la cara.',revisar:'La nariz está ligeramente desviada hacia un lado. Esto es bastante frecuente.',significativo:'La nariz presenta una desviación notable hacia un lado. En algunos casos puede haber también desviación del tabique por dentro, lo que dificulta respirar por la nariz y puede llevar al niño a respirar más por la boca.'},
+    tags:['Tabique nasal','Obstrucción nasal','Respiración oral secundaria','Traumatismo facial'],
+    exercise_tip:null},
+  man:{name:'Desviación mandibular',
+    clinic:{normal:'El mentón alineado con la línea media. Sin desviación mandibular.',revisar:'Ligera desviación mandibular. Valorar si es estructural (radiología) o funcional (mordida cruzada unilateral).',significativo:'Desviación mandibular significativa. Investigar: mordida cruzada posterior unilateral, disfunción de la articulación temporomandibular (ATM), asimetría mandibular estructural o laterognación mandibular. Derivar a ortodoncista.'},
+    family:{normal:'La mandíbula y el mentón están bien alineados con el centro de la cara.',revisar:'La mandíbula está algo desviada hacia un lado. Puede estar relacionado con la forma en que encajan los dientes.',significativo:'La mandíbula está claramente desviada hacia un lado. Puede estar relacionado con cómo encajan los dientes, con la articulación de la mandíbula (la "bisagra") o con el desarrollo del hueso de la mandíbula. Conviene que lo vea un ortodoncista.'},
+    tags:['Disfunción ATM','Mordida cruzada','Asimetría mandibular','Laterognación'],
+    exercise_tip:'Observar en "Apertura": si la desviación aumenta al abrir la boca, sugiere disfunción de ATM.'},
+  fif:{name:'Proporciones horizontales',
+    clinic:{normal:'Los cinco quintos faciales presentan proporciones horizontales equilibradas.',revisar:'Leve desproporción en los quintos faciales horizontales.',significativo:'Desproporción significativa de los quintos faciales. Cara ancha: puede asociarse a facies adenoidea (patrón respiratorio oral). Cara estrecha: puede relacionarse con paladar estrecho y compresión maxilar.'},
+    family:{normal:'El ancho de la cara está bien proporcionado en relación con los ojos y los pómulos.',revisar:'Hay alguna diferencia en las proporciones horizontales de la cara.',significativo:'Las proporciones de ancho de la cara muestran cierta alteración. Puede estar relacionado con el crecimiento del paladar o con el patrón habitual de respiración.'},
+    tags:['Facies adenoidea','Compresión maxilar','Paladar estrecho','Respiración oral'],
+    exercise_tip:null},
+  mid:{name:'Línea media facial',
+    clinic:{normal:'Nariz y mentón alineados correctamente con la línea media facial.',revisar:'Ligera desviación de la línea media combinada.',significativo:'Desviación significativa de la línea media facial (nariz + mentón). Valorar en conjunto: asimetrías esqueléticas globales, desviación de tabique y asimetría mandibular.'},
+    family:{normal:'La nariz y el mentón están bien alineados en el centro de la cara.',revisar:'La línea central de la cara muestra una leve desviación.',significativo:'La línea central de la cara (desde la nariz hasta el mentón) está claramente desviada. Conviene mencionarlo al especialista en la próxima visita.'},
+    tags:['Asimetría facial global','Desviación de tabique','Asimetría mandibular'],
+    exercise_tip:null}
+};
+
+const METRIC_IDS = ['tSup','tMid','tInf','sym','lip','com','nas','man','fif','mid'];
+
+// ══════════════════════════════════════════════════════════
+// IndexedDB
+// ══════════════════════════════════════════════════════════
+const DB_NAME='LogopedIA_SMB_v2', DB_VER=1;
+let db;
+function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open(DB_NAME,DB_VER);r.onupgradeneeded=e=>{const d=e.target.result;if(!d.objectStoreNames.contains('patients'))d.createObjectStore('patients',{keyPath:'id',autoIncrement:true}).createIndex('name','name');if(!d.objectStoreNames.contains('analyses'))d.createObjectStore('analyses',{keyPath:'id',autoIncrement:true}).createIndex('patient_id','patient_id');};r.onsuccess=e=>{db=e.target.result;res(db);};r.onerror=rej;});}
+const txAdd=(s,o)=>new Promise((res,rej)=>{const r=db.transaction(s,'readwrite').objectStore(s).add(o);r.onsuccess=()=>res(r.result);r.onerror=rej;});
+const txAll=s=>new Promise((res,rej)=>{const r=db.transaction(s,'readonly').objectStore(s).getAll();r.onsuccess=()=>res(r.result);r.onerror=rej;});
+const txIdx=(s,i,v)=>new Promise((res,rej)=>{const r=db.transaction(s,'readonly').objectStore(s).index(i).getAll(v);r.onsuccess=()=>res(r.result);r.onerror=rej;});
+
+// ══════════════════════════════════════════════════════════
+// State
+// ══════════════════════════════════════════════════════════
+let currentPatient=null, currentAnalysis=null, faceMesh=null;
+let camStream=null, animId=null, lastLandmarks=null;
+let ipdMm=63, lastFrameTs=0, capturing=false;
+let currentExercise=EXERCISES[0];
+
+const video=document.getElementById('video');
+const canvas=document.getElementById('canvas');
+const ctx=canvas.getContext('2d');
+
+const LM={TOP:10,GLAB:168,NOSE:4,SUBN:2,UBOT:13,LTOP:14,MENT:152,
+          CL:61,CR:291,EIL:133,EIR:362,EOL:33,EOR:263,ZL:234,ZR:454,
+          IRIS_L:468,IRIS_R:473};
+
+// ══════════════════════════════════════════════════════════
+// Exercise UI
+// ══════════════════════════════════════════════════════════
+function buildExerciseBar(){
+  const container=document.getElementById('ex-buttons');
+  container.innerHTML=EXERCISES.map(ex=>`
+    <button class="ex-btn${ex.id===currentExercise.id?' active':''}" onclick="selectExercise('${ex.id}')">
+      ${ex.icon} ${ex.label}
+    </button>`).join('');
+  updateExInstruction();
+}
+function selectExercise(id){
+  currentExercise=EXERCISES.find(e=>e.id===id)||EXERCISES[0];
+  document.querySelectorAll('.ex-btn').forEach(b=>{
+    b.classList.toggle('active', b.textContent.trim().includes(currentExercise.label));
+  });
+  updateExInstruction();
+}
+function updateExInstruction(){
+  document.getElementById('ex-name-label').textContent=currentExercise.label.toUpperCase();
+  document.getElementById('ex-text-label').textContent=currentExercise.inst;
+  document.getElementById('ex-eval-label').textContent='Evalúa: '+currentExercise.eval;
+}
+
+// ══════════════════════════════════════════════════════════
+// MediaPipe
+// ══════════════════════════════════════════════════════════
+async function initMesh(){
+  faceMesh=new FaceMesh({locateFile:f=>`https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${f}`});
+  faceMesh.setOptions({maxNumFaces:1,refineLandmarks:true,minDetectionConfidence:0.5,minTrackingConfidence:0.5});
+  faceMesh.onResults(onMeshResults);
+  await faceMesh.initialize();
+}
+function onMeshResults(res){
+  canvas.width=video.videoWidth||640;
+  canvas.height=video.videoHeight||480;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  const badge=document.getElementById('face-badge');
+  const noFace=document.getElementById('no-face');
+  if(res.multiFaceLandmarks&&res.multiFaceLandmarks.length>0){
+    lastLandmarks=res.multiFaceLandmarks[0];
+    badge.textContent='Cara detectada ✓'; badge.className='ok';
+    noFace.style.display='none';
+    drawOverlay(lastLandmarks);
+    if(!capturing){const m=calcMetrics(lastLandmarks);if(m)renderMetrics(diagnose(m),false);}
+    document.getElementById('btn-capture').disabled=!currentPatient;
+  } else {
+    lastLandmarks=null; badge.textContent='Sin cara detectada'; badge.className='warn';
+    noFace.style.display='block'; document.getElementById('btn-capture').disabled=true;
+  }
+}
+function drawOverlay(lm){
+  const W=canvas.width,H=canvas.height;
+  const p=i=>lm[i]?{x:lm[i].x*W,y:lm[i].y*H}:null;
+  // Key dots
+  ctx.fillStyle='rgba(167,139,250,0.85)';
+  [LM.TOP,LM.GLAB,LM.NOSE,LM.SUBN,LM.UBOT,LM.LTOP,LM.MENT,LM.CL,LM.CR,
+   LM.EIL,LM.EIR,LM.EOL,LM.EOR,LM.ZL,LM.ZR].forEach(i=>{
+    const pt=p(i);if(!pt)return;
+    ctx.beginPath();ctx.arc(pt.x,pt.y,3,0,Math.PI*2);ctx.fill();
+  });
+  // Midline
+  const top=p(LM.TOP),bot=p(LM.MENT);
+  if(top&&bot){
+    ctx.strokeStyle='rgba(124,58,237,0.5)';ctx.lineWidth=1;ctx.setLineDash([5,4]);
+    ctx.beginPath();ctx.moveTo(top.x,top.y);ctx.lineTo(bot.x,bot.y);ctx.stroke();ctx.setLineDash([]);
+  }
+  // Thirds lines
+  const glab=p(LM.GLAB),subn=p(LM.SUBN),zl=p(LM.ZL),zr=p(LM.ZR);
+  if(glab&&subn&&zl&&zr){
+    const x0=Math.min(zl.x,zr.x)-10,x1=Math.max(zl.x,zr.x)+10;
+    ctx.strokeStyle='rgba(5,150,105,0.5)';ctx.lineWidth=1;ctx.setLineDash([3,4]);
+    [glab,subn].forEach(pt=>{ctx.beginPath();ctx.moveTo(x0,pt.y);ctx.lineTo(x1,pt.y);ctx.stroke();});
+    ctx.setLineDash([]);
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// Camera
+// ══════════════════════════════════════════════════════════
+async function startCamera(){
+  document.getElementById('face-badge').textContent='Cargando MediaPipe...';
+  if(!faceMesh){try{await initMesh();}catch(e){alert('Error al cargar MediaPipe: '+e.message);return;}}
+  try{
+    camStream=await navigator.mediaDevices.getUserMedia({video:{width:640,height:480,facingMode:'user'}});
+    video.srcObject=camStream;await video.play();
+    document.getElementById('btn-start').style.display='none';
+    document.getElementById('btn-stop').style.display='inline-block';
+    document.getElementById('calib-bar').style.display='flex';
+    loopFrame();
+  }catch(e){alert('Sin acceso a la cámara: '+e.message);}
+}
+function loopFrame(){
+  animId=requestAnimationFrame(async ts=>{
+    if(ts-lastFrameTs>33&&video.readyState>=2&&faceMesh){lastFrameTs=ts;try{await faceMesh.send({image:video});}catch(_){}}
+    loopFrame();
+  });
+}
+function stopCamera(){
+  if(animId){cancelAnimationFrame(animId);animId=null;}
+  if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;}
+  video.srcObject=null;lastLandmarks=null;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  document.getElementById('face-badge').textContent='Sin cámara';
+  document.getElementById('face-badge').className='';
+  document.getElementById('btn-start').style.display='inline-block';
+  document.getElementById('btn-stop').style.display='none';
+  document.getElementById('btn-capture').disabled=true;
+  document.getElementById('calib-bar').style.display='none';
+}
+function applyIPD(){ipdMm=parseFloat(document.getElementById('ipd-input').value)||63;document.getElementById('ipd-ok').textContent=`DIP: ${ipdMm}mm ✓`;}
+
+// ══════════════════════════════════════════════════════════
+// Countdown & Capture
+// ══════════════════════════════════════════════════════════
+function startCountdown(){
+  if(!lastLandmarks||!currentPatient||capturing)return;
+  const overlay=document.getElementById('countdown');
+  const numEl=document.getElementById('countdown-num');
+  document.getElementById('btn-capture').disabled=true;
+  overlay.style.display='flex'; let n=3;
+  numEl.textContent=n;
+  const tick=setInterval(()=>{
+    n--;
+    if(n>0){numEl.textContent=n;}
+    else{clearInterval(tick);overlay.style.display='none';captureAnalysis();}
+  },1000);
+}
+
+async function captureAnalysis(){
+  if(!lastLandmarks||!currentPatient)return;
+  capturing=true;
+  const m=calcMetrics(lastLandmarks);
+  const diag=diagnose(m);
+  const score=calcScore(diag);
+  // Capture mirrored frame
+  const tmp=document.createElement('canvas');
+  tmp.width=video.videoWidth;tmp.height=video.videoHeight;
+  const tc=tmp.getContext('2d');
+  tc.save();tc.scale(-1,1);tc.drawImage(video,-tmp.width,0);tc.restore();
+  const imgData=tmp.toDataURL('image/jpeg',0.82);
+  const rec={
+    patient_id:currentPatient.id,date:new Date().toISOString(),
+    score,exercise_id:currentExercise.id,exercise_label:currentExercise.label,
+    diag:JSON.stringify(diag),metrics:JSON.stringify(m),img:imgData
+  };
+  const id=await txAdd('analyses',rec);rec.id=id;currentAnalysis=rec;
+  renderMetrics(diag,true);renderFamilyPanel(diag);
+  document.getElementById('btn-pdf').disabled=false;
+  document.getElementById('btn-txt').disabled=false;
+  document.getElementById('btn-capture').disabled=false;
+  // Flash
+  const flash=Object.assign(document.createElement('div'),{style:'position:absolute;inset:0;background:#fff;opacity:.7;pointer-events:none;border-radius:10px;transition:opacity .3s'});
+  document.getElementById('video-wrap').appendChild(flash);
+  setTimeout(()=>{flash.style.opacity=0;setTimeout(()=>flash.remove(),300);},60);
+  await loadHistory();
+  capturing=false;
+}
+
+// ══════════════════════════════════════════════════════════
+// Metrics calculation
+// ══════════════════════════════════════════════════════════
+function calcMetrics(lm){
+  const g=i=>lm[i]||null;
+  const top=g(LM.TOP),glab=g(LM.GLAB),nose=g(LM.NOSE),subn=g(LM.SUBN);
+  const ubot=g(LM.UBOT),ltop=g(LM.LTOP),ment=g(LM.MENT);
+  const cl=g(LM.CL),cr=g(LM.CR);
+  const eil=g(LM.EIL),eir=g(LM.EIR),eol=g(LM.EOL),eor=g(LM.EOR);
+  const zl=g(LM.ZL),zr=g(LM.ZR);
+  if(!top||!glab||!subn||!ment||!zl||!zr)return null;
+  const fH=Math.abs(ment.y-top.y),fW=Math.abs(zr.x-zl.x);
+  const midX=(top.x+(nose?nose.x:top.x)+ment.x)/3;
+  const tSup=Math.abs(glab.y-top.y)/fH;
+  const tMid=Math.abs(subn.y-glab.y)/fH;
+  const tInf=Math.abs(ment.y-subn.y)/fH;
+  const pairs=[];
+  if(cl&&cr)pairs.push([Math.abs(cl.x-midX),Math.abs(cr.x-midX)]);
+  if(eil&&eir)pairs.push([Math.abs(eil.x-midX),Math.abs(eir.x-midX)]);
+  if(eol&&eor)pairs.push([Math.abs(eol.x-midX),Math.abs(eor.x-midX)]);
+  if(zl&&zr)pairs.push([Math.abs(zl.x-midX),Math.abs(zr.x-midX)]);
+  const symScore=pairs.length?pairs.reduce((s,[a,b])=>s+Math.abs(a-b)/fW,0)/pairs.length:0;
+  const lipGap=(ubot&&ltop)?Math.abs(ltop.y-ubot.y)/fH:0;
+  const commSym=(cl&&cr)?Math.abs(cl.y-cr.y)/fH:0;
+  const nasalDev=nose?Math.abs(nose.x-midX)/fW:0;
+  const mandDev=Math.abs(ment.x-midX)/fW;
+  const f1=eol&&zl?Math.abs(eol.x-zl.x)/fW:0.2;
+  const f2=eil&&eol?Math.abs(eil.x-eol.x)/fW:0.2;
+  const f3=eil&&eir?Math.abs(eir.x-eil.x)/fW:0.2;
+  const f4=eor&&eir?Math.abs(eor.x-eir.x)/fW:0.2;
+  const f5=zr&&eor?Math.abs(zr.x-eor.x)/fW:0.2;
+  const fifthsDev=[f1,f2,f3,f4,f5].reduce((s,f)=>s+Math.abs(f-0.2),0)/5;
+  const midlineDev=(nasalDev+mandDev)/2;
+  return{tSup,tMid,tInf,symScore,lipGap,commSym,nasalDev,mandDev,fifthsDev,midlineDev};
+}
+
+function gradeT(v){const d=Math.abs(v-1/3);return d<0.04?'normal':d<0.08?'revisar':'significativo';}
+function grade(v,t1,t2){return v<t1?'normal':v<t2?'revisar':'significativo';}
+
+function diagnose(m){
+  if(!m)return[];
+  const fmt=v=>(v*100).toFixed(1)+'%';
+  return[
+    {id:'tSup',g:gradeT(m.tSup),    v:`${fmt(m.tSup)} (ideal 33.3%)`},
+    {id:'tMid',g:gradeT(m.tMid),    v:`${fmt(m.tMid)} (ideal 33.3%)`},
+    {id:'tInf',g:gradeT(m.tInf),    v:`${fmt(m.tInf)} (ideal 33.3%)`},
+    {id:'sym', g:grade(m.symScore,0.02,0.05), v:`Asimetría ${fmt(m.symScore)}`},
+    {id:'lip', g:grade(m.lipGap,0.01,0.03),   v:`Apertura ${fmt(m.lipGap)} de altura facial`},
+    {id:'com', g:grade(m.commSym,0.01,0.025), v:`Diferencia comisuras ${fmt(m.commSym)}`},
+    {id:'nas', g:grade(m.nasalDev,0.01,0.025),v:`Desv. nasal ${fmt(m.nasalDev)}`},
+    {id:'man', g:grade(m.mandDev,0.01,0.025), v:`Desv. mandibular ${fmt(m.mandDev)}`},
+    {id:'fif', g:grade(m.fifthsDev,0.02,0.05),v:`Desv. quintos ${fmt(m.fifthsDev)}`},
+    {id:'mid', g:grade(m.midlineDev,0.01,0.025),v:`Desv. media ${fmt(m.midlineDev)}`}
+  ];
+}
+function calcScore(diag){return diag.reduce((s,d)=>s+(d.g==='normal'?10:d.g==='revisar'?5:0),0);}
+
+// ══════════════════════════════════════════════════════════
+// Render – Clinical view
+// ══════════════════════════════════════════════════════════
+const BC={normal:'badge-normal',revisar:'badge-revisar',significativo:'badge-significativo'};
+const BT={normal:'Normal',revisar:'Revisar',significativo:'Significativo'};
+const FC={normal:'fill-normal',revisar:'fill-revisar',significativo:'fill-significativo'};
+const BW={normal:100,revisar:55,significativo:18};
+
+function renderMetrics(diag, frozen){
+  const panel=document.getElementById('metrics-panel');
+  if(!diag||!diag.length){panel.innerHTML='<div class="empty-msg">Selecciona un paciente,<br>inicia la cámara y captura.</div>';return;}
+  panel.innerHTML=diag.map(d=>{
+    const info=METRIC_INFO[d.id];
+    const clinicText=info?info.clinic[d.g]:'';
+    const tip=info?.exercise_tip;
+    return`<div class="metric-item">
+      <div class="metric-head" onclick="toggleExpand('${d.id}')">
+        <div class="metric-header">
+          <span class="metric-name">${info?.name||d.id}</span>
+          <span><span class="badge ${BC[d.g]}">${BT[d.g]}</span><span class="chevron" id="ch-${d.id}">▼</span></span>
+        </div>
+        <div class="metric-value">${d.v}</div>
+        <div class="metric-bar"><div class="metric-bar-fill ${FC[d.g]}" style="width:${BW[d.g]}%"></div></div>
+      </div>
+      <div class="metric-expand" id="exp-${d.id}">
+        <div class="exp-section">
+          <div class="exp-label">Interpretación clínica</div>
+          <div class="exp-text">${clinicText}</div>
+        </div>
+        ${tip?`<div class="exp-section"><div class="exp-label">Ejercicio recomendado</div><div class="exp-text" style="color:#6d28d9">🔬 ${tip}</div></div>`:''}
+        ${info?.tags?.length?`<div class="exp-section"><div class="exp-label">Relacionado con</div><div class="exp-tags">${info.tags.map(t=>`<span class="exp-tag">${t}</span>`).join('')}</div></div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+  const score=calcScore(diag);
+  document.getElementById('score-num').textContent=frozen?score:'~'+score;
+  document.getElementById('score-num').style.color=score>=80?'#059669':score>=50?'#d97706':'#dc2626';
+  document.getElementById('score-desc').textContent=frozen
+    ?(score>=80?'Proporciones dentro del rango normal':score>=50?'Algunos parámetros requieren valoración':'Parámetros significativos — valoración indicada')
+    :'Vista previa en tiempo real';
+  // Auto-expand significant items
+  if(frozen) diag.filter(d=>d.g==='significativo').forEach(d=>openExpand(d.id));
+}
+
+function toggleExpand(id){
+  const el=document.getElementById('exp-'+id);
+  const ch=document.getElementById('ch-'+id);
+  if(!el)return;
+  const open=el.classList.toggle('open');
+  if(ch)ch.classList.toggle('open',open);
+}
+function openExpand(id){
+  const el=document.getElementById('exp-'+id);
+  const ch=document.getElementById('ch-'+id);
+  if(el){el.classList.add('open');}
+  if(ch){ch.classList.add('open');}
+}
+
+// ══════════════════════════════════════════════════════════
+// Render – Family view
+// ══════════════════════════════════════════════════════════
+function renderFamilyPanel(diag){
+  const panel=document.getElementById('family-panel');
+  const sigs=diag.filter(d=>d.g==='significativo');
+  const revs=diag.filter(d=>d.g==='revisar');
+  const normals=diag.filter(d=>d.g==='normal');
+  let html='';
+  // Summary card
+  const score=calcScore(diag);
+  const emoji=score>=80?'✅':score>=50?'⚠️':'🔴';
+  const summary=score>=80
+    ?'Los parámetros analizados están dentro del rango normal. No se observan hallazgos significativos.'
+    :score>=50
+    ?'Se han detectado algunos parámetros que vale la pena revisar en la próxima consulta. No implican necesariamente un problema grave.'
+    :'Se han detectado varios parámetros que requieren atención. Recomendamos revisión clínica detallada.';
+  html+=`<div class="family-card">
+    <div class="family-card-title"><span class="icon">${emoji}</span>Resumen general</div>
+    <div class="family-text">${summary}</div>
+  </div>`;
+  // Significant findings
+  if(sigs.length){
+    html+=`<div class="family-card" style="border-color:#fecaca">
+      <div class="family-card-title" style="color:#991b1b"><span class="icon">🔴</span>Hallazgos importantes</div>`;
+    sigs.forEach(d=>{
+      const info=METRIC_INFO[d.id];
+      html+=`<div style="margin-bottom:10px">
+        <div style="font-size:11px;font-weight:700;color:#374151;margin-bottom:3px">${info?.name}</div>
+        <div class="family-text">${info?.family?.[d.g]||''}</div>
+      </div>`;
+    });
+    html+='</div>';
+  }
+  // Revisar
+  if(revs.length){
+    html+=`<div class="family-card" style="border-color:#fde68a">
+      <div class="family-card-title" style="color:#92400e"><span class="icon">⚠️</span>A tener en cuenta</div>`;
+    revs.forEach(d=>{
+      const info=METRIC_INFO[d.id];
+      html+=`<div style="margin-bottom:8px">
+        <div style="font-size:11px;font-weight:700;color:#374151;margin-bottom:3px">${info?.name}</div>
+        <div class="family-text">${info?.family?.[d.g]||''}</div>
+      </div>`;
+    });
+    html+='</div>';
+  }
+  // Good
+  if(normals.length===diag.length){
+    html+=`<div class="family-card" style="border-color:#bbf7d0">
+      <div class="family-card-title" style="color:#065f46"><span class="icon">✅</span>Sin hallazgos destacables</div>
+      <div class="family-text">Todos los parámetros faciales analizados están dentro del rango normal para este ejercicio.</div>
+    </div>`;
+  }
+  // What is this
+  html+=`<div class="family-card" style="background:#f5f3ff;border-color:#ddd6fe">
+    <div class="family-card-title"><span class="icon">ℹ️</span>¿Qué es este análisis?</div>
+    <div class="family-text">El Análisis Facial Biométrico (SMB) mide proporciones, simetría y postura orofacial a partir de la imagen de la cara. Es una herramienta de apoyo para el logopeda — no es un diagnóstico médico. Los resultados siempre deben ser interpretados por un profesional cualificado junto con el resto de la evaluación.</div>
+  </div>`;
+  panel.innerHTML=html;
+}
+
+// ══════════════════════════════════════════════════════════
+// Tab switching
+// ══════════════════════════════════════════════════════════
+function showTab(tab){
+  document.querySelectorAll('.vtab').forEach((t,i)=>t.classList.toggle('active',(tab==='clinic'&&i===0)||(tab==='family'&&i===1)));
+  document.getElementById('metrics-panel').style.display=tab==='clinic'?'block':'none';
+  document.getElementById('family-panel').style.display=tab==='family'?'block':'none';
+}
+
+// ══════════════════════════════════════════════════════════
+// Patients
+// ══════════════════════════════════════════════════════════
+async function loadPatients(){
+  const pts=await txAll('patients');
+  const list=document.getElementById('patient-list');
+  if(!pts.length){list.innerHTML='<div class="empty-msg">Sin pacientes.<br>Añade el primero.</div>';return;}
+  list.innerHTML=pts.map(p=>`
+    <div class="patient-item ${currentPatient?.id===p.id?'active':''}" onclick="selectPatient(${p.id})">
+      <div class="patient-name">${p.name}</div>
+      <div class="patient-meta">${p.specialty} · ${p.dob||'—'}</div>
+    </div>`).join('');
+}
+async function selectPatient(id){
+  const pts=await txAll('patients');
+  currentPatient=pts.find(p=>p.id===id)||null;
+  document.getElementById('right-patient').textContent=currentPatient?.name||'Sin paciente';
+  document.getElementById('btn-capture').disabled=!currentPatient||!lastLandmarks;
+  currentAnalysis=null;
+  document.getElementById('btn-pdf').disabled=true;
+  document.getElementById('btn-txt').disabled=true;
+  renderMetrics([],false);
+  document.getElementById('family-panel').innerHTML='';
+  document.getElementById('score-num').textContent='—';
+  document.getElementById('score-desc').textContent='Sin análisis';
+  await loadPatients();await loadHistory();
+}
+async function loadHistory(){
+  if(!currentPatient)return;
+  const all=await txIdx('analyses','patient_id',currentPatient.id);
+  const sec=document.getElementById('hist-section');
+  const lst=document.getElementById('hist-list');
+  if(!all.length){sec.style.display='none';return;}
+  sec.style.display='block';
+  const sorted=all.slice().sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,5);
+  const scoreColor=s=>s>=80?'#d1fae5;color:#065f46':s>=50?'#fef3c7;color:#92400e':'#fee2e2;color:#991b1b';
+  lst.innerHTML=sorted.map(a=>`
+    <div class="hist-item" onclick="loadAnalysis(${a.id})">
+      <div>
+        <div class="hist-date">${new Date(a.date).toLocaleDateString('es-ES',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
+        <div style="font-size:9px;color:#9ca3af">${a.exercise_label||'—'}</div>
+      </div>
+      <span class="hist-badge" style="background:${scoreColor(a.score)}">${a.score}/100</span>
+    </div>`).join('');
+}
+async function loadAnalysis(id){
+  const all=await txAll('analyses');
+  const a=all.find(x=>x.id===id);if(!a)return;
+  currentAnalysis=a;
+  const diag=JSON.parse(a.diag);
+  renderMetrics(diag,true);renderFamilyPanel(diag);
+  document.getElementById('btn-pdf').disabled=false;
+  document.getElementById('btn-txt').disabled=false;
+}
+function openPatientModal(){document.getElementById('patient-modal').classList.add('open');}
+function closePatientModal(){document.getElementById('patient-modal').classList.remove('open');['p-name','p-dob','p-hc'].forEach(id=>document.getElementById(id).value='');}
+async function savePatient(){
+  const name=document.getElementById('p-name').value.trim();
+  if(!name){alert('Introduce el nombre del paciente');return;}
+  const p={name,dob:document.getElementById('p-dob').value,specialty:document.getElementById('p-specialty').value,hc:document.getElementById('p-hc').value.trim(),created:new Date().toISOString()};
+  const id=await txAdd('patients',p);p.id=id;
+  closePatientModal();await loadPatients();await selectPatient(id);
+}
+
+// ══════════════════════════════════════════════════════════
+// PDF Export
+// ══════════════════════════════════════════════════════════
+async function exportPDF(){
+  if(!currentAnalysis||!currentPatient)return;
+  const{jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const W=doc.internal.pageSize.getWidth();
+  let y=0;
+  // Header
+  doc.setFillColor(124,58,237);doc.rect(0,0,W,28,'F');
+  doc.setTextColor(255,255,255);doc.setFontSize(15);doc.setFont(undefined,'bold');
+  doc.text('SMB — Análisis Facial Biométrico',14,11);
+  doc.setFontSize(8);doc.setFont(undefined,'normal');
+  doc.text('Logoped-IA · Sistema de análisis orofacial clínico',14,18);
+  doc.text(new Date(currentAnalysis.date).toLocaleString('es-ES'),W-14,18,{align:'right'});
+  y=34;
+  // Patient box
+  doc.setFillColor(237,233,254);doc.setDrawColor(196,181,253);doc.roundedRect(14,y,W-28,22,3,3,'FD');
+  doc.setTextColor(76,29,149);doc.setFontSize(9);doc.setFont(undefined,'bold');doc.text('PACIENTE',20,y+7);
+  doc.setFontSize(9);doc.setFont(undefined,'normal');doc.setTextColor(55,65,81);
+  doc.text(currentPatient.name,20,y+14);
+  doc.text(`Fecha nac.: ${currentPatient.dob||'—'}`,90,y+9);
+  doc.text(`Especialidad: ${currentPatient.specialty}`,90,y+14);
+  if(currentPatient.hc)doc.text(`HC: ${currentPatient.hc}`,90,y+19);
+  y+=28;
+  // Exercise tag
+  doc.setFillColor(109,40,217);doc.roundedRect(14,y,W-28,10,2,2,'F');
+  doc.setTextColor(255,255,255);doc.setFontSize(8);doc.setFont(undefined,'bold');
+  doc.text(`Ejercicio evaluativo: ${currentAnalysis.exercise_label||'—'}`,W/2,y+6.5,{align:'center'});
+  y+=16;
+  // Score
+  const score=currentAnalysis.score;
+  const sc=score>=80?[5,150,105]:score>=50?[217,119,6]:[220,38,38];
+  doc.setFillColor(...sc);doc.roundedRect(14,y,44,18,3,3,'F');
+  doc.setTextColor(255,255,255);doc.setFontSize(20);doc.setFont(undefined,'bold');
+  doc.text(`${score}`,36,y+11,{align:'center'});
+  doc.setFontSize(7);doc.setFont(undefined,'normal');doc.text('/100',36,y+16,{align:'center'});
+  doc.setTextColor(55,65,81);doc.setFontSize(10);doc.setFont(undefined,'bold');
+  doc.text('Puntuación global',62,y+8);doc.setFont(undefined,'normal');doc.setFontSize(8);
+  const sl=score>=80?'Proporciones dentro del rango normal':score>=50?'Algunos parámetros requieren valoración':'Parámetros significativos — valoración clínica indicada';
+  doc.text(sl,62,y+14);
+  y+=24;
+  // Image + table
+  const diag=JSON.parse(currentAnalysis.diag);
+  if(currentAnalysis.img){
+    const iH=62,iW=83;
+    try{
+      doc.addImage(currentAnalysis.img,'JPEG',W-14-iW,y,iW,iH);
+      pdfTable(doc,diag.slice(0,6),14,y,W-28-iW-6);
+      y+=iH+4;
+      if(diag.length>6){pdfTable(doc,diag.slice(6),14,y,W-28);y+=(diag.length-6)*11+4;}
+    }catch(_){pdfTable(doc,diag,14,y,W-28);y+=diag.length*11+4;}
+  }else{pdfTable(doc,diag,14,y,W-28);y+=diag.length*11+4;}
+  // Clinical section
+  y+=4;doc.setDrawColor(196,181,253);doc.line(14,y,W-14,y);y+=6;
+  doc.setFontSize(11);doc.setFont(undefined,'bold');doc.setTextColor(76,29,149);
+  doc.text('Interpretación clínica por parámetro',14,y);y+=7;
+  const sigs=diag.filter(d=>d.g==='significativo');
+  const revs=diag.filter(d=>d.g==='revisar');
+  if(sigs.length){
+    doc.setFontSize(9);doc.setFont(undefined,'bold');doc.setTextColor(153,27,27);
+    doc.text('Parámetros significativos:',14,y);y+=5;
+    sigs.forEach(d=>{
+      const info=METRIC_INFO[d.id];
+      doc.setFontSize(8);doc.setFont(undefined,'bold');doc.setTextColor(55,65,81);
+      doc.text(`${info?.name}: ${d.v}`,16,y);y+=4;
+      doc.setFont(undefined,'normal');doc.setTextColor(107,114,128);
+      const lines=doc.splitTextToSize(info?.clinic?.[d.g]||'',W-32);
+      doc.text(lines,18,y);y+=lines.length*4.5+2;
+      if(info?.exercise_tip){
+        doc.setTextColor(109,40,217);
+        doc.text(`→ ${info.exercise_tip}`,18,y);y+=4.5;
+      }
+    });
+  }
+  if(revs.length){
+    y+=2;doc.setFontSize(9);doc.setFont(undefined,'bold');doc.setTextColor(146,64,14);
+    doc.text('Parámetros a revisar:',14,y);y+=5;
+    revs.forEach(d=>{
+      const info=METRIC_INFO[d.id];
+      doc.setFontSize(8);doc.setFont(undefined,'bold');doc.setTextColor(55,65,81);
+      doc.text(`${info?.name}: ${d.v}`,16,y);y+=4;
+      doc.setFont(undefined,'normal');doc.setTextColor(107,114,128);
+      const lines=doc.splitTextToSize(info?.clinic?.[d.g]||'',W-32);
+      doc.text(lines,18,y);y+=lines.length*4.5+2;
+    });
+  }
+  // Family section — new page if needed
+  if(y>230)doc.addPage();
+  else{y+=6;doc.setDrawColor(196,181,253);doc.line(14,y,W-14,y);y+=6;}
+  doc.setFillColor(245,243,255);doc.roundedRect(14,y,W-28,10,2,2,'F');
+  doc.setFontSize(10);doc.setFont(undefined,'bold');doc.setTextColor(76,29,149);
+  doc.text('Sección para familias — Lenguaje accesible',W/2,y+6.5,{align:'center'});
+  y+=14;
+  const familySections=[...sigs,...revs];
+  if(!familySections.length){
+    doc.setFontSize(9);doc.setFont(undefined,'normal');doc.setTextColor(5,150,105);
+    doc.text('Todos los parámetros están dentro del rango normal. No se han detectado hallazgos significativos.',14,y);y+=6;
+  } else {
+    familySections.forEach(d=>{
+      const info=METRIC_INFO[d.id];
+      doc.setFontSize(9);doc.setFont(undefined,'bold');doc.setTextColor(55,65,81);
+      doc.text(info?.name||d.id,14,y);y+=5;
+      doc.setFont(undefined,'normal');doc.setTextColor(107,114,128);
+      const lines=doc.splitTextToSize(info?.family?.[d.g]||'',W-28);
+      doc.text(lines,14,y);y+=lines.length*4.5+3;
+      if(y>270){doc.addPage();y=14;}
+    });
+  }
+  // Disclaimer
+  y+=4;doc.setFontSize(7);doc.setTextColor(107,114,128);
+  const disc='Este análisis es una herramienta de apoyo diagnóstico. Los resultados deben ser interpretados por un logopeda o profesional sanitario cualificado en el contexto de la evaluación clínica completa. No constituye un diagnóstico médico.';
+  doc.text(doc.splitTextToSize(disc,W-28),14,y);
+  // Footer
+  doc.setFillColor(245,243,255);doc.rect(0,285,W,12,'F');
+  doc.setFontSize(7);doc.setTextColor(107,114,128);
+  doc.text('Generado por Logoped-IA · SMB v2.0 · Datos almacenados localmente en el dispositivo',W/2,292,{align:'center'});
+  doc.save(`SMB_${currentPatient.name.replace(/\s+/g,'_')}_${new Date().toISOString().slice(0,10)}.pdf`);
+}
+
+function pdfTable(doc,items,x,startY,w){
+  const GC={normal:[5,150,105],revisar:[217,119,6],significativo:[220,38,38]};
+  const GT={normal:'Normal',revisar:'Revisar',significativo:'Significativo'};
+  let y=startY;
+  items.forEach((d,i)=>{
+    if(i%2===0){doc.setFillColor(249,250,251);doc.rect(x,y-2,w,10,'F');}
+    const info=METRIC_INFO[d.id];
+    doc.setFontSize(8);doc.setFont(undefined,'bold');doc.setTextColor(55,65,81);
+    doc.text(info?.name||d.id,x+2,y+4);
+    doc.setFont(undefined,'normal');doc.setFontSize(7);doc.setTextColor(107,114,128);
+    doc.text(d.v,x+2,y+8.5);
+    const[r,g,b]=GC[d.g];doc.setFillColor(r,g,b);
+    const bw=22,bx=x+w-bw-2;doc.roundedRect(bx,y,bw,6,2,2,'F');
+    doc.setFontSize(6);doc.setFont(undefined,'bold');doc.setTextColor(255,255,255);
+    doc.text(GT[d.g],bx+bw/2,y+4.2,{align:'center'});
+    y+=11;
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+// TXT Export
+// ══════════════════════════════════════════════════════════
+function exportTXT(){
+  if(!currentAnalysis||!currentPatient)return;
+  const diag=JSON.parse(currentAnalysis.diag);
+  const lines=[
+    'SMB — ANÁLISIS FACIAL BIOMÉTRICO · LOGOPED-IA','═'.repeat(54),
+    `Paciente:     ${currentPatient.name}`,
+    `Nacimiento:   ${currentPatient.dob||'—'}`,
+    `Especialidad: ${currentPatient.specialty}`,
+    `HC:           ${currentPatient.hc||'—'}`,
+    `Fecha:        ${new Date(currentAnalysis.date).toLocaleString('es-ES')}`,
+    `Ejercicio:    ${currentAnalysis.exercise_label||'—'}`,
+    '','PUNTUACIÓN GLOBAL: '+currentAnalysis.score+' / 100','─'.repeat(54),'',
+    'PARÁMETROS:',
+    ...diag.map(d=>{
+      const info=METRIC_INFO[d.id];
+      return`  ${(info?.name||d.id).padEnd(30)} [${d.g.toUpperCase().padEnd(13)}]  ${d.v}`;
+    }),
+    '','─'.repeat(54),'INTERPRETACIÓN CLÍNICA:','',
+    ...diag.filter(d=>d.g!=='normal').map(d=>{
+      const info=METRIC_INFO[d.id];
+      return`${info?.name||d.id} [${d.g.toUpperCase()}]\n  Clínico: ${info?.clinic?.[d.g]||''}\n  Familia: ${info?.family?.[d.g]||''}\n`;
+    }),
+    '─'.repeat(54),
+    'NOTA: Herramienta de apoyo. Interpretar con criterio clínico profesional.',
+    'Generado por Logoped-IA · SMB v2.0'
+  ];
+  const blob=new Blob([lines.join('\n')],{type:'text/plain'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`SMB_${currentPatient.name.replace(/\s+/g,'_')}_${new Date().toISOString().slice(0,10)}.txt`;
+  a.click();
+}
+
+// ══════════════════════════════════════════════════════════
+// Init
+// ══════════════════════════════════════════════════════════
+(async()=>{
+  await openDB();
+  buildExerciseBar();
+  await loadPatients();
+  if(!navigator.mediaDevices?.getUserMedia)
+    document.getElementById('browser-warn').style.display='block';
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SMB · Logoped-IA</title>
+  <style>
+    :root {
+      --violet-700: #6d28d9;
+      --violet-600: #7c3aed;
+      --violet-100: #ede9fe;
+      --hero-bg: #1e1b4b;
+      --text-dark: #1f1645;
+      --muted: #5b4f84;
+      --ok: #16a34a;
+      --warn: #d97706;
+      --bad: #dc2626;
+      --radius: 18px;
+      --shadow: 0 14px 36px rgba(109, 40, 217, 0.15);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+      color: var(--text-dark);
+      background: #fff;
+      line-height: 1.5;
+    }
+
+    .container {
+      width: min(1180px, 92vw);
+      margin: 0 auto;
+    }
+
+    .hero {
+      min-height: 100svh;
+      display: grid;
+      align-items: center;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(124, 58, 237, 0.38), transparent 38%),
+        radial-gradient(circle at 85% 80%, rgba(237, 233, 254, 0.16), transparent 35%),
+        var(--hero-bg);
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -20% -35% -20%;
+      height: 55%;
+      background: linear-gradient(to top, rgba(237, 233, 254, 0.08), transparent);
+      pointer-events: none;
+    }
+
+    .hero-content { position: relative; z-index: 1; }
+
+    h1 {
+      margin: 0 0 16px;
+      font-size: clamp(2.2rem, 5.8vw, 5.2rem);
+      line-height: 0.95;
+      letter-spacing: -0.03em;
+      max-width: 14ch;
+    }
+
+    .lead {
+      margin: 0;
+      font-size: clamp(1rem, 2.2vw, 1.45rem);
+      color: var(--violet-100);
+      max-width: 42ch;
+    }
+
+    .cta {
+      margin-top: 34px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      border: none;
+      border-radius: 999px;
+      background: #fff;
+      color: var(--violet-700);
+      font-weight: 800;
+      font-size: 1rem;
+      padding: 14px 22px;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .cta:hover { transform: translateY(-2px); box-shadow: 0 16px 34px rgba(0, 0, 0, 0.28); }
+
+    section {
+      padding: 82px 0;
+      border-top: 1px solid #f1ecff;
+    }
+
+    h2 {
+      margin: 0 0 24px;
+      font-size: clamp(1.6rem, 3vw, 2.5rem);
+      letter-spacing: -0.02em;
+      color: #2d1f62;
+    }
+
+    .before-after {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+    }
+
+    .panel {
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: var(--shadow);
+      border: 1px solid #ebe4ff;
+      background: #fff;
+      min-height: 340px;
+      display: grid;
+      align-content: start;
+      gap: 16px;
+    }
+
+    .panel h3 { margin: 0; font-size: 1.2rem; }
+    .panel p { margin: 0; color: var(--muted); }
+
+    .pdf-mock {
+      border: 1px solid #ddd4fe;
+      border-radius: 10px;
+      background: #f8f6ff;
+      min-height: 210px;
+      padding: 14px;
+      position: relative;
+    }
+
+    .pdf-line {
+      height: 8px;
+      border-radius: 999px;
+      background: #ddd6fe;
+      margin-bottom: 10px;
+    }
+
+    .pdf-note {
+      position: absolute;
+      right: 12px;
+      top: 16px;
+      background: #fef3c7;
+      color: #7c2d12;
+      font-size: .8rem;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transform: rotate(-5deg);
+    }
+
+    .pdf-ruler {
+      position: absolute;
+      left: 14px;
+      bottom: 14px;
+      width: 140px;
+      height: 12px;
+      border-radius: 999px;
+      background: repeating-linear-gradient(90deg, #c4b5fd, #c4b5fd 6px, #f8f6ff 6px, #f8f6ff 10px);
+    }
+
+    .smb-mock {
+      border-radius: 12px;
+      background: linear-gradient(140deg, #22145a, #3b238a 55%, #2d1f6b);
+      min-height: 210px;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.16);
+    }
+
+    .face {
+      position: absolute;
+      inset: 18px auto auto 18px;
+      width: 44%;
+      aspect-ratio: 1/1;
+      border-radius: 12px;
+      background: radial-gradient(circle at 40% 35%, #ede9fe, #c4b5fd 70%);
+      opacity: .9;
+    }
+
+    .dot { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: #22d3ee; }
+    .dot.d1 { left: 35%; top: 35%; }
+    .dot.d2 { left: 41%; top: 42%; }
+    .dot.d3 { left: 29%; top: 48%; }
+    .dot.d4 { left: 38%; top: 53%; }
+
+    .traffic {
+      position: absolute;
+      right: 16px;
+      top: 16px;
+      display: grid;
+      gap: 10px;
+      width: 42%;
+    }
+
+    .meter {
+      border-radius: 9px;
+      background: rgba(255, 255, 255, .12);
+      color: #fff;
+      padding: 8px 10px;
+      font-size: .82rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .light { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .green { background: var(--ok); }
+    .yellow { background: var(--warn); }
+    .red { background: var(--bad); }
+
+    .family-panel {
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      bottom: 16px;
+      border-radius: 10px;
+      background: rgba(255,255,255,.14);
+      color: #fff;
+      font-size: .8rem;
+      padding: 9px 10px;
+    }
+
+    .grid6 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 14px;
+    }
+
+    .card {
+      border-radius: 14px;
+      border: 1px solid #e9e2ff;
+      background: #faf8ff;
+      padding: 16px;
+      box-shadow: 0 8px 20px rgba(124, 58, 237, .08);
+    }
+
+    .card h3 { margin: 0 0 8px; font-size: 1rem; }
+    .card p { margin: 0; color: var(--muted); font-size: .92rem; }
+
+    .metrics {
+      display: grid;
+      gap: 10px;
+    }
+
+    .metric {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 12px;
+      align-items: start;
+      border: 1px solid #ece6ff;
+      border-radius: 12px;
+      padding: 12px 14px;
+      background: #fff;
+    }
+
+    .badge {
+      min-width: 68px;
+      text-align: center;
+      color: #fff;
+      font-size: .8rem;
+      font-weight: 800;
+      border-radius: 999px;
+      padding: 5px 8px;
+      animation: glow 2.4s ease-in-out infinite;
+    }
+
+    .badge.ok { background: var(--ok); }
+    .badge.warn { background: var(--warn); }
+    .badge.bad { background: var(--bad); }
+
+    .family {
+      border-radius: var(--radius);
+      background: linear-gradient(140deg, #f6f0ff, #ffffff 60%);
+      border: 1px solid #e8ddff;
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .family p { margin: 0 0 14px; }
+
+    .family-card {
+      border: 1px solid #dccdff;
+      border-radius: 12px;
+      background: #fff;
+      padding: 14px;
+      color: #4a3b7b;
+      font-size: .95rem;
+    }
+
+    .final-cta {
+      text-align: center;
+      padding: 72px 0 92px;
+      background: linear-gradient(180deg, #fff, #f8f3ff);
+    }
+
+    .final-cta .cta {
+      background: var(--violet-600);
+      color: #fff;
+      box-shadow: 0 14px 34px rgba(109, 40, 217, .35);
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(26px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+
+    .reveal.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @keyframes glow {
+      0%, 100% { filter: brightness(1); }
+      50% { filter: brightness(1.22); }
+    }
+
+    @media (max-width: 940px) {
+      .before-after, .grid6 { grid-template-columns: 1fr; }
+      .traffic { width: 46%; }
+      h1 { max-width: 12ch; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="container hero-content reveal">
+      <h1>El informe logopédico que se hace solo</h1>
+      <p class="lead">Análisis facial biométrico en tiempo real. Sin papel. Sin esperar.</p>
+      <a class="cta" href="logopedia-smb.html" target="_blank" rel="noreferrer">Abrir herramienta SMB →</a>
+    </div>
+  </header>
+
+  <main>
+    <section>
+      <div class="container">
+        <h2 class="reveal">Antes / Ahora</h2>
+        <div class="before-after">
+          <article class="panel reveal">
+            <h3>ANTES · PDF estático</h3>
+            <p>Informe frío, escalas manuales y decisiones sin feedback inmediato.</p>
+            <div class="pdf-mock">
+              <div class="pdf-note">"Revisar simetría"</div>
+              <div class="pdf-line" style="width:82%"></div>
+              <div class="pdf-line" style="width:65%"></div>
+              <div class="pdf-line" style="width:91%"></div>
+              <div class="pdf-line" style="width:74%"></div>
+              <div class="pdf-ruler"></div>
+            </div>
+          </article>
+          <article class="panel reveal">
+            <h3>AHORA · SMB en tiempo real</h3>
+            <p>Puntos faciales, semáforo de métricas y explicación clara para familias.</p>
+            <div class="smb-mock">
+              <div class="face"></div>
+              <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="dot d4"></span>
+              <div class="traffic">
+                <div class="meter">Simetría <span class="light green"></span></div>
+                <div class="meter">Apertura <span class="light yellow"></span></div>
+                <div class="meter">Línea media <span class="light red"></span></div>
+              </div>
+              <div class="family-panel">"Tu hijo mejora en cierre labial. Aún hay desviación mandibular leve."</div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <h2 class="reveal">6 ejercicios evaluativos</h2>
+        <div class="grid6">
+          <article class="card reveal"><h3>😐 Reposo</h3><p>Evalúa simetría basal y tono orofacial en estado neutro.</p></article>
+          <article class="card reveal"><h3>🤐 Cierre labial</h3><p>Mide sellado labial y compensaciones periorales.</p></article>
+          <article class="card reveal"><h3>😄 Sonrisa</h3><p>Analiza comisuras, elevación y asimetrías dinámicas.</p></article>
+          <article class="card reveal"><h3>💋 Protrusión</h3><p>Valora avance labial, control motor y desviación.</p></article>
+          <article class="card reveal"><h3>😮 Apertura</h3><p>Cuantifica amplitud oral y alineación mandibular.</p></article>
+          <article class="card reveal"><h3>👅 Lengua</h3><p>Observa proyección, centrado y control lingual funcional.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <h2 class="reveal">10 métricas con semáforo</h2>
+        <div class="metrics">
+          <div class="metric reveal"><span class="badge ok">VERDE</span><div><strong>Tercios faciales</strong><br>Proporción vertical global en reposo y dinámica.</div></div>
+          <div class="metric reveal"><span class="badge warn">AMAR.</span><div><strong>Simetría general</strong><br>Balance derecha/izquierda en puntos clave.</div></div>
+          <div class="metric reveal"><span class="badge ok">VERDE</span><div><strong>Apertura labial</strong><br>Rango de apertura y control en gesto voluntario.</div></div>
+          <div class="metric reveal"><span class="badge warn">AMAR.</span><div><strong>Comisuras</strong><br>Diferencia de elevación y tracción bilateral.</div></div>
+          <div class="metric reveal"><span class="badge bad">ROJO</span><div><strong>Desviación nasal</strong><br>Desalineación del eje nasal respecto a la línea media.</div></div>
+          <div class="metric reveal"><span class="badge warn">AMAR.</span><div><strong>Desviación mandibular</strong><br>Desplazamiento en apertura/cierre funcional.</div></div>
+          <div class="metric reveal"><span class="badge ok">VERDE</span><div><strong>Quintos faciales</strong><br>Proporción transversal del rostro.</div></div>
+          <div class="metric reveal"><span class="badge warn">AMAR.</span><div><strong>Línea media</strong><br>Coherencia entre ejes centrales anatómicos.</div></div>
+          <div class="metric reveal"><span class="badge ok">VERDE</span><div><strong>Sellado en reposo</strong><br>Mantenimiento de cierre sin esfuerzo accesorio.</div></div>
+          <div class="metric reveal"><span class="badge bad">ROJO</span><div><strong>Compensación muscular</strong><br>Sobreactivación en patrones no deseados.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container family reveal">
+        <h2>Para familias</h2>
+        <p><strong>Por primera vez, los padres entienden qué le pasa a su hijo. En su idioma.</strong></p>
+        <div class="family-card">
+          <strong>Ejemplo de tarjeta familiar:</strong><br>
+          "Hoy la sonrisa es más simétrica que hace 3 sesiones. Seguimos trabajando apertura y desviación mandibular con ejercicios de 5 minutos diarios."
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="final-cta">
+    <a class="cta" href="logopedia-smb.html" target="_blank" rel="noreferrer">Probar el análisis ahora →</a>
+  </footer>
+
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) entry.target.classList.add('show');
+      });
+    }, { threshold: 0.14 });
+
+    document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+  </script>
+</body>
+</html>
