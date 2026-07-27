@@ -649,6 +649,25 @@
       text-transform: uppercase;
     }
     .nav .notes-jump.on { color: var(--ink); background: var(--mint); }
+    .rescue-link {
+      position: fixed;
+      z-index: 11;
+      right: 16px;
+      bottom: 17px;
+      padding: 9px 12px;
+      border: 1px solid #ffffff26;
+      border-radius: 999px;
+      background: #071321d9;
+      color: var(--yellow);
+      text-decoration: none;
+      font-size: 10px;
+      font-weight: 950;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 12px 24px #0004;
+    }
+    .rescue-link:hover { color: var(--ink); background: var(--yellow); }
     .counter {
       min-width: 58px;
       color: #d5e4e3;
@@ -807,6 +826,7 @@
       .method-row { grid-template-columns: repeat(3, 1fr); }
       .notes { left: 8px; right: 8px; width: auto; bottom: 56px; max-height: 52vh; }
       .nav { bottom: 8px; }
+      .rescue-link { right: 8px; bottom: 56px; font-size: 8px; padding: 7px 9px; }
       .fullscreen { top: 9px; right: 9px; }
     }
   </style>
@@ -1075,6 +1095,7 @@
       <button class="notes-jump" id="notesJump" aria-label="Notas del ponente">Notas</button>
       <button id="next" aria-label="Slide siguiente">›</button>
     </nav>
+    <a class="rescue-link" href="demos/mapa-completo-logoped-ia.html" target="_blank" rel="noopener" onclick="event.stopPropagation()">Mapa completo ↗</a>
   </main>
 
   <script>
