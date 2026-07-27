@@ -5,349 +5,189 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Del Google Form a una experiencia · Logoped-IA</title>
   <style>
-    @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800;900&family=Fraunces:opsz,wght@9..144,650;9..144,800&display=swap");
-    :root {
-      --ink: #101820;
-      --navy: #071525;
-      --panel: #10263a;
-      --paper: #f7f3ea;
-      --mint: #72dfbf;
-      --lime: #d9ef72;
-      --yellow: #ffcc68;
-      --coral: #ff9279;
-      --muted: #62716f;
-      --line: #d9e2dc;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      background:
-        linear-gradient(135deg, #f6f1e8 0%, #eff8ef 45%, #e6f1f2 100%);
-      color: var(--ink);
-      font-family: "DM Sans", system-ui, sans-serif;
-    }
-    .wrap { width: min(1180px, calc(100% - 36px)); margin: 0 auto; padding: 28px 0 42px; }
-    .back {
-      display: inline-flex;
-      color: #47625c;
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: 900;
-      margin-bottom: 22px;
-    }
-    .hero {
-      display: grid;
-      grid-template-columns: 1.05fr .95fr;
-      gap: 28px;
-      align-items: center;
-      min-height: 460px;
-    }
-    .eyebrow {
-      color: #446f5f;
-      font-size: 12px;
-      font-weight: 900;
-      letter-spacing: .13em;
-      text-transform: uppercase;
-    }
-    h1, h2, h3 { font-family: Fraunces, serif; letter-spacing: -.04em; }
-    h1 { margin: 13px 0 18px; max-width: 760px; font-size: clamp(48px, 8vw, 96px); line-height: .88; }
-    .lead { max-width: 690px; color: #334d49; font-size: 19px; line-height: 1.5; }
-    .proof {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 24px;
-    }
-    .proof span {
-      padding: 10px 13px;
-      border: 1px solid #c9d8d1;
-      border-radius: 999px;
-      background: #ffffffa8;
-      color: #385852;
-      font-size: 13px;
-      font-weight: 900;
-    }
-    .phone {
-      position: relative;
-      min-height: 440px;
-      border-radius: 34px;
-      padding: 18px;
-      background: var(--navy);
-      box-shadow: 0 34px 90px rgba(17, 47, 39, .25);
-      overflow: hidden;
-    }
-    .phone:before {
-      content: "";
-      position: absolute;
-      inset: -30% -15% auto auto;
-      width: 260px;
-      height: 260px;
-      background: radial-gradient(circle, #72dfbf 0, transparent 68%);
-      opacity: .36;
-    }
-    .screen {
-      position: relative;
-      height: 100%;
-      min-height: 404px;
-      border-radius: 24px;
-      background: #f9fbf7;
-      padding: 22px;
-      overflow: hidden;
-    }
-    .ugly {
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      padding: 16px;
-      background: white;
-      color: #444;
-      font-family: Arial, sans-serif;
-    }
-    .ugly h3 { margin: 0 0 10px; font-family: Arial, sans-serif; letter-spacing: 0; }
-    .ugly label { display: block; margin-top: 12px; font-size: 12px; }
-    .ugly input, .ugly select, .ugly textarea { width: 100%; margin-top: 5px; padding: 8px; border: 1px solid #cfcfcf; }
-    .pretty {
-      margin-top: 18px;
-      padding: 18px;
-      border-radius: 18px;
-      background: linear-gradient(135deg, #10263a, #163e3a);
-      color: white;
-    }
-    .pretty small { color: var(--mint); font-weight: 900; letter-spacing: .1em; }
-    .pretty strong { display: block; margin-top: 8px; font-size: 24px; line-height: 1; }
-    .chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px; }
-    .chips span { padding: 8px 10px; border-radius: 999px; background: #ffffff16; color: #dceee8; font-size: 11px; font-weight: 800; }
-    .grid { display: grid; grid-template-columns: .88fr 1.12fr; gap: 18px; margin-top: 26px; }
-    .panel {
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      background: rgba(255,255,255,.78);
-      padding: 22px;
-      box-shadow: 0 18px 48px rgba(38, 65, 54, .08);
-    }
-    .panel.dark { background: var(--navy); color: white; border-color: #24435c; }
-    .panel h2 { margin: 0 0 14px; font-size: clamp(31px, 4vw, 50px); line-height: .96; }
-    .panel p { color: var(--muted); line-height: 1.5; }
-    .panel.dark p { color: #c4d5d7; }
-    .steps { display: grid; gap: 10px; margin-top: 18px; }
-    .step {
-      display: grid;
-      grid-template-columns: 42px 1fr;
-      gap: 12px;
-      align-items: start;
-      padding: 14px;
-      border: 1px solid #d9e3dd;
-      border-radius: 8px;
-      background: white;
-    }
-    .step b {
-      display: grid;
-      place-items: center;
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: var(--lime);
-      color: var(--ink);
-      font-size: 14px;
-    }
-    .step strong { display: block; font-size: 16px; }
-    .step span { display: block; margin-top: 4px; color: var(--muted); line-height: 1.35; }
-    .prompt {
-      position: relative;
-      margin-top: 14px;
-      border-radius: 12px;
-      border: 1px solid #2a4962;
-      background: #0d2032;
-      overflow: hidden;
-    }
-    .prompt header {
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      align-items: center;
-      padding: 12px 14px;
-      border-bottom: 1px solid #203b52;
-      color: var(--mint);
-      font-size: 12px;
-      font-weight: 900;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-    }
-    button {
-      border: 0;
-      border-radius: 999px;
-      padding: 9px 12px;
-      background: var(--yellow);
-      color: var(--ink);
-      font: inherit;
-      font-size: 12px;
-      font-weight: 950;
-      cursor: pointer;
-    }
-    pre {
-      margin: 0;
-      padding: 18px;
-      white-space: pre-wrap;
-      color: #e9f4ef;
-      font: 14px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    }
-    .timeline {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin-top: 18px;
-    }
-    .moment {
-      min-height: 178px;
-      border-radius: 10px;
-      padding: 18px;
-      background: var(--navy);
-      color: white;
-      border: 1px solid #24435c;
-    }
-    .moment small { color: var(--coral); font-weight: 950; letter-spacing: .09em; }
-    .moment strong { display: block; margin-top: 10px; font-size: 19px; line-height: 1.1; }
-    .moment p { margin: 8px 0 0; color: #c8d7d7; font-size: 13px; line-height: 1.4; }
-    .takeaway {
-      margin-top: 24px;
-      padding: 26px;
-      border-radius: 10px;
-      background: #153d2f;
-      color: white;
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 20px;
-      align-items: center;
-    }
-    .takeaway h2 { margin: 0; font-size: clamp(34px, 5vw, 62px); line-height: .94; }
-    .takeaway p { margin: 10px 0 0; color: #d6e8df; max-width: 760px; }
-    .badge { padding: 13px 16px; border-radius: 999px; background: var(--mint); color: #08251f; font-weight: 950; }
-    @media (max-width: 860px) {
-      .hero, .grid, .timeline, .takeaway { grid-template-columns: 1fr; }
-      .phone { min-height: auto; }
-      .timeline { gap: 10px; }
-    }
+    @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800;900&family=Fraunces:opsz,wght@9..144,650;9..144,750&display=swap");
+    :root{--ink:#101820;--navy:#071525;--panel:#10263a;--paper:#f7f3ea;--mint:#72dfbf;--lime:#d9ef72;--yellow:#ffcc68;--coral:#ff9279;--muted:#60716d;--line:#d8e2dc}
+    *{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#f6f1e8,#eef8ee 48%,#e7f1f2);color:var(--ink);font-family:"DM Sans",system-ui,sans-serif}.wrap{width:min(1180px,calc(100% - 36px));margin:auto;padding:26px 0 42px}.back{display:inline-flex;color:#47625c;text-decoration:none;font-size:13px;font-weight:900;margin-bottom:18px}.eyebrow{color:#446f5f;font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}h1,h2,h3{font-family:Fraunces,serif;letter-spacing:-.035em}h1{margin:10px 0 14px;max-width:850px;font-size:clamp(42px,6vw,72px);line-height:.92}h2{margin:0 0 12px;font-size:clamp(30px,4vw,46px);line-height:.98}h3{margin:0;font-size:24px;line-height:1}.lead{max-width:760px;color:#334d49;font-size:18px;line-height:1.48}.hero{display:grid;grid-template-columns:1fr auto;gap:22px;align-items:end;margin-bottom:20px}.hero-card{padding:18px;border:1px solid var(--line);border-radius:10px;background:#ffffffa8}.mini-stats{display:grid;grid-template-columns:repeat(2,132px);gap:10px}.mini-stats div{padding:13px;border-radius:8px;background:var(--navy);color:white}.mini-stats b{display:block;color:var(--yellow);font-size:24px}.mini-stats span{font-size:12px;color:#c8d9d8;font-weight:800}.workbench{display:grid;grid-template-columns:.78fr 1.22fr;gap:16px}.rail,.preview,.prompt-box,.notes{border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.8);box-shadow:0 16px 44px rgba(38,65,54,.08)}.rail{padding:16px}.phase{width:100%;display:grid;grid-template-columns:36px 1fr;gap:11px;align-items:center;margin-top:10px;padding:12px;border:1px solid var(--line);border-radius:8px;background:white;text-align:left;cursor:pointer}.phase.active{background:var(--navy);color:white;border-color:#24435c}.phase i{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--lime);color:var(--ink);font-style:normal;font-weight:950}.phase strong{display:block;font-size:15px}.phase span{display:block;margin-top:3px;color:var(--muted);font-size:12px;line-height:1.3}.phase.active span{color:#c5d6d5}.checklist{display:grid;gap:8px;margin-top:16px}.check{display:flex;gap:9px;align-items:flex-start;color:#425853;font-size:13px;line-height:1.35}.check:before{content:"";flex:0 0 auto;width:16px;height:16px;border-radius:50%;margin-top:1px;background:#d3dcd7}.check.on:before{background:var(--mint);box-shadow:inset 0 0 0 4px #173d31}.preview{padding:16px}.toolbar{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px}.toggle{display:flex;border:1px solid var(--line);border-radius:999px;background:white;padding:4px}.toggle button{border:0;border-radius:999px;background:transparent;padding:8px 12px;font:inherit;font-size:12px;font-weight:900;cursor:pointer}.toggle button.active{background:var(--navy);color:white}.phone{position:relative;min-height:438px;border-radius:24px;background:var(--navy);padding:16px;overflow:hidden}.screen{height:100%;min-height:406px;border-radius:18px;background:#f9fbf7;padding:18px;overflow:hidden}.ugly{border:1px solid #d0d0d0;border-radius:6px;padding:14px;background:#fff;color:#444;font-family:Arial,sans-serif}.ugly h3{font:700 20px/1.1 Arial,sans-serif;letter-spacing:0;margin:0 0 9px}.ugly label{display:block;margin-top:11px;font-size:12px}.ugly input,.ugly select,.ugly textarea{width:100%;margin-top:5px;padding:8px;border:1px solid #cfcfcf}.pretty{display:none}.phone[data-mode="pretty"] .ugly{display:none}.phone[data-mode="pretty"] .pretty{display:block}.pretty-top{padding:16px;border-radius:16px;background:linear-gradient(135deg,#10263a,#164238);color:white}.pretty-top small{color:var(--mint);font-weight:900;letter-spacing:.1em}.pretty-top strong{display:block;margin-top:8px;font-size:24px;line-height:1.05}.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:13px}.chips span{padding:7px 9px;border-radius:999px;background:#ffffff18;color:#e2f2ed;font-size:11px;font-weight:850}.question-card{margin-top:12px;padding:14px;border:1px solid var(--line);border-radius:12px;background:white}.question-card small{color:#557267;font-weight:900}.question-card h3{margin-top:6px;font-size:22px}.options{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:12px}.option{padding:9px;border-radius:8px;background:#edf5ed;color:#23433d;font-size:12px;font-weight:850}.thermo{margin-top:12px;height:13px;border-radius:999px;background:#dde8e0;overflow:hidden}.thermo div{height:100%;width:68%;background:linear-gradient(90deg,var(--mint),var(--yellow))}.result-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.result-row div{padding:10px;border-radius:10px;background:#10263a;color:white}.result-row b{display:block;color:var(--yellow);font-size:20px}.result-row span{font-size:11px;color:#c8d9d8;font-weight:800}.panel-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}.prompt-box{background:var(--navy);color:white;padding:16px}.prompt-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.prompt-tabs button,.copy{border:0;border-radius:999px;padding:8px 11px;background:#ffffff14;color:white;font:inherit;font-size:12px;font-weight:900;cursor:pointer}.prompt-tabs button.active,.copy{background:var(--yellow);color:var(--ink)}pre{margin:0;min-height:300px;padding:15px;border:1px solid #24435c;border-radius:8px;background:#0d2032;color:#e9f4ef;white-space:pre-wrap;font:13px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}.notes{padding:16px}.insight{display:grid;gap:10px;margin-top:12px}.insight div{padding:13px;border-left:4px solid var(--coral);background:white;border-radius:0 8px 8px 0}.insight strong{display:block;font-size:15px}.insight span{display:block;margin-top:4px;color:var(--muted);font-size:13px;line-height:1.35}.takeaway{margin-top:16px;padding:18px;border-radius:10px;background:#153d2f;color:white;display:flex;justify-content:space-between;gap:16px;align-items:center}.takeaway p{margin:0;color:#d6e8df;line-height:1.45}.badge{padding:11px 14px;border-radius:999px;background:var(--mint);color:#08251f;font-weight:950;white-space:nowrap}@media(max-width:900px){.hero,.workbench,.panel-grid,.takeaway{grid-template-columns:1fr;display:grid}.mini-stats{grid-template-columns:repeat(2,1fr)}.options,.result-row{grid-template-columns:1fr}.takeaway{display:block}.badge{display:inline-flex;margin-top:12px}.phone{min-height:auto}.screen{min-height:390px}}
   </style>
 </head>
 <body>
   <main class="wrap">
     <a class="back" href="../index.html">Volver a la webinar</a>
-
     <section class="hero">
       <div>
-        <span class="eyebrow">Caso real · hecho esta misma mañana</span>
-        <h1>Disfrazar un Google Form no es hacer trampa. Es cuidar la experiencia.</h1>
-        <p class="lead">El formulario seguía siendo Google Forms por debajo: estable, anónimo y conectado a su hoja. Lo que cambió fue la capa que ve el alumnado: una experiencia clara, rápida, amable y mucho más profesional.</p>
-        <div class="proof">
-          <span>Sin programar desde cero</span>
-          <span>Sin pedir datos personales</span>
-          <span>Con respuestas en Sheets</span>
-          <span>Iterado bajo presión</span>
-        </div>
+        <span class="eyebrow">Caso real · hecho esta mañana</span>
+        <h1>De Google Form frío a experiencia que apetece contestar.</h1>
+        <p class="lead">La IA no hizo magia. Aceleró una conversación con criterio: qué necesitamos saber, cómo preguntarlo sin abrumar y cómo convertir algo feo en una herramienta útil para empezar mejor la webinar.</p>
       </div>
-      <aside class="phone" aria-label="Antes y después del formulario">
-        <div class="screen">
-          <div class="ugly">
-            <h3>Formulario previo</h3>
-            <label>¿Cuál es tu nivel de IA?</label>
-            <select><option>Empiezo</option></select>
-            <label>¿Qué esperas?</label>
-            <textarea rows="2">Aprender algo útil...</textarea>
-          </div>
-          <div class="pretty">
-            <small>COLOGEX x LOGOPED-IA</small>
-            <strong>Antes de la webinar, nos conocemos mejor.</strong>
-            <div class="chips">
-              <span>multirespuesta</span>
-              <span>termómetro 0-100</span>
-              <span>estrellas</span>
-              <span>mapa de grupo</span>
-            </div>
-          </div>
+      <aside class="hero-card">
+        <div class="mini-stats">
+          <div><b>4</b><span>iteraciones</span></div>
+          <div><b>0</b><span>datos personales</span></div>
+          <div><b>1</b><span>Sheets detrás</span></div>
+          <div><b>10'</b><span>para mejorar</span></div>
         </div>
       </aside>
     </section>
 
-    <section class="grid">
-      <article class="panel">
-        <span class="eyebrow">La idea pedagógica</span>
-        <h2>No embellecer por embellecer.</h2>
-        <p>La pregunta no fue “hazlo bonito”. La pregunta buena fue: ¿qué necesita sentir y entender una logopeda que todavía no usa IA para contestar sin perderse?</p>
-        <div class="steps">
-          <div class="step"><b>1</b><div><strong>Definir la función</strong><span>Queríamos recoger datos útiles antes de la webinar, sin pedir correo ni nombres.</span></div></div>
-          <div class="step"><b>2</b><div><strong>Traducir a experiencia</strong><span>Convertir preguntas secas en una secuencia cómoda: elegir, puntuar, escribir poco.</span></div></div>
-          <div class="step"><b>3</b><div><strong>Revisar como profesional</strong><span>Que se entienda, que no agobie, que no parezca infantil, que respete privacidad.</span></div></div>
-          <div class="step"><b>4</b><div><strong>Publicar y medir</strong><span>Enviar una URL limpia y mirar el mapa del grupo para adaptar la sesión.</span></div></div>
+    <section class="workbench">
+      <aside class="rail">
+        <span class="eyebrow">Toca una fase</span>
+        <button class="phase active" data-phase="0"><i>1</i><span><strong>Preguntar mejor</strong><span>Antes del diseño: para qué sirve el formulario.</span></span></button>
+        <button class="phase" data-phase="1"><i>2</i><span><strong>Reducir fricción</strong><span>Menos escritura, más elección clara.</span></span></button>
+        <button class="phase" data-phase="2"><i>3</i><span><strong>Hacerlo humano</strong><span>Lenguaje cercano para gente sin IA.</span></span></button>
+        <button class="phase" data-phase="3"><i>4</i><span><strong>Leer el grupo</strong><span>Resultados agregados para adaptar la sesión.</span></span></button>
+        <div class="checklist" id="checklist"></div>
+      </aside>
+
+      <section class="preview">
+        <div class="toolbar">
+          <div>
+            <span class="eyebrow">Antes / después</span>
+            <h2 id="phaseTitle">Preguntar mejor, no decorar más.</h2>
+          </div>
+          <div class="toggle" aria-label="Cambiar vista">
+            <button class="active" data-mode="ugly">Antes</button>
+            <button data-mode="pretty">Después</button>
+          </div>
         </div>
-      </article>
-
-      <article class="panel dark">
-        <span class="eyebrow">Prompt socrático para copiar y pegar</span>
-        <h2>Antes de pedir diseño, pide preguntas mejores.</h2>
-        <p>Este prompt obliga a la IA a pensar contigo antes de construir. No le deja correr hacia una interfaz bonita sin entender el objetivo.</p>
-        <div class="prompt">
-          <header>Prompt base <button data-copy="prompt1">Copiar</button></header>
-          <pre id="prompt1">Actúa como diseñador pedagógico y de experiencia de usuario para una formación sanitaria.
-
-Quiero transformar un Google Form feo en una experiencia web breve, anónima y amable, pero manteniendo Google Forms/Sheets como sistema de recogida de datos.
-
-Antes de proponer diseño, hazme preguntas socráticas y muy concretas sobre:
-1. Qué decisión quiero tomar con las respuestas.
-2. Qué perfil de personas lo va a rellenar.
-3. Qué datos son imprescindibles y cuáles sobran.
-4. Cómo evitar que parezca un examen o una encuesta fría.
-5. Qué tipo de resultados agregados me ayudarían a adaptar una webinar.
-
-Después, propón una estructura de 5-7 pantallas máximo, con lenguaje cercano para personas que aún no saben mucho de IA.</pre>
+        <div class="phone" id="phone" data-mode="ugly">
+          <div class="screen">
+            <div class="ugly">
+              <h3>Antes de la webinar</h3>
+              <label>¿Cuál es tu nivel de IA?</label>
+              <select><option>Empiezo</option></select>
+              <label>¿Qué esperas de la formación?</label>
+              <textarea rows="3">Aprender cosas prácticas...</textarea>
+              <label>¿Con quién trabajas?</label>
+              <input value="Varios">
+            </div>
+            <div class="pretty">
+              <div class="pretty-top">
+                <small>COLOGEX x LOGOPED-IA</small>
+                <strong>Antes de la webinar, nos conocemos mejor.</strong>
+                <div class="chips"><span>anónimo</span><span>multirespuesta</span><span>rápido</span><span>útil para la sesión</span></div>
+              </div>
+              <div class="question-card">
+                <small>Paso 2 de 5</small>
+                <h3 id="mockQuestion">¿Dónde aportas más valor como terapeuta?</h3>
+                <div class="options"><div class="option">Adaptar materiales</div><div class="option">Observar y detectar</div><div class="option">Crear actividades</div><div class="option">Acompañar familias</div></div>
+                <div class="thermo"><div></div></div>
+                <div class="result-row"><div><b>6</b><span>participantes</span></div><div><b>4/6</b><span>empiezan</span></div><div><b>4/6</b><span>quieren práctica</span></div></div>
+              </div>
+            </div>
+          </div>
         </div>
-      </article>
+      </section>
     </section>
 
-    <section class="panel" style="margin-top:18px">
-      <span class="eyebrow">Cómo se itera de verdad</span>
-      <h2>La mejora no sale a la primera. Sale conversando.</h2>
-      <div class="timeline">
-        <div class="moment"><small>ITERACIÓN 01</small><strong>“Esto parece un formulario feo en bonito.”</strong><p>Se detecta que el diseño no basta: falta profundidad, intención y sensación de herramienta profesional.</p></div>
-        <div class="moment"><small>ITERACIÓN 02</small><strong>“Que sea multirespuesta.”</strong><p>Se cambia la lógica: no forzar una sola opción cuando la práctica real mezcla contextos, necesidades y fortalezas.</p></div>
-        <div class="moment"><small>ITERACIÓN 03</small><strong>“Pon termómetro y estrellas.”</strong><p>Se añade una capa rápida de autopercepción: confianza 0-100 y valoración 1-5 sin escribir demasiado.</p></div>
-        <div class="moment"><small>ITERACIÓN 04</small><strong>“Quiero ver el grupo.”</strong><p>Se crea una página de resultados agregados para empezar la webinar desde el nivel real de la clase.</p></div>
-      </div>
-      <div class="prompt">
-        <header>Prompt de mejora iterativa <button data-copy="prompt2">Copiar</button></header>
-        <pre id="prompt2">Mira esta primera versión como si fueras una logopeda con poco tiempo y poca experiencia en IA.
+    <section class="panel-grid">
+      <article class="prompt-box">
+        <span class="eyebrow">Prompts copiables</span>
+        <h2>El truco no es pedir bonito. Es pedir pensamiento.</h2>
+        <div class="prompt-tabs">
+          <button class="active" data-prompt="socratico">Socrático</button>
+          <button data-prompt="iterar">Iterar</button>
+          <button data-prompt="publicar">Publicar</button>
+        </div>
+        <pre id="promptText"></pre>
+        <button class="copy" id="copyPrompt">Copiar prompt</button>
+      </article>
 
-No me digas solo si es bonito. Dime:
-- Qué no se entiende.
-- Qué pregunta sobra.
-- Qué pregunta falta para adaptar mejor la formación.
-- Dónde una persona se puede sentir evaluada o insegura.
-- Qué haría que respondiera con más ganas.
-- Qué resultado agregado sería útil para abrir una webinar.
-
-Después propón una segunda versión más clara, más humana y más profesional, manteniendo que no se pida nombre, correo ni datos identificativos.</pre>
-      </div>
+      <article class="notes">
+        <span class="eyebrow">Qué enseña este ejemplo</span>
+        <h2>La urgencia se vuelve método.</h2>
+        <p class="lead" style="font-size:16px">Esto se puede contar en 45 segundos en la webinar: hoy había un formulario normalito, una necesidad real y poco tiempo. La IA sirvió para iterar rápido sin perder el criterio profesional.</p>
+        <div class="insight">
+          <div><strong>1. La tecnología queda debajo</strong><span>Google Forms/Sheets guarda las respuestas. La web solo mejora la experiencia.</span></div>
+          <div><strong>2. El criterio manda</strong><span>Decidimos qué preguntar, qué no pedir y cómo no intimidar al grupo.</span></div>
+          <div><strong>3. La mejora es conversación</strong><span>“No se entiende”, “más cercano”, “multirespuesta”, “quiero ver el grupo”: eso es iterar.</span></div>
+          <div><strong>4. Se aprende haciendo</strong><span>Este caso es exactamente el tipo de práctica que puede salir de la formación.</span></div>
+        </div>
+      </article>
     </section>
 
     <section class="takeaway">
-      <div>
-        <h2>Esto es exactamente lo que enseña la formación.</h2>
-        <p>No es aprender “herramientas sueltas”. Es aprender a pensar una necesidad, pedir bien, revisar con criterio, iterar y convertir una urgencia en algo usable.</p>
-      </div>
-      <div class="badge">IA + criterio clínico</div>
+      <p><strong>Mensaje para el directo:</strong> no necesitas programar desde cero para mejorar una herramienta. Necesitas aprender a dirigir la IA, revisar lo que hace y adaptarlo a una necesidad real.</p>
+      <span class="badge">IA + criterio clínico</span>
     </section>
   </main>
   <script>
-    document.querySelectorAll("[data-copy]").forEach((button) => {
-      button.addEventListener("click", async () => {
-        const text = document.getElementById(button.dataset.copy).textContent.trim();
-        try {
-          await navigator.clipboard.writeText(text);
-          button.textContent = "Copiado";
-          setTimeout(() => button.textContent = "Copiar", 1400);
-        } catch {
-          button.textContent = "Selecciona el texto";
-        }
+    const phases = [
+      { title: "Preguntar mejor, no decorar más.", question: "¿Qué decisión necesito tomar con estas respuestas?", checks: ["Objetivo claro", "Datos mínimos", "Sin correo", "Una decisión pedagógica"] },
+      { title: "Reducir fricción para que contesten.", question: "¿Dónde aportas más valor como terapeuta?", checks: ["Multirespuesta", "Opciones breves", "Menos texto libre", "Avance por pantallas"] },
+      { title: "Hacerlo cercano sin hacerlo infantil.", question: "¿Cómo llega tu relación con la IA hoy?", checks: ["Lenguaje humano", "Sin jerga técnica", "Termómetro 0-100", "Estrellas 1-5"] },
+      { title: "Leer el grupo antes de hablar.", question: "¿Qué necesita ver primero esta clase?", checks: ["Resultados agregados", "Nivel de partida", "Prioridades visibles", "Webinar adaptada"] }
+    ];
+    const prompts = {
+      socratico: `Actúa como diseñador pedagógico y de experiencia de usuario para una formación sanitaria.
+
+Quiero transformar un Google Form feo en una experiencia web breve, anónima y amable, manteniendo Google Forms/Sheets como sistema de recogida.
+
+Antes de proponer diseño, hazme preguntas concretas sobre:
+1. Qué decisión quiero tomar con las respuestas.
+2. Qué perfil de personas lo va a rellenar.
+3. Qué datos son imprescindibles y cuáles sobran.
+4. Cómo evitar que parezca un examen.
+5. Qué resultados agregados me ayudarían a adaptar una webinar.
+
+Después propón una estructura de 5-7 pantallas máximo, con lenguaje cercano para personas que aún no saben mucho de IA.`,
+      iterar: `Mira esta primera versión como si fueras una logopeda con poco tiempo y poca experiencia en IA.
+
+No me digas solo si es bonita. Dime:
+- Qué no se entiende.
+- Qué pregunta sobra.
+- Qué pregunta falta.
+- Dónde una persona puede sentirse evaluada.
+- Qué haría que respondiera con más ganas.
+- Qué resultado agregado sería útil para abrir una webinar.
+
+Después propón una segunda versión más clara, humana y profesional.`,
+      publicar: `Convierte esta idea en una página HTML autónoma, responsive y profesional.
+
+Debe:
+- Enviar respuestas a un Google Form ya existente.
+- No pedir nombre, correo ni datos identificativos.
+- Usar preguntas multirespuesta cuando tenga sentido.
+- Incluir un termómetro 0-100 y una valoración de 1 a 5.
+- Terminar con una pantalla de gracias y enlace a resultados agregados.
+- Mantener lenguaje cercano para profesionales sanitarios que empiezan con IA.
+
+Antes de cerrar, revisa que funciona en móvil y escritorio.`
+    };
+    const checklist = document.getElementById("checklist");
+    const phaseTitle = document.getElementById("phaseTitle");
+    const mockQuestion = document.getElementById("mockQuestion");
+    function renderPhase(index){
+      const phase = phases[index];
+      phaseTitle.textContent = phase.title;
+      mockQuestion.textContent = phase.question;
+      checklist.innerHTML = phase.checks.map((item, i) => `<div class="check ${i <= index ? "on" : ""}">${item}</div>`).join("");
+      document.querySelectorAll(".phase").forEach((button) => button.classList.toggle("active", Number(button.dataset.phase) === index));
+    }
+    document.querySelectorAll(".phase").forEach((button) => button.addEventListener("click", () => renderPhase(Number(button.dataset.phase))));
+    document.querySelectorAll("[data-mode]").forEach((button) => {
+      button.addEventListener("click", () => {
+        document.getElementById("phone").dataset.mode = button.dataset.mode;
+        document.querySelectorAll("[data-mode]").forEach((b) => b.classList.toggle("active", b === button));
       });
     });
+    const promptText = document.getElementById("promptText");
+    function setPrompt(key){
+      promptText.textContent = prompts[key];
+      document.querySelectorAll("[data-prompt]").forEach((b) => b.classList.toggle("active", b.dataset.prompt === key));
+    }
+    document.querySelectorAll("[data-prompt]").forEach((button) => button.addEventListener("click", () => setPrompt(button.dataset.prompt)));
+    document.getElementById("copyPrompt").addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(promptText.textContent.trim());
+        copyPrompt.textContent = "Copiado";
+        setTimeout(() => copyPrompt.textContent = "Copiar prompt", 1400);
+      } catch {
+        copyPrompt.textContent = "Selecciona el texto";
+      }
+    });
+    renderPhase(0);
+    setPrompt("socratico");
   </script>
 </body>
 </html>
