@@ -1,0 +1,893 @@
+/* ═══════════════════════════════════════════════════
+   CUADERNO RUB-IA · Sistema de Estilos v2.0
+   Decisión de diseño: mm reales para impresión,
+   proporciones clamp() para pantalla.
+   ═══════════════════════════════════════════════════ */
+
+/* ─── Variables globales ─────────────────────────── */
+:root {
+  --paper:      #fffef9;
+  --ink:        #22384e;
+  --muted:      #5f7185;
+  --line-base:  #b8d2e6;   /* azul suave — línea base */
+  --line-mid:   rgba(120, 168, 221, 0.50); /* guía mediana */
+  --line-top:   rgba(120, 168, 221, 0.28); /* guía ascendentes */
+  --margin-red: #e07c7c;   /* línea de margen izquierda */
+  --trace-col:  #9ec3db;   /* texto para repasar — azul Rubio */
+  --ghost-col:  #a8b5c0;   /* texto modelo — gris tenue */
+  --accent:     #e09028;
+  --green:      #1f8a70;
+  --bg-1:       #f3ebda;
+  --bg-2:       #e8d6b4;
+  --danger:     #bf3d3d;
+  --shadow-book: 0 18px 40px rgba(60,42,12,0.13);
+}
+
+/* ─── Reset básico ───────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  color: var(--ink);
+  font-family: "Nunito", system-ui, sans-serif;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(108, 154, 195, 0.14) 0px,
+      rgba(108, 154, 195, 0.14) 1px,
+      transparent 1px,
+      transparent 44px
+    ),
+    radial-gradient(circle at 12% 12%, rgba(255,220,160,0.40), transparent 38%),
+    radial-gradient(circle at 88% 88%, rgba(180,220,200,0.35), transparent 34%),
+    linear-gradient(130deg, var(--bg-1), var(--bg-2));
+  min-height: 100dvh;
+}
+
+button, input, textarea, select { font: inherit; }
+
+/* ─── Shell ──────────────────────────────────────── */
+.app-shell {
+  max-width: 1540px;
+  margin: 0 auto;
+  padding: 0.75rem 0.9rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+/* ─── Topbar ─────────────────────────────────────── */
+.topbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(255,253,247,0.92);
+  border: 2px solid #e7dcc4;
+  border-radius: 16px;
+  padding: 0.85rem 1.2rem;
+  box-shadow: 0 8px 20px rgba(70,52,23,0.08);
+}
+
+.topbar-brand h1 {
+  margin: 0;
+  font-family: "Baloo 2", cursive;
+  font-size: clamp(1.25rem, 2vw, 1.75rem);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.topbar-brand p {
+  margin: 0.1rem 0 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.page-counter {
+  font-weight: 700;
+  font-size: 0.93rem;
+  color: var(--ink);
+}
+.page-counter.muted { color: var(--muted); }
+
+/* ─── Session bar ────────────────────────────────── */
+.session-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  background: rgba(255,253,247,0.82);
+  border: 1.5px dashed #e0d4b8;
+  border-radius: 12px;
+  padding: 0.5rem 0.9rem;
+}
+
+.session-bar input {
+  border: 1px solid #d8ccb0;
+  border-radius: 8px;
+  padding: 0.35rem 0.55rem;
+  background: #fffdf9;
+  font-size: 0.9rem;
+  flex: 1 1 160px;
+  min-width: 0;
+}
+
+/* ─── Botones ────────────────────────────────────── */
+button {
+  border: 0;
+  border-radius: 11px;
+  background: #1e3549;
+  color: white;
+  padding: 0.58rem 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 130ms ease, transform 100ms ease;
+  white-space: nowrap;
+}
+button:hover  { background: #27465f; transform: translateY(-1px); }
+button:active { transform: translateY(0); }
+button[disabled] { background: #a0aab4; cursor: not-allowed; transform: none; }
+
+.btn-print {
+  background: #1a7a55;
+}
+.btn-print:hover { background: #218c63; }
+
+.btn-generate {
+  background: linear-gradient(135deg, #1e5fa0, #1a4a80);
+  padding: 0.7rem 1rem;
+  font-size: 1rem;
+  width: 100%;
+  border-radius: 12px;
+}
+.btn-generate:hover { background: linear-gradient(135deg, #256db8, #1e5fa0); }
+
+#applyPresetBtn {
+  background: #5a3f2f;
+}
+
+#applyPresetBtn:hover {
+  background: #6d4e3a;
+}
+
+/* ─── Layout principal ───────────────────────────── */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(340px,1fr) minmax(280px,420px);
+  gap: 0.8rem;
+  align-items: start;
+}
+
+/* ─── Área del libro ─────────────────────────────── */
+.book-area {
+  background: rgba(255,253,247,0.75);
+  border: 2px solid #e4d9c6;
+  border-radius: 22px;
+  padding: 1rem 0.8rem 1.2rem;
+  box-shadow: var(--shadow-book);
+}
+
+/* ─── Libro (efecto flip) ────────────────────────── */
+.book {
+  position: relative;
+  margin: 0 auto;
+  width: min(90vw, 920px);
+  aspect-ratio: 1.415;      /* Proporción A4 landscape ≈ A5 portrait×2 */
+  perspective: 2400px;
+}
+
+/* ─── Página ─────────────────────────────────────── */
+.page {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform-origin: left center;
+  backface-visibility: hidden;
+  transition: transform 680ms cubic-bezier(0.42, 0.08, 0.22, 1);
+  background: var(--paper);
+  border-radius: 3px 14px 14px 3px;
+  border: 1px solid #d8cdbf;
+  box-shadow:
+    inset -3px 0 8px rgba(0,0,0,0.06),
+    3px 0 12px rgba(50,35,10,0.10),
+    0 12px 28px rgba(50,35,10,0.08);
+  overflow: hidden;
+}
+
+/* Sombra del lomo (izquierda) */
+.page::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 18px;
+  background: linear-gradient(90deg, rgba(0,0,0,0.12), transparent);
+  pointer-events: none;
+  z-index: 3;
+}
+
+.page.flipped {
+  transform: rotateY(-179deg);
+}
+
+/* ─── Interior de página ─────────────────────────── */
+.page-inner {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  padding: clamp(0.6rem, 1.6vw, 1.1rem) clamp(0.6rem, 1.4vw, 1rem);
+  display: grid;
+  grid-template-rows: auto auto auto 1fr auto;
+  gap: clamp(0.2rem, 0.6vw, 0.45rem);
+}
+
+/* ─── Cabecera de ejercicio ──────────────────────── */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.6rem;
+  border-bottom: 2px solid #e8e0d4;
+  padding-bottom: 0.25rem;
+}
+
+.page-title {
+  margin: 0;
+  font-family: "Baloo 2", cursive;
+  font-size: clamp(0.88rem, 1.7vw, 1.2rem);
+  font-weight: 700;
+  color: #19384f;
+  line-height: 1.2;
+}
+
+.page-number {
+  flex-shrink: 0;
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 0.82rem;
+}
+
+/* ─── Instrucciones ──────────────────────────────── */
+.instructions {
+  margin: 0;
+  color: #3a5568;
+  font-size: clamp(0.73rem, 1.35vw, 0.88rem);
+  line-height: 1.35;
+  font-style: italic;
+}
+
+.print-meta {
+  font-size: clamp(0.62rem, 1vw, 0.74rem);
+  color: #5f7185;
+  padding: 0.15rem 0.3rem;
+  border: 1px dashed #d8ccb3;
+  border-radius: 6px;
+  background: #fffaf0;
+}
+
+/* ═══════════════════════════════════════════════════
+   SISTEMA DE PAUTAS
+   --rh: altura de banda en mm (seteado por JS)
+   Triple guía: ascendentes / mediana / base
+   Margen rojo vertical a la izquierda (estilo Rubio)
+   ═══════════════════════════════════════════════════ */
+.practice-area {
+  position: relative;
+  border: 1px solid #ddd3c0;
+  border-radius: 8px;
+  padding: 0 0 0 clamp(12px, 2.2vw, 20px);
+  overflow: hidden;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(125, 168, 204, 0.14) 0px,
+      rgba(125, 168, 204, 0.14) 1px,
+      transparent 1px,
+      transparent 12px
+    ),
+    #fffdfa;
+}
+
+/* Línea de margen roja vertical */
+.practice-area::before {
+  content: "";
+  position: absolute;
+  left: clamp(10px, 1.8vw, 17px);
+  top: 0; bottom: 0;
+  width: 1.5px;
+  background: var(--margin-red);
+  opacity: 0.55;
+  z-index: 1;
+}
+
+/* ─── Línea de escritura ─────────────────────────── */
+.line {
+  position: relative;
+  height: var(--rh);
+  min-height: var(--rh);
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: clamp(1px, 0.3vw, 2px);
+  border-bottom: 1.5px solid var(--line-base);
+}
+
+.line:last-child { border-bottom: 0; }
+
+/* Línea de ascendentes (techo) */
+.line::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0;
+  top: 0;
+  border-top: 1px dashed var(--line-top);
+}
+
+/* Línea de x-height (mediana) */
+.line::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0;
+  top: var(--xline, 40%);
+  border-top: 1px dashed var(--line-mid);
+}
+
+.practice-area[data-ruling="simple"] .line::before,
+.practice-area[data-ruling="simple"] .line::after {
+  display: none;
+}
+
+.practice-area[data-ruling="grid"] .line {
+  background-image:
+    repeating-linear-gradient(
+      to right,
+      rgba(120, 168, 221, 0.2) 0,
+      rgba(120, 168, 221, 0.2) 1px,
+      transparent 1px,
+      transparent 7mm
+    );
+}
+
+/* ─── Texto de trazado ───────────────────────────── */
+
+/* TRACE: azul claro para repasar por encima */
+.trace-text {
+  display: block;
+  width: 100%;
+  font-family: "Patrick Hand", "Nunito", sans-serif;
+  font-weight: 700;
+  font-size: calc(var(--rh) * 0.62);
+  color: var(--trace-col);
+  letter-spacing: 0.10em;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  user-select: none;
+  z-index: 2;
+}
+
+.trace-svg {
+  width: 100%;
+  height: calc(var(--rh) * 0.72);
+  overflow: visible;
+  z-index: 2;
+}
+
+.trace-svg text {
+  fill: none;
+  stroke: var(--trace-col);
+  stroke-width: 1.05px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 0.2 4;
+  font-family: "Patrick Hand", "Nunito", sans-serif;
+  font-weight: 700;
+  font-size: calc(var(--rh) * 0.62);
+  letter-spacing: 0.08em;
+  opacity: 0.96;
+}
+
+.trace-svg text.cursive {
+  font-family: "Caveat", cursive;
+  font-size: calc(var(--rh) * 0.74);
+  letter-spacing: 0.05em;
+}
+
+.trace-svg use {
+  fill: #7fb7e0;
+  opacity: 0.65;
+}
+
+.reference-box {
+  margin-top: 0.7rem;
+  border: 1px dashed #c8bda4;
+  border-radius: 10px;
+  padding: 0.6rem;
+  background: #fff9ef;
+}
+
+.reference-box h3 {
+  margin: 0;
+  font-family: "Baloo 2", cursive;
+  font-size: 0.95rem;
+  color: #20405a;
+}
+
+.reference-box p {
+  margin: 0.3rem 0 0.5rem;
+  font-size: 0.8rem;
+  color: #567086;
+}
+
+.reference-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.45rem;
+}
+
+.reference-grid img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #dccfb5;
+  box-shadow: 0 5px 14px rgba(50, 40, 16, 0.14);
+}
+
+/* GHOST: gris tenue como referencia/muestra */
+.ghost-text {
+  display: block;
+  width: 100%;
+  font-family: "Patrick Hand", "Nunito", sans-serif;
+  font-weight: 600;
+  font-size: calc(var(--rh) * 0.56);
+  color: var(--ghost-col);
+  opacity: 0.65;
+  letter-spacing: 0.10em;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  user-select: none;
+  z-index: 2;
+}
+
+/* Cursiva para ambos modos */
+.trace-text.cursive,
+.ghost-text.cursive {
+  font-family: "Caveat", cursive;
+  font-size: calc(var(--rh) * 0.74);
+  letter-spacing: 0.06em;
+}
+
+/* Etiquetas clínicas (registro) */
+.label-text {
+  display: block;
+  font-size: calc(var(--rh) * 0.44);
+  color: #4a6070;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  z-index: 2;
+}
+
+/* ─── Caja de teoría clínica ─────────────────────── */
+.theory-box {
+  background: linear-gradient(120deg, #fef9ef, #eef7f4);
+  border: 1px solid #e0d4b4;
+  border-left: 4px solid var(--accent);
+  border-radius: 8px;
+  padding: clamp(0.28rem, 0.7vw, 0.5rem) clamp(0.4rem, 0.9vw, 0.7rem);
+  font-size: clamp(0.66rem, 1.1vw, 0.80rem);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem 1rem;
+}
+
+.theory-box strong {
+  display: block;
+  color: #153a5a;
+  font-size: 0.72em;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.15rem;
+}
+
+.theory-box span {
+  color: #2e4a5e;
+  line-height: 1.35;
+}
+
+/* ─── Portada ─────────────────────────────────────── */
+.cover-page {
+  background:
+    radial-gradient(circle at 22% 18%, rgba(255,220,140,0.85), transparent 32%),
+    radial-gradient(circle at 78% 78%, rgba(160,226,206,0.80), transparent 30%),
+    linear-gradient(155deg, #fff5e0, #f8e8cc 65%, #f0e2c0);
+}
+
+.cover-inner {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  padding: clamp(1rem, 2.5vw, 1.8rem);
+}
+
+.cover-top h2 {
+  margin: 0.3rem 0 0.1rem;
+  font-family: "Baloo 2", cursive;
+  font-size: clamp(1.6rem, 3.5vw, 2.6rem);
+  font-weight: 800;
+  color: #12344e;
+  line-height: 1.1;
+}
+
+.cover-subtitle {
+  margin: 0;
+  color: #2e4e66;
+  font-size: clamp(0.9rem, 1.7vw, 1.15rem);
+}
+
+.cover-meta {
+  font-size: clamp(0.8rem, 1.4vw, 1rem);
+  color: #2e4e66;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.2rem;
+  padding: 0.5rem 0;
+  border-top: 1.5px dashed #d4c8a8;
+  border-bottom: 1.5px dashed #d4c8a8;
+}
+
+.cover-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem 1.2rem;
+}
+
+.cover-col h3 {
+  margin: 0 0 0.3rem;
+  color: #173954;
+  font-size: clamp(0.82rem, 1.4vw, 0.98rem);
+  font-weight: 700;
+}
+
+.cover-col ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  color: #2f4c62;
+  font-size: clamp(0.75rem, 1.25vw, 0.88rem);
+  line-height: 1.5;
+}
+
+.cover-note {
+  margin: 0.5rem 0 0;
+  font-size: clamp(0.68rem, 1.1vw, 0.78rem);
+  color: var(--muted);
+  font-style: italic;
+}
+
+.cover-footer {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* ─── Chips y badges ─────────────────────────────── */
+.chip {
+  display: inline-flex;
+  width: fit-content;
+  border-radius: 999px;
+  padding: 0.2rem 0.7rem;
+  font-weight: 700;
+  font-size: clamp(0.68rem, 1.1vw, 0.82rem);
+}
+
+.chip-green { background: #1a7a55; color: white; }
+
+.level-badge {
+  border-radius: 8px;
+  padding: 0.2rem 0.55rem;
+  font-size: clamp(0.66rem, 1.05vw, 0.78rem);
+  font-weight: 700;
+}
+.level-i   { background: #e8f4ec; color: #1a6e44; border: 1px solid #b8dcca; }
+.level-ii  { background: #e8f0f8; color: #1a4a7a; border: 1px solid #b0c8e4; }
+.level-iii { background: #f4eef8; color: #5a2a7a; border: 1px solid #d0b8e4; }
+
+/* ─── Panel del terapeuta ────────────────────────── */
+.editor-panel {
+  background: rgba(255,253,247,0.94);
+  border: 2px solid #e7dcc4;
+  border-radius: 18px;
+  padding: 0.9rem 1rem;
+  box-shadow: 0 8px 22px rgba(60,42,16,0.07);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  max-height: calc(100vh - 140px);
+  overflow-y: auto;
+}
+
+.editor-panel h2 {
+  margin: 0 0 0.1rem;
+  font-family: "Baloo 2", cursive;
+  font-size: clamp(1.05rem, 1.8vw, 1.3rem);
+  font-weight: 800;
+}
+
+.editor-intro {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.35;
+}
+
+.editor-panel label {
+  font-weight: 700;
+  color: #243d52;
+  font-size: 0.88rem;
+  margin-top: 0.25rem;
+}
+
+.editor-panel input,
+.editor-panel textarea,
+.editor-panel select {
+  border: 1.5px solid #d8ccb0;
+  border-radius: 9px;
+  padding: 0.45rem 0.6rem;
+  background: #fffdf9;
+  width: 100%;
+  transition: border-color 120ms ease;
+}
+.editor-panel input:focus,
+.editor-panel textarea:focus,
+.editor-panel select:focus {
+  outline: none;
+  border-color: #3a7abf;
+}
+
+.editor-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem 0.6rem;
+}
+.editor-grid > div { display: flex; flex-direction: column; gap: 0.2rem; }
+
+.hint-box {
+  margin-top: 0.6rem;
+  border-left: 4px solid var(--accent);
+  border-radius: 8px;
+  padding: 0.5rem 0.65rem;
+  background: #fff6e8;
+}
+
+.hint-box strong {
+  display: block;
+  font-size: 0.88rem;
+  margin-bottom: 0.25rem;
+  color: #3a2a0a;
+}
+
+.hint-box p {
+  margin: 0;
+  color: #4a5f70;
+  font-size: 0.84rem;
+  line-height: 1.4;
+}
+
+.disclaimer {
+  font-size: 0.74rem;
+  color: #8a9aaa;
+  font-style: italic;
+  text-align: center;
+  margin: 0.3rem 0 0;
+  line-height: 1.35;
+}
+
+.empty-text {
+  color: var(--danger);
+  font-size: 0.86rem;
+  min-height: 1.1rem;
+  margin: 0;
+}
+
+/* ─── Sección header dentro del libro ───────────── */
+.section-header {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(155deg, #e8f4f0, #daeef6);
+  border-radius: inherit;
+  text-align: center;
+  padding: 2rem;
+}
+
+.section-header .section-num {
+  font-family: "Baloo 2", cursive;
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 800;
+  color: #1a5a7a;
+  opacity: 0.18;
+  line-height: 1;
+}
+
+.section-header h2 {
+  font-family: "Baloo 2", cursive;
+  font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+  color: #1a4a6a;
+  margin: 0.2rem 0 0.5rem;
+}
+
+.section-header p {
+  color: #2e5a74;
+  font-size: clamp(0.8rem, 1.4vw, 1rem);
+  max-width: 380px;
+  line-height: 1.4;
+}
+
+/* ─── Responsive ─────────────────────────────────── */
+@media (max-width: 1140px) {
+  .layout { grid-template-columns: 1fr; }
+  .book { width: min(96vw, 780px); }
+  .cover-body { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+  .editor-grid { grid-template-columns: 1fr; }
+}
+
+/* ═══════════════════════════════════════════════════
+   IMPRESIÓN A4 — Medidas exactas
+   A4: 210×297mm · márgenes 10mm → área 190×277mm
+   ═══════════════════════════════════════════════════ */
+
+@page {
+  size: A4 portrait;
+  margin: 10mm 10mm 10mm 14mm; /* extra izquierda para encuadernación */
+}
+
+@media print {
+
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  body { background: white; }
+
+  .no-print,
+  .session-bar { display: none !important; }
+
+  .app-shell,
+  .layout,
+  .book-area {
+    all: unset;
+    display: block;
+  }
+
+  .book {
+    width: 100%;
+    aspect-ratio: auto;
+    perspective: none;
+    display: block;
+    position: static;
+  }
+
+  /* Cada página ocupa exactamente una hoja A4 */
+  .page,
+  .page.flipped {
+    position: relative !important;
+    page-break-after: always;
+    break-after: page;
+    width: 186mm;   /* 210 - 24mm márgenes */
+    height: 277mm;  /* 297 - 20mm márgenes */
+    margin: 0 auto;
+    border-radius: 0;
+    border: 0;
+    box-shadow: none;
+    transform: none !important;
+    overflow: hidden;
+    background: white;
+  }
+
+  .page::before { display: none; }
+
+  .page-inner {
+    padding: 5mm 7mm 5mm 9mm;
+    gap: 2.5mm;
+    height: 100%;
+  }
+
+  /* Cabecera de página */
+  .page-header { border-bottom-width: 1px; padding-bottom: 1.5mm; }
+  .page-title  { font-size: 5mm; }
+  .page-number { font-size: 3.5mm; }
+
+  .instructions { font-size: 3.2mm; }
+
+  .print-meta {
+    font-size: 2.7mm;
+    border-radius: 0;
+    padding: 1mm 1.4mm;
+    background: #fffaf0 !important;
+  }
+
+  /* Área de práctica */
+  .practice-area {
+    padding-left: 7mm;
+    border-radius: 0;
+    border-color: #d8d0c4;
+  }
+
+  .practice-area::before { left: 6mm; }
+
+  /* Las líneas usan --rh directamente en mm (fijado por JS) */
+  .line {
+    height: var(--rh);
+    min-height: var(--rh);
+    padding-bottom: 0.8mm;
+    border-bottom-width: 1px;
+  }
+
+  /* Tamaños de texto en función de --rh (ya en mm) */
+  .trace-text {
+    font-size: calc(var(--rh) * 0.62);
+    letter-spacing: 0.08em;
+  }
+
+  .trace-svg {
+    height: calc(var(--rh) * 0.72);
+  }
+
+  .trace-svg text {
+    stroke-width: 0.7px;
+    stroke-dasharray: 1.3 2.1;
+  }
+
+  .ghost-text {
+    font-size: calc(var(--rh) * 0.56);
+    letter-spacing: 0.08em;
+  }
+
+  .trace-text.cursive,
+  .ghost-text.cursive {
+    font-size: calc(var(--rh) * 0.74);
+  }
+
+  .label-text { font-size: calc(var(--rh) * 0.44); }
+
+  /* Caja de teoría en impresión */
+  .theory-box {
+    font-size: 3mm;
+    padding: 2mm 3mm;
+    border-radius: 0;
+    background: #fdf9f0 !important;
+    border-color: #d8cca0;
+  }
+
+  .theory-box strong { font-size: 2.6mm; }
+
+  /* Portada en impresión */
+  .cover-page { background: #fdf8ee !important; }
+  .cover-inner { padding: 12mm; }
+  .cover-top h2 { font-size: 14mm; }
+  .cover-subtitle { font-size: 5mm; }
+  .cover-meta { font-size: 4mm; }
+  .cover-col h3 { font-size: 4.2mm; }
+  .cover-col ul { font-size: 3.6mm; }
+  .cover-note { font-size: 3mm; }
+  .level-badge { font-size: 3.2mm; }
+  .chip { font-size: 3.2mm; }
+
+  /* Sección header en impresión */
+  .section-header h2 { font-size: 10mm; }
+  .section-header p  { font-size: 4.5mm; }
+}

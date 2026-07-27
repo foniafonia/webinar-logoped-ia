@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cuaderno Rub-IA v2 — Grafomotricidad Terapéutica</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Caveat:wght@600;700&family=Nunito:wght@400;600;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+
+    <!-- TOPBAR -->
+    <header class="topbar no-print">
+      <div class="topbar-brand">
+        <h1>Cuaderno Rub-IA v2</h1>
+        <p>Grafomotricidad terapéutica · Nivel clínico</p>
+      </div>
+      <div class="topbar-actions">
+        <button id="prevBtn" type="button" aria-label="Página anterior">&#8592; Anterior</button>
+        <span class="page-counter" id="pageIndicator" aria-live="polite">Página 1</span>
+        <span class="page-counter muted" id="totalIndicator">/ 1</span>
+        <button id="nextBtn" type="button" aria-label="Página siguiente">Siguiente &#8594;</button>
+        <button id="printBtn" type="button" class="btn-print" aria-label="Imprimir cuaderno completo">&#128438; Imprimir</button>
+      </div>
+    </header>
+
+    <!-- DATOS DE SESIÓN (visible en impresión si se rellenan) -->
+    <div class="session-bar no-print" id="sessionBar">
+      <input id="studentName" type="text" placeholder="Nombre del alumno/a" maxlength="50" />
+      <input id="therapistName" type="text" placeholder="Terapeuta" maxlength="40" />
+      <input id="sessionDate" type="date" />
+      <input id="sessionNum" type="number" min="1" max="999" placeholder="Sesión nº" style="width:90px" />
+    </div>
+
+    <!-- LAYOUT PRINCIPAL -->
+    <main class="layout">
+
+      <!-- LIBRO -->
+      <section class="book-area">
+        <div id="book" class="book" aria-label="Cuaderno de ejercicios" role="region"></div>
+      </section>
+
+      <!-- EDITOR DEL TERAPEUTA -->
+      <aside class="editor-panel no-print" aria-label="Editor de páginas personalizadas">
+        <h2>Editor del Terapeuta</h2>
+        <p class="editor-intro">Escribe cualquier sílaba, palabra o pseudopalabra. El sistema genera la página sin correcciones.</p>
+
+        <label for="customTitle">Título de la página</label>
+        <input id="customTitle" type="text" value="Serie personalizada" maxlength="60" />
+
+        <label for="customPrompt">Texto a entrenar</label>
+        <textarea id="customPrompt" rows="4" placeholder="Ej: MA ME MI MO MU&#10;o: PUASO QUESA TIRLO&#10;o: pra pre pri pro pru"></textarea>
+
+        <div class="editor-grid">
+          <div>
+            <label for="stagePreset">Preset pedagógico</label>
+            <select id="stagePreset">
+              <option value="3-4">3-4 años · Pretrazo</option>
+              <option value="4-5">4-5 años · Letras iniciales</option>
+              <option value="5-6" selected>5-6 años · Sílabas y palabras</option>
+              <option value="6-7">6-7 años · Frases funcionales</option>
+              <option value="intervencion">Intervención disgrafía</option>
+            </select>
+          </div>
+          <div>
+            <label for="lineStyle">Tipo de ejercicio</label>
+            <select id="lineStyle">
+              <option value="trace">Calco + muestra + libre</option>
+              <option value="copy">Muestra + copia libre</option>
+              <option value="mixed">Calco + libre</option>
+            </select>
+          </div>
+          <div>
+            <label for="contentLevel">Nivel de contenido</label>
+            <select id="contentLevel">
+              <option value="tracing">Trazos básicos</option>
+              <option value="syllables" selected>Sílabas</option>
+              <option value="words">Palabras</option>
+              <option value="pseudo">Pseudopalabras</option>
+              <option value="sentences">Frases cortas</option>
+            </select>
+          </div>
+          <div>
+            <label for="letterCase">Tipo de letra</label>
+            <select id="letterCase">
+              <option value="upper">MAYÚSCULA bloque</option>
+              <option value="lower">minúscula bloque</option>
+              <option value="both">MAYÚSCULA + minúscula</option>
+              <option value="cursive">cursiva enlazada</option>
+            </select>
+          </div>
+          <div>
+            <label for="ruleSize">Pauta</label>
+            <select id="ruleSize">
+              <option value="8">Infantil · 8 mm</option>
+              <option value="5" selected>Primaria inicial · 5 mm</option>
+              <option value="3.5">Primaria avanzada · 3.5 mm</option>
+            </select>
+          </div>
+          <div>
+            <label for="rulingType">Tipo de pauta</label>
+            <select id="rulingType">
+              <option value="montessori" selected>Montessori / trilínea</option>
+              <option value="grid">Cuadrícula guiada</option>
+              <option value="simple">Línea simple</option>
+            </select>
+          </div>
+          <div>
+            <label for="repetitions">Repeticiones</label>
+            <input id="repetitions" type="number" min="1" max="6" value="3" />
+          </div>
+          <div>
+            <label for="xHeightMm">x-height (mm)</label>
+            <input id="xHeightMm" type="number" min="2" max="12" step="0.1" value="5" />
+          </div>
+          <div>
+            <label for="ascRatio">Ascendente (ratio)</label>
+            <input id="ascRatio" type="number" min="0.5" max="3" step="0.1" value="1" />
+          </div>
+          <div>
+            <label for="descRatio">Descendente (ratio)</label>
+            <input id="descRatio" type="number" min="0.3" max="3" step="0.1" value="1" />
+          </div>
+        </div>
+
+        <label for="objective">Objetivo terapéutico</label>
+        <input id="objective" type="text" value="Consolidar automatización grafomotora" maxlength="120" />
+
+        <button id="applyPresetBtn" type="button">Aplicar preset pedagógico</button>
+        <button id="addPageBtn" type="button" class="btn-generate">&#10024; Generar página</button>
+        <p id="editorError" class="empty-text" role="alert" aria-live="polite"></p>
+
+        <div class="hint-box">
+          <strong>Justificación clínica</strong>
+          <p>La práctica repetida con modelo, calco y copia libre consolida la automatización motora del trazo y mejora legibilidad sin sobrecargar la memoria de trabajo.</p>
+        </div>
+
+        <div class="reference-box">
+          <h3>Referencia visual objetivo</h3>
+          <p>Este es el estilo de punteado y estética esperada para la landing del lanzamiento.</p>
+          <div class="reference-grid">
+            <img src="assets/referencias/referencia-rubia-1.jpg" alt="Referencia visual 1 estilo cuaderno punteado" />
+            <img src="assets/referencias/referencia-rubia-2.png" alt="Referencia visual 2 estilo cuaderno punteado" />
+          </div>
+        </div>
+
+        <p class="disclaimer">Material inspirado en la secuenciación clásica de cuadernos de caligrafía y grafomotricidad. Sin afiliación comercial con ninguna marca editorial.</p>
+      </aside>
+    </main>
+  </div>
+
+  <!-- PORTADA TEMPLATE -->
+  <template id="coverTemplate">
+    <article class="page cover-page">
+      <div class="page-inner cover-inner">
+        <div class="cover-top">
+          <span class="chip chip-green">Cuaderno terapéutico · Grafomotricidad</span>
+          <h2>Cuaderno Rub-IA</h2>
+          <p class="cover-subtitle">Entrenamiento grafomotor de progresión clínica</p>
+        </div>
+        <div class="cover-meta" id="coverMeta">
+          <!-- Se rellena desde JS con los datos de sesión -->
+        </div>
+        <div class="cover-body">
+          <div class="cover-col">
+            <h3>Contenidos del cuaderno</h3>
+            <ul>
+              <li>Pretrazo: líneas, curvas y zigzags</li>
+              <li>Letras: vocales y consonantes frecuentes</li>
+              <li>Sílabas directas, inversas y trabadas</li>
+              <li>Palabras funcionales y pseudopalabras</li>
+              <li>Frases cortas y generalización</li>
+              <li>Páginas personalizadas del terapeuta</li>
+            </ul>
+          </div>
+          <div class="cover-col">
+            <h3>Cómo usar este cuaderno</h3>
+            <ul>
+              <li>Las líneas azules son para <strong>repasar</strong></li>
+              <li>Las líneas grises son <strong>modelo</strong> a copiar</li>
+              <li>Las líneas en blanco son para <strong>practicar</strong></li>
+              <li>Sigue el orden de los niveles de pauta</li>
+            </ul>
+            <p class="cover-note">Sin afiliación comercial con marcas editoriales.</p>
+          </div>
+        </div>
+        <div class="cover-footer">
+          <span class="level-badge level-i">Nivel I · Pauta 8 mm</span>
+          <span class="level-badge level-ii">Nivel II · Pauta 5 mm</span>
+          <span class="level-badge level-iii">Nivel III · Pauta 3.5 mm</span>
+        </div>
+      </div>
+    </article>
+  </template>
+
+  <script src="script.js"></script>
+</body>
+</html>

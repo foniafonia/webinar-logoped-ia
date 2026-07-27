@@ -1,0 +1,2213 @@
+<!DOCTYPE html><html lang="es"><head><meta name="x-poe-datastore-behavior" content="local_only"><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Detective de Palabras</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&amp;family=Nunito:wght@400;700&amp;display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #1a1a2e;
+            --bg-medium: #16213e;
+            --accent: #e94560;
+            --accent-glow: #ff6b6b;
+            --success: #4ade80;
+            --text-light: #f8f8f8;
+            --gold: #ffd700;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: var(--bg-dark);
+            min-height: 100vh;
+            overflow: hidden;
+            user-select: none;
+            touch-action: none;
+        }
+
+        .dark body {
+            background: #0a0a15;
+        }
+
+        #game-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Start Screen */
+        #start-screen {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-medium) 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        #start-screen.hidden {
+            display: none;
+        }
+
+        .game-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: clamp(1.8rem, 7vw, 3.5rem);
+            color: var(--text-light);
+            text-align: center;
+            margin-bottom: 8px;
+            text-shadow: 0 0 30px var(--accent-glow);
+            animation: titlePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes titlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+
+        .game-subtitle {
+            font-size: clamp(0.9rem, 2.5vw, 1.3rem);
+            color: var(--accent);
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .tool-icon {
+            font-size: clamp(3rem, 12vw, 6rem);
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(-10deg); }
+            50% { transform: translateY(-15px) rotate(-10deg); }
+        }
+
+        .section-label {
+            color: var(--text-light);
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .mode-description {
+            color: #a0a0b0;
+            font-size: 0.85rem;
+            margin-top: 8px;
+            text-align: center;
+            max-width: 350px;
+        }
+
+        /* Tool Mode Selection */
+        .tool-select {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .tool-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .tool-btn {
+            padding: 15px 25px;
+            font-size: 1.1rem;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+            border: 3px solid #8b5cf6;
+            background: transparent;
+            color: var(--text-light);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .tool-btn .tool-emoji {
+            font-size: 2rem;
+        }
+
+        .tool-btn:hover, .tool-btn.selected {
+            background: #8b5cf6;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+        }
+
+        /* Search Type Selection */
+        .search-type-select {
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .search-type-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            max-width: 400px;
+        }
+
+        .search-type-btn {
+            padding: 8px 14px;
+            font-size: 0.85rem;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+            border: 2px solid #10b981;
+            background: transparent;
+            color: var(--text-light);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-type-btn:hover, .search-type-btn.selected {
+            background: #10b981;
+            transform: scale(1.05);
+        }
+
+        .category-select {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .category-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            max-width: 450px;
+        }
+
+        .category-btn {
+            padding: 10px 18px;
+            font-size: 0.95rem;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+            border: 2px solid var(--accent);
+            background: transparent;
+            color: var(--text-light);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .category-btn:hover, .category-btn.selected {
+            background: var(--accent);
+            transform: scale(1.05);
+        }
+
+        .difficulty-select {
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .difficulty-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .diff-btn {
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+            border: 2px solid var(--gold);
+            background: transparent;
+            color: var(--text-light);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .diff-btn:hover, .diff-btn.selected {
+            background: var(--gold);
+            color: var(--bg-dark);
+        }
+
+        .start-btn {
+            padding: 16px 45px;
+            font-size: 1.3rem;
+            font-family: 'Fredoka One', cursive;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-glow) 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(233, 69, 96, 0.4);
+        }
+
+        .start-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(233, 69, 96, 0.6);
+        }
+
+        /* Game Area */
+        #game-area {
+            position: absolute;
+            inset: 0;
+            display: none;
+        }
+
+        #game-area.active {
+            display: block;
+        }
+
+        /* Background for flashlight mode (dark) */
+        #game-area.mode-flashlight {
+            background: #0a0a12;
+        }
+
+        /* Background for magnifier mode (lighter, visible) */
+        #game-area.mode-magnifier {
+            background: linear-gradient(135deg, #2a3a4a 0%, #1a2a3a 50%, #0f1f2f 100%);
+        }
+
+        /* HUD */
+        #hud {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 50;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%);
+        }
+
+        .hud-left, .hud-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .level-badge {
+            background: var(--accent);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .tool-badge {
+            background: #8b5cf6;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .score-display {
+            color: var(--gold);
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .score-display.score-detail {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            min-width: 74px;
+            justify-content: flex-end;
+        }
+
+        .round-display {
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+
+        #menu-btn, #audio-btn {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            font-size: 1.4rem;
+            padding: 8px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        #menu-btn:hover, #audio-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* Target Display */
+        #target-display {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.85);
+            padding: 12px 25px;
+            border-radius: 30px;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 2px solid var(--accent);
+        }
+
+        #target-text {
+            color: var(--text-light);
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        #replay-audio {
+            background: var(--accent);
+            border: none;
+            color: white;
+            font-size: 1.1rem;
+            padding: 8px 12px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        #replay-audio:hover {
+            transform: scale(1.1);
+        }
+
+        /* Objects Container */
+        #objects-container {
+            position: absolute;
+            inset: 80px 20px 100px 20px;
+        }
+
+        /* ============ FLASHLIGHT MODE OBJECTS ============ */
+        .mode-flashlight .game-object {
+            position: absolute;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.15s, filter 0.15s;
+            opacity: 0.08;
+            filter: blur(5px) grayscale(100%);
+            z-index: 10;
+        }
+
+        .mode-flashlight .game-object.revealed {
+            opacity: 1;
+            filter: blur(0) grayscale(0%);
+            z-index: 20;
+        }
+
+        /* ============ MAGNIFIER MODE OBJECTS ============ */
+        /* Objects are TINY and blurry - almost unrecognizable */
+        .mode-magnifier .game-object {
+            position: absolute;
+            cursor: pointer;
+            transition: font-size 0.12s ease-out, filter 0.12s ease-out;
+            opacity: 0.6;
+            filter: blur(1px) grayscale(50%);
+            z-index: 10;
+        }
+
+        /* When magnified, objects become clear and large */
+        .mode-magnifier .game-object.magnified {
+            z-index: 25;
+            opacity: 1;
+            filter: blur(0) grayscale(0%) drop-shadow(0 2px 8px rgba(0,0,0,0.4));
+        }
+
+        .game-object:active {
+            transform: scale(1.3) !important;
+        }
+
+        /* Text-based objects (phonemes, syllables, words) */
+        .game-object.text-item {
+            font-family: 'Fredoka One', cursive;
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            padding: 5px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+
+        .mode-magnifier .game-object.text-item {
+            background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+        }
+
+        .mode-magnifier .game-object.text-item.magnified {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        /* Flashlight Effect */
+        #flashlight {
+            position: fixed;
+            pointer-events: none;
+            z-index: 30;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+        }
+
+        #flashlight.active {
+            display: block;
+        }
+
+        /* Flashlight mode - warm light */
+        #flashlight.mode-flashlight {
+            background: radial-gradient(circle,
+                rgba(255,255,200,0.2) 0%,
+                rgba(255,255,200,0.1) 40%,
+                transparent 70%);
+            box-shadow:
+                0 0 100px 50px rgba(255,255,150,0.15),
+                inset 0 0 60px rgba(255,255,200,0.15);
+        }
+
+        /* Magnifier mode - glass lens */
+        #flashlight.mode-magnifier {
+            background: radial-gradient(circle,
+                rgba(220, 240, 255, 0.25) 0%,
+                rgba(200, 230, 255, 0.15) 50%,
+                rgba(180, 220, 255, 0.05) 70%,
+                transparent 85%);
+            border: 10px solid #5a4a3a;
+            box-shadow:
+                0 0 0 5px #3d3228,
+                0 0 40px rgba(100, 180, 255, 0.4),
+                inset 0 0 80px rgba(200, 230, 255, 0.3),
+                inset 0 -30px 60px rgba(255, 255, 255, 0.15);
+        }
+
+        /* Magnifier handle */
+        #magnifier-handle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 29;
+            width: 22px;
+            height: 90px;
+            background: linear-gradient(90deg, #7a6a5a 0%, #9a8a7a 50%, #5a4a3a 100%);
+            border-radius: 10px;
+            transform-origin: top center;
+            display: none;
+            box-shadow: 3px 3px 10px rgba(0,0,0,0.5);
+        }
+
+        #magnifier-handle.active {
+            display: block;
+        }
+
+        /* Magnifier glass shine */
+        #magnifier-shine {
+            position: fixed;
+            pointer-events: none;
+            z-index: 31;
+            border-radius: 50%;
+            background: linear-gradient(135deg,
+                rgba(255, 255, 255, 0.5) 0%,
+                rgba(255, 255, 255, 0.15) 30%,
+                transparent 50%);
+            transform: translate(-50%, -50%);
+            display: none;
+        }
+
+        #magnifier-shine.active {
+            display: block;
+        }
+
+        /* Feedback Overlays */
+        #success-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(74, 222, 128, 0.3);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        #success-overlay.show {
+            display: flex;
+            animation: successFlash 0.8s ease-out;
+        }
+
+        @keyframes successFlash {
+            0% { opacity: 0; }
+            20% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        .success-icon {
+            font-size: 5rem;
+            animation: successBounce 0.6s ease-out;
+        }
+
+        @keyframes successBounce {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+
+        .success-text {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.8rem;
+            color: white;
+            text-shadow: 0 0 20px var(--success);
+            margin-top: 15px;
+        }
+
+        /* Stars Animation */
+        .star-burst {
+            position: fixed;
+            font-size: 1.8rem;
+            pointer-events: none;
+            z-index: 250;
+            animation: starFly 1s ease-out forwards;
+        }
+
+        @keyframes starFly {
+            0% {
+                opacity: 1;
+                transform: translate(0, 0) scale(1) rotate(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--tx), var(--ty)) scale(0) rotate(360deg);
+            }
+        }
+
+        /* Level Complete Screen */
+        #level-complete {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.92);
+            z-index: 300;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        #level-complete.show {
+            display: flex;
+        }
+
+        .complete-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: clamp(1.8rem, 7vw, 3.5rem);
+            color: var(--gold);
+            margin-bottom: 15px;
+            text-shadow: 0 0 30px var(--gold);
+            text-align: center;
+        }
+
+        .complete-stats {
+            color: var(--text-light);
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .complete-stars {
+            font-size: 2.5rem;
+            margin-bottom: 25px;
+        }
+
+        .next-btn {
+            padding: 14px 35px;
+            font-size: 1.1rem;
+            font-family: 'Fredoka One', cursive;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            margin: 8px;
+            transition: transform 0.3s;
+        }
+
+        .next-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Audio Init */
+        #audio-init {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        #audio-init.show {
+            display: flex;
+        }
+
+        #audio-init p {
+            color: var(--text-light);
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        #enable-audio-btn {
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-family: 'Fredoka One', cursive;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            #target-display {
+                padding: 10px 18px;
+                bottom: 12px;
+            }
+
+            #target-text {
+                font-size: 1rem;
+            }
+
+            #hud {
+                padding: 10px 12px;
+            }
+
+            .tool-btn {
+                padding: 10px 18px;
+                font-size: 0.95rem;
+            }
+
+            .tool-btn .tool-emoji {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <!-- Audio Init Screen -->
+        <div id="audio-init">
+            <p>🔊 Toca para activar el audio del juego</p>
+            <button id="enable-audio-btn">Activar Audio</button>
+        </div>
+
+        <!-- Start Screen -->
+        <div id="start-screen">
+            <div class="tool-icon" id="tool-icon-display">🔦</div>
+            <h1 class="game-title">Detective de Palabras</h1>
+            <p class="game-subtitle">¡Encuentra el objeto escondido!</p>
+
+            <!-- Tool Selection -->
+            <div class="tool-select">
+                <p class="section-label">Elige tu herramienta:</p>
+                <div class="tool-buttons">
+                    <button class="tool-btn selected" data-tool="flashlight">
+                        <span class="tool-emoji">🔦</span>
+                        <span>Linterna</span>
+                    </button>
+                    <button class="tool-btn" data-tool="magnifier">
+                        <span class="tool-emoji">🔍</span>
+                        <span>Lupa</span>
+                    </button>
+                </div>
+                <p class="mode-description" id="mode-description">
+                    🔦 Objetos ocultos en la oscuridad. ¡Ilumínalos para encontrarlos!
+                </p>
+            </div>
+
+            <!-- Search Type Selection -->
+            <div class="search-type-select">
+                <p class="section-label">Tipo de búsqueda:</p>
+                <div class="search-type-buttons" id="search-type-buttons">
+                    <button class="search-type-btn selected" data-type="semantic">🖼️ Imágenes</button>
+                    <button class="search-type-btn" data-type="phonemes">🔤 Fonemas</button>
+                    <button class="search-type-btn" data-type="syllables">📝 Sílabas</button>
+                    <button class="search-type-btn" data-type="words">📖 Palabras</button>
+                </div>
+            </div>
+
+            <!-- Category/Content Selection -->
+            <div class="category-select" id="category-section">
+                <p class="section-label" id="category-label">Campo semántico:</p>
+                <div class="category-buttons" id="category-buttons"></div>
+            </div>
+
+            <div class="difficulty-select">
+                <p class="section-label">Dificultad:</p>
+                <div class="difficulty-buttons">
+                    <button class="diff-btn selected" data-level="1">Muy fácil</button>
+                    <button class="diff-btn" data-level="2">Fácil</button>
+                    <button class="diff-btn" data-level="3">Medio</button>
+                    <button class="diff-btn" data-level="4">Difícil</button>
+                    <button class="diff-btn" data-level="5">Muy difícil</button>
+                </div>
+            </div>
+
+            <button class="start-btn" id="start-btn">¡Jugar!</button>
+        </div>
+
+        <!-- Game Area -->
+        <div id="game-area">
+            <div id="hud">
+                <div class="hud-left">
+                    <span class="tool-badge" id="tool-badge">🔦 Linterna</span>
+                    <span class="level-badge" id="level-badge">Nivel 1</span>
+                    <span class="round-display" id="round-display">Ronda 1/5</span>
+                </div>
+                <div class="hud-right">
+                    <span class="score-display">⭐ <span id="score">0</span></span>
+                    <span class="score-display score-detail">⏱️ <span id="round-time">0.0s</span></span>
+                    <span class="score-display score-detail">❌ <span id="error-count">0</span></span>
+                    <button id="audio-btn">🔊</button>
+                    <button id="menu-btn">☰</button>
+                </div>
+            </div>
+
+            <div id="objects-container"></div>
+
+            <div id="target-display">
+                <span id="target-text">Busca: ???</span>
+                <button id="replay-audio">🔊</button>
+            </div>
+
+            <div id="flashlight"></div>
+            <div id="magnifier-handle"></div>
+            <div id="magnifier-shine"></div>
+        </div>
+
+        <!-- Success Overlay -->
+        <div id="success-overlay">
+            <div class="success-icon">⭐</div>
+            <div class="success-text" id="success-text">¡Correcto!</div>
+        </div>
+
+        <!-- Level Complete -->
+        <div id="level-complete">
+            <h2 class="complete-title">¡Nivel Completado!</h2>
+            <div class="complete-stats" id="complete-stats"></div>
+            <div class="complete-stars" id="complete-stars"></div>
+            <button class="next-btn" id="next-level-btn">Siguiente Nivel</button>
+            <button class="next-btn" id="back-menu-btn" style="background: var(--accent);">Menú Principal</button>
+        </div>
+    </div>
+
+    <script>
+        // ============ GAME DATA ============
+
+        // PHONEMES - Individual sounds/letters
+        const PHONEMES = {
+            vocales: {
+                name: "Vocales",
+                icon: "🅰️",
+                items: [
+                    { emoji: "A", name: "A", isText: true },
+                    { emoji: "E", name: "E", isText: true },
+                    { emoji: "I", name: "I", isText: true },
+                    { emoji: "O", name: "O", isText: true },
+                    { emoji: "U", name: "U", isText: true }
+                ]
+            },
+            bilabiales: {
+                name: "Bilabiales (P, B, M)",
+                icon: "👄",
+                items: [
+                    { emoji: "P", name: "P", isText: true },
+                    { emoji: "B", name: "B", isText: true },
+                    { emoji: "M", name: "M", isText: true }
+                ]
+            },
+            dentales: {
+                name: "Dentales (T, D)",
+                icon: "🦷",
+                items: [
+                    { emoji: "T", name: "T", isText: true },
+                    { emoji: "D", name: "D", isText: true }
+                ]
+            },
+            velares: {
+                name: "Velares (K, G, J)",
+                icon: "🔤",
+                items: [
+                    { emoji: "K", name: "K", isText: true },
+                    { emoji: "G", name: "G", isText: true },
+                    { emoji: "J", name: "J", isText: true }
+                ]
+            },
+            fricativas: {
+                name: "Fricativas (F, S, Z)",
+                icon: "💨",
+                items: [
+                    { emoji: "F", name: "F", isText: true },
+                    { emoji: "S", name: "S", isText: true },
+                    { emoji: "Z", name: "Z", isText: true }
+                ]
+            },
+            liquidas: {
+                name: "Líquidas (L, R, RR)",
+                icon: "💧",
+                items: [
+                    { emoji: "L", name: "L", isText: true },
+                    { emoji: "R", name: "R", isText: true },
+                    { emoji: "RR", name: "RR", isText: true }
+                ]
+            },
+            nasales: {
+                name: "Nasales (M, N, Ñ)",
+                icon: "👃",
+                items: [
+                    { emoji: "M", name: "M", isText: true },
+                    { emoji: "N", name: "N", isText: true },
+                    { emoji: "Ñ", name: "Ñ", isText: true }
+                ]
+            },
+            africadas: {
+                name: "Africadas (CH, LL, Y)",
+                icon: "🎯",
+                items: [
+                    { emoji: "CH", name: "CH", isText: true },
+                    { emoji: "LL", name: "LL", isText: true },
+                    { emoji: "Y", name: "Y", isText: true }
+                ]
+            },
+            todas: {
+                name: "Todas las letras",
+                icon: "🔠",
+                items: [
+                    { emoji: "A", name: "A", isText: true },
+                    { emoji: "B", name: "B", isText: true },
+                    { emoji: "C", name: "C", isText: true },
+                    { emoji: "D", name: "D", isText: true },
+                    { emoji: "E", name: "E", isText: true },
+                    { emoji: "F", name: "F", isText: true },
+                    { emoji: "G", name: "G", isText: true },
+                    { emoji: "H", name: "H", isText: true },
+                    { emoji: "I", name: "I", isText: true },
+                    { emoji: "J", name: "J", isText: true },
+                    { emoji: "K", name: "K", isText: true },
+                    { emoji: "L", name: "L", isText: true },
+                    { emoji: "M", name: "M", isText: true },
+                    { emoji: "N", name: "N", isText: true },
+                    { emoji: "Ñ", name: "Ñ", isText: true },
+                    { emoji: "O", name: "O", isText: true },
+                    { emoji: "P", name: "P", isText: true },
+                    { emoji: "R", name: "R", isText: true },
+                    { emoji: "S", name: "S", isText: true },
+                    { emoji: "T", name: "T", isText: true },
+                    { emoji: "U", name: "U", isText: true }
+                ]
+            }
+        };
+
+        // SYLLABLES - Common Spanish syllables
+        const SYLLABLES = {
+            directas_a: {
+                name: "Directas con A",
+                icon: "🅰️",
+                items: [
+                    { emoji: "MA", name: "MA", isText: true },
+                    { emoji: "PA", name: "PA", isText: true },
+                    { emoji: "TA", name: "TA", isText: true },
+                    { emoji: "LA", name: "LA", isText: true },
+                    { emoji: "SA", name: "SA", isText: true },
+                    { emoji: "NA", name: "NA", isText: true },
+                    { emoji: "DA", name: "DA", isText: true },
+                    { emoji: "CA", name: "CA", isText: true },
+                    { emoji: "BA", name: "BA", isText: true },
+                    { emoji: "FA", name: "FA", isText: true },
+                    { emoji: "GA", name: "GA", isText: true },
+                    { emoji: "JA", name: "JA", isText: true },
+                    { emoji: "RA", name: "RA", isText: true },
+                    { emoji: "VA", name: "VA", isText: true }
+                ]
+            },
+            directas_e: {
+                name: "Directas con E",
+                icon: "📧",
+                items: [
+                    { emoji: "ME", name: "ME", isText: true },
+                    { emoji: "PE", name: "PE", isText: true },
+                    { emoji: "TE", name: "TE", isText: true },
+                    { emoji: "LE", name: "LE", isText: true },
+                    { emoji: "SE", name: "SE", isText: true },
+                    { emoji: "NE", name: "NE", isText: true },
+                    { emoji: "DE", name: "DE", isText: true },
+                    { emoji: "CE", name: "CE", isText: true },
+                    { emoji: "BE", name: "BE", isText: true },
+                    { emoji: "FE", name: "FE", isText: true },
+                    { emoji: "GE", name: "GE", isText: true },
+                    { emoji: "JE", name: "JE", isText: true },
+                    { emoji: "RE", name: "RE", isText: true },
+                    { emoji: "VE", name: "VE", isText: true }
+                ]
+            },
+            directas_i: {
+                name: "Directas con I",
+                icon: "ℹ️",
+                items: [
+                    { emoji: "MI", name: "MI", isText: true },
+                    { emoji: "PI", name: "PI", isText: true },
+                    { emoji: "TI", name: "TI", isText: true },
+                    { emoji: "LI", name: "LI", isText: true },
+                    { emoji: "SI", name: "SI", isText: true },
+                    { emoji: "NI", name: "NI", isText: true },
+                    { emoji: "DI", name: "DI", isText: true },
+                    { emoji: "CI", name: "CI", isText: true },
+                    { emoji: "BI", name: "BI", isText: true },
+                    { emoji: "FI", name: "FI", isText: true },
+                    { emoji: "GI", name: "GI", isText: true },
+                    { emoji: "JI", name: "JI", isText: true },
+                    { emoji: "RI", name: "RI", isText: true },
+                    { emoji: "VI", name: "VI", isText: true }
+                ]
+            },
+            directas_o: {
+                name: "Directas con O",
+                icon: "🔵",
+                items: [
+                    { emoji: "MO", name: "MO", isText: true },
+                    { emoji: "PO", name: "PO", isText: true },
+                    { emoji: "TO", name: "TO", isText: true },
+                    { emoji: "LO", name: "LO", isText: true },
+                    { emoji: "SO", name: "SO", isText: true },
+                    { emoji: "NO", name: "NO", isText: true },
+                    { emoji: "DO", name: "DO", isText: true },
+                    { emoji: "CO", name: "CO", isText: true },
+                    { emoji: "BO", name: "BO", isText: true },
+                    { emoji: "FO", name: "FO", isText: true },
+                    { emoji: "GO", name: "GO", isText: true },
+                    { emoji: "JO", name: "JO", isText: true },
+                    { emoji: "RO", name: "RO", isText: true },
+                    { emoji: "VO", name: "VO", isText: true }
+                ]
+            },
+            directas_u: {
+                name: "Directas con U",
+                icon: "🇺",
+                items: [
+                    { emoji: "MU", name: "MU", isText: true },
+                    { emoji: "PU", name: "PU", isText: true },
+                    { emoji: "TU", name: "TU", isText: true },
+                    { emoji: "LU", name: "LU", isText: true },
+                    { emoji: "SU", name: "SU", isText: true },
+                    { emoji: "NU", name: "NU", isText: true },
+                    { emoji: "DU", name: "DU", isText: true },
+                    { emoji: "CU", name: "CU", isText: true },
+                    { emoji: "BU", name: "BU", isText: true },
+                    { emoji: "FU", name: "FU", isText: true },
+                    { emoji: "GU", name: "GU", isText: true },
+                    { emoji: "JU", name: "JU", isText: true },
+                    { emoji: "RU", name: "RU", isText: true },
+                    { emoji: "VU", name: "VU", isText: true }
+                ]
+            },
+            inversas: {
+                name: "Inversas",
+                icon: "🔄",
+                items: [
+                    { emoji: "AL", name: "AL", isText: true },
+                    { emoji: "EL", name: "EL", isText: true },
+                    { emoji: "IL", name: "IL", isText: true },
+                    { emoji: "OL", name: "OL", isText: true },
+                    { emoji: "UL", name: "UL", isText: true },
+                    { emoji: "AR", name: "AR", isText: true },
+                    { emoji: "ER", name: "ER", isText: true },
+                    { emoji: "IR", name: "IR", isText: true },
+                    { emoji: "OR", name: "OR", isText: true },
+                    { emoji: "UR", name: "UR", isText: true },
+                    { emoji: "AS", name: "AS", isText: true },
+                    { emoji: "ES", name: "ES", isText: true },
+                    { emoji: "IS", name: "IS", isText: true },
+                    { emoji: "OS", name: "OS", isText: true }
+                ]
+            },
+            trabadas: {
+                name: "Trabadas",
+                icon: "🔗",
+                items: [
+                    { emoji: "BRA", name: "BRA", isText: true },
+                    { emoji: "BRE", name: "BRE", isText: true },
+                    { emoji: "BRI", name: "BRI", isText: true },
+                    { emoji: "BRO", name: "BRO", isText: true },
+                    { emoji: "BRU", name: "BRU", isText: true },
+                    { emoji: "CRA", name: "CRA", isText: true },
+                    { emoji: "CRE", name: "CRE", isText: true },
+                    { emoji: "CRI", name: "CRI", isText: true },
+                    { emoji: "DRA", name: "DRA", isText: true },
+                    { emoji: "DRE", name: "DRE", isText: true },
+                    { emoji: "FRA", name: "FRA", isText: true },
+                    { emoji: "FRE", name: "FRE", isText: true },
+                    { emoji: "GRA", name: "GRA", isText: true },
+                    { emoji: "GRE", name: "GRE", isText: true }
+                ]
+            },
+            mixtas: {
+                name: "Mixtas variadas",
+                icon: "🎲",
+                items: [
+                    { emoji: "PLA", name: "PLA", isText: true },
+                    { emoji: "PLE", name: "PLE", isText: true },
+                    { emoji: "PLI", name: "PLI", isText: true },
+                    { emoji: "PLO", name: "PLO", isText: true },
+                    { emoji: "TRA", name: "TRA", isText: true },
+                    { emoji: "TRE", name: "TRE", isText: true },
+                    { emoji: "TRI", name: "TRI", isText: true },
+                    { emoji: "TRO", name: "TRO", isText: true },
+                    { emoji: "CLA", name: "CLA", isText: true },
+                    { emoji: "CLE", name: "CLE", isText: true },
+                    { emoji: "CLI", name: "CLI", isText: true },
+                    { emoji: "CLO", name: "CLO", isText: true },
+                    { emoji: "FLA", name: "FLA", isText: true },
+                    { emoji: "FLO", name: "FLO", isText: true }
+                ]
+            }
+        };
+
+        // WORDS - Simple Spanish words by category
+        const WORDS = {
+            cortas: {
+                name: "Palabras cortas (2-3 letras)",
+                icon: "📝",
+                items: [
+                    { emoji: "SOL", name: "SOL", isText: true },
+                    { emoji: "MAR", name: "MAR", isText: true },
+                    { emoji: "PAN", name: "PAN", isText: true },
+                    { emoji: "LUZ", name: "LUZ", isText: true },
+                    { emoji: "PEZ", name: "PEZ", isText: true },
+                    { emoji: "SAL", name: "SAL", isText: true },
+                    { emoji: "TOS", name: "TOS", isText: true },
+                    { emoji: "MES", name: "MES", isText: true },
+                    { emoji: "DOS", name: "DOS", isText: true },
+                    { emoji: "SER", name: "SER", isText: true },
+                    { emoji: "VER", name: "VER", isText: true },
+                    { emoji: "DAR", name: "DAR", isText: true },
+                    { emoji: "IRE", name: "IR", isText: true },
+                    { emoji: "REY", name: "REY", isText: true }
+                ]
+            },
+            bisilabas: {
+                name: "Bisílabas",
+                icon: "📖",
+                items: [
+                    { emoji: "CASA", name: "CASA", isText: true },
+                    { emoji: "MESA", name: "MESA", isText: true },
+                    { emoji: "GATO", name: "GATO", isText: true },
+                    { emoji: "PERRO", name: "PERRO", isText: true },
+                    { emoji: "LUNA", name: "LUNA", isText: true },
+                    { emoji: "SOPA", name: "SOPA", isText: true },
+                    { emoji: "PATO", name: "PATO", isText: true },
+                    { emoji: "RANA", name: "RANA", isText: true },
+                    { emoji: "VACA", name: "VACA", isText: true },
+                    { emoji: "BOCA", name: "BOCA", isText: true },
+                    { emoji: "MANO", name: "MANO", isText: true },
+                    { emoji: "PERA", name: "PERA", isText: true },
+                    { emoji: "SILLA", name: "SILLA", isText: true },
+                    { emoji: "CAMA", name: "CAMA", isText: true }
+                ]
+            },
+            trisilabas: {
+                name: "Trisílabas",
+                icon: "📚",
+                items: [
+                    { emoji: "PELOTA", name: "PELOTA", isText: true },
+                    { emoji: "CAMINO", name: "CAMINO", isText: true },
+                    { emoji: "BANANA", name: "BANANA", isText: true },
+                    { emoji: "TOMATE", name: "TOMATE", isText: true },
+                    { emoji: "CONEJO", name: "CONEJO", isText: true },
+                    { emoji: "COCINA", name: "COCINA", isText: true },
+                    { emoji: "GALLINA", name: "GALLINA", isText: true },
+                    { emoji: "ZAPATO", name: "ZAPATO", isText: true },
+                    { emoji: "PAYASO", name: "PAYASO", isText: true },
+                    { emoji: "HELADO", name: "HELADO", isText: true },
+                    { emoji: "CABALLO", name: "CABALLO", isText: true },
+                    { emoji: "PALOMA", name: "PALOMA", isText: true },
+                    { emoji: "ESPEJO", name: "ESPEJO", isText: true },
+                    { emoji: "REGALO", name: "REGALO", isText: true }
+                ]
+            },
+            animales_p: {
+                name: "Animales",
+                icon: "🐾",
+                items: [
+                    { emoji: "PERRO", name: "PERRO", isText: true },
+                    { emoji: "GATO", name: "GATO", isText: true },
+                    { emoji: "PATO", name: "PATO", isText: true },
+                    { emoji: "RANA", name: "RANA", isText: true },
+                    { emoji: "VACA", name: "VACA", isText: true },
+                    { emoji: "TORO", name: "TORO", isText: true },
+                    { emoji: "LOBO", name: "LOBO", isText: true },
+                    { emoji: "PUMA", name: "PUMA", isText: true },
+                    { emoji: "LORO", name: "LORO", isText: true },
+                    { emoji: "PAVO", name: "PAVO", isText: true },
+                    { emoji: "MONO", name: "MONO", isText: true },
+                    { emoji: "RATA", name: "RATA", isText: true },
+                    { emoji: "ZORRO", name: "ZORRO", isText: true },
+                    { emoji: "BURRO", name: "BURRO", isText: true }
+                ]
+            },
+            comida_p: {
+                name: "Comida",
+                icon: "🍽️",
+                items: [
+                    { emoji: "SOPA", name: "SOPA", isText: true },
+                    { emoji: "PAPA", name: "PAPA", isText: true },
+                    { emoji: "PERA", name: "PERA", isText: true },
+                    { emoji: "MIEL", name: "MIEL", isText: true },
+                    { emoji: "FLAN", name: "FLAN", isText: true },
+                    { emoji: "TARTA", name: "TARTA", isText: true },
+                    { emoji: "PIZZA", name: "PIZZA", isText: true },
+                    { emoji: "QUESO", name: "QUESO", isText: true },
+                    { emoji: "ARROZ", name: "ARROZ", isText: true },
+                    { emoji: "POLLO", name: "POLLO", isText: true },
+                    { emoji: "CARNE", name: "CARNE", isText: true },
+                    { emoji: "JUGO", name: "JUGO", isText: true },
+                    { emoji: "LECHE", name: "LECHE", isText: true },
+                    { emoji: "FRUTA", name: "FRUTA", isText: true }
+                ]
+            },
+            cuerpo: {
+                name: "Cuerpo humano",
+                icon: "🧍",
+                items: [
+                    { emoji: "MANO", name: "MANO", isText: true },
+                    { emoji: "BOCA", name: "BOCA", isText: true },
+                    { emoji: "NARIZ", name: "NARIZ", isText: true },
+                    { emoji: "OREJA", name: "OREJA", isText: true },
+                    { emoji: "PELO", name: "PELO", isText: true },
+                    { emoji: "BRAZO", name: "BRAZO", isText: true },
+                    { emoji: "PIERNA", name: "PIERNA", isText: true },
+                    { emoji: "DEDO", name: "DEDO", isText: true },
+                    { emoji: "CUELLO", name: "CUELLO", isText: true },
+                    { emoji: "ESPALDA", name: "ESPALDA", isText: true },
+                    { emoji: "RODILLA", name: "RODILLA", isText: true },
+                    { emoji: "CODO", name: "CODO", isText: true },
+                    { emoji: "CARA", name: "CARA", isText: true },
+                    { emoji: "CABEZA", name: "CABEZA", isText: true }
+                ]
+            }
+        };
+
+        // SEMANTIC CATEGORIES (original - with emojis)
+        const CATEGORIES = {
+            animales: {
+                name: "Animales",
+                icon: "🐾",
+                items: [
+                    { emoji: "🦁", name: "león" },
+                    { emoji: "🐘", name: "elefante" },
+                    { emoji: "🦒", name: "jirafa" },
+                    { emoji: "🐒", name: "mono" },
+                    { emoji: "🦓", name: "cebra" },
+                    { emoji: "🐅", name: "tigre" },
+                    { emoji: "🦛", name: "hipopótamo" },
+                    { emoji: "🐊", name: "cocodrilo" },
+                    { emoji: "🦏", name: "rinoceronte" },
+                    { emoji: "🐍", name: "serpiente" },
+                    { emoji: "🦜", name: "loro" },
+                    { emoji: "🦩", name: "flamenco" },
+                    { emoji: "🐢", name: "tortuga" },
+                    { emoji: "🦔", name: "erizo" }
+                ]
+            },
+            frutas: {
+                name: "Frutas",
+                icon: "🍎",
+                items: [
+                    { emoji: "🍎", name: "manzana" },
+                    { emoji: "🍌", name: "plátano" },
+                    { emoji: "🍊", name: "naranja" },
+                    { emoji: "🍇", name: "uvas" },
+                    { emoji: "🍓", name: "fresa" },
+                    { emoji: "🍑", name: "melocotón" },
+                    { emoji: "🍍", name: "piña" },
+                    { emoji: "🥝", name: "kiwi" },
+                    { emoji: "🍋", name: "limón" },
+                    { emoji: "🍉", name: "sandía" },
+                    { emoji: "🥭", name: "mango" },
+                    { emoji: "🍒", name: "cerezas" },
+                    { emoji: "🫐", name: "arándanos" },
+                    { emoji: "🍐", name: "pera" }
+                ]
+            },
+            ropa: {
+                name: "Ropa",
+                icon: "👕",
+                items: [
+                    { emoji: "👕", name: "camiseta" },
+                    { emoji: "👖", name: "pantalón" },
+                    { emoji: "👗", name: "vestido" },
+                    { emoji: "🧥", name: "abrigo" },
+                    { emoji: "👟", name: "zapatillas" },
+                    { emoji: "🧦", name: "calcetines" },
+                    { emoji: "👒", name: "sombrero" },
+                    { emoji: "🧤", name: "guantes" },
+                    { emoji: "🧣", name: "bufanda" },
+                    { emoji: "👔", name: "corbata" },
+                    { emoji: "👠", name: "tacones" },
+                    { emoji: "🥾", name: "botas" },
+                    { emoji: "👓", name: "gafas" },
+                    { emoji: "🎒", name: "mochila" }
+                ]
+            },
+            transportes: {
+                name: "Transportes",
+                icon: "🚗",
+                items: [
+                    { emoji: "🚗", name: "coche" },
+                    { emoji: "🚌", name: "autobús" },
+                    { emoji: "🚂", name: "tren" },
+                    { emoji: "✈️", name: "avión" },
+                    { emoji: "🚢", name: "barco" },
+                    { emoji: "🚲", name: "bicicleta" },
+                    { emoji: "🏍️", name: "moto" },
+                    { emoji: "🚁", name: "helicóptero" },
+                    { emoji: "🚀", name: "cohete" },
+                    { emoji: "🛴", name: "patinete" },
+                    { emoji: "🚜", name: "tractor" },
+                    { emoji: "🚒", name: "bomberos" },
+                    { emoji: "🚑", name: "ambulancia" },
+                    { emoji: "🛵", name: "scooter" }
+                ]
+            },
+            comida: {
+                name: "Comida",
+                icon: "🍕",
+                items: [
+                    { emoji: "🍕", name: "pizza" },
+                    { emoji: "🍔", name: "hamburguesa" },
+                    { emoji: "🌭", name: "perrito caliente" },
+                    { emoji: "🍟", name: "patatas fritas" },
+                    { emoji: "🥪", name: "sándwich" },
+                    { emoji: "🌮", name: "taco" },
+                    { emoji: "🍝", name: "espaguetis" },
+                    { emoji: "🍳", name: "huevo frito" },
+                    { emoji: "🥐", name: "cruasán" },
+                    { emoji: "🧀", name: "queso" },
+                    { emoji: "🍩", name: "donut" },
+                    { emoji: "🍪", name: "galleta" },
+                    { emoji: "🎂", name: "tarta" },
+                    { emoji: "🍦", name: "helado" }
+                ]
+            },
+            casa: {
+                name: "Casa",
+                icon: "🏠",
+                items: [
+                    { emoji: "🛋️", name: "sofá" },
+                    { emoji: "🪑", name: "silla" },
+                    { emoji: "🛏️", name: "cama" },
+                    { emoji: "🚿", name: "ducha" },
+                    { emoji: "🛁", name: "bañera" },
+                    { emoji: "🚽", name: "váter" },
+                    { emoji: "🪟", name: "ventana" },
+                    { emoji: "🚪", name: "puerta" },
+                    { emoji: "💡", name: "lámpara" },
+                    { emoji: "📺", name: "televisión" },
+                    { emoji: "🖼️", name: "cuadro" },
+                    { emoji: "🪴", name: "planta" },
+                    { emoji: "⏰", name: "reloj" },
+                    { emoji: "🪞", name: "espejo" }
+                ]
+            }
+        };
+
+        // Difficulty settings - different for each mode
+        const DIFFICULTY = {
+            flashlight: {
+                1: { focusSize: 230, objectCount: 5, baseSize: 72 },
+                2: { focusSize: 200, objectCount: 7, baseSize: 64 },
+                3: { focusSize: 170, objectCount: 9, baseSize: 56 },
+                4: { focusSize: 140, objectCount: 11, baseSize: 48 },
+                5: { focusSize: 115, objectCount: 13, baseSize: 42 }
+            },
+            magnifier: {
+                1: { focusSize: 230, objectCount: 5, baseSize: 16, zoomScale: 4.8 },
+                2: { focusSize: 200, objectCount: 7, baseSize: 13, zoomScale: 5.8 },
+                3: { focusSize: 170, objectCount: 9, baseSize: 10, zoomScale: 7 },
+                4: { focusSize: 140, objectCount: 11, baseSize: 8, zoomScale: 8.2 },
+                5: { focusSize: 115, objectCount: 13, baseSize: 6, zoomScale: 9.4 }
+            }
+        };
+
+        const ROUNDS_PER_LEVEL = 5;
+        const MAX_DIFFICULTY_LEVEL = 5;
+        const MEASUREMENT_STORAGE_KEY = 'detective_palabras_metrics_v1';
+        const DIFFICULTY_LABELS = {
+            1: 'Muy fácil',
+            2: 'Fácil',
+            3: 'Medio',
+            4: 'Difícil',
+            5: 'Muy difícil'
+        };
+
+        // ============ GAME STATE ============
+        let gameState = {
+            searchType: 'semantic', // 'semantic', 'phonemes', 'syllables', 'words'
+            category: 'animales',
+            difficulty: 1,
+            toolMode: 'flashlight',
+            currentRound: 0,
+            score: 0,
+            targetItem: null,
+            objects: [],
+            audioEnabled: true,
+            cursorPos: { x: -500, y: -500 },
+            totalErrors: 0,
+            totalClicks: 0,
+            correctSelections: 0,
+            currentRoundErrors: 0,
+            roundStartTime: 0,
+            sessionStartTime: 0,
+            roundTimerId: null,
+            roundMetrics: [],
+            lastMeasurement: null
+        };
+
+        // Get the appropriate data source based on search type
+        function getDataSource() {
+            switch (gameState.searchType) {
+                case 'phonemes': return PHONEMES;
+                case 'syllables': return SYLLABLES;
+                case 'words': return WORDS;
+                default: return CATEGORIES;
+            }
+        }
+
+        // Get label for category section
+        function getCategoryLabel() {
+            switch (gameState.searchType) {
+                case 'phonemes': return 'Grupo de fonemas:';
+                case 'syllables': return 'Tipo de sílabas:';
+                case 'words': return 'Categoría de palabras:';
+                default: return 'Campo semántico:';
+            }
+        }
+
+        // ============ DOM ELEMENTS ============
+        const elements = {
+            startScreen: document.getElementById('start-screen'),
+            gameArea: document.getElementById('game-area'),
+            objectsContainer: document.getElementById('objects-container'),
+            flashlight: document.getElementById('flashlight'),
+            magnifierHandle: document.getElementById('magnifier-handle'),
+            magnifierShine: document.getElementById('magnifier-shine'),
+            targetText: document.getElementById('target-text'),
+            scoreDisplay: document.getElementById('score'),
+            roundTime: document.getElementById('round-time'),
+            errorCount: document.getElementById('error-count'),
+            roundDisplay: document.getElementById('round-display'),
+            levelBadge: document.getElementById('level-badge'),
+            toolBadge: document.getElementById('tool-badge'),
+            successOverlay: document.getElementById('success-overlay'),
+            successText: document.getElementById('success-text'),
+            levelComplete: document.getElementById('level-complete'),
+            completeStats: document.getElementById('complete-stats'),
+            completeStars: document.getElementById('complete-stars'),
+            audioInit: document.getElementById('audio-init'),
+            categoryButtons: document.getElementById('category-buttons'),
+            categoryLabel: document.getElementById('category-label'),
+            categorySection: document.getElementById('category-section'),
+            toolIconDisplay: document.getElementById('tool-icon-display'),
+            modeDescription: document.getElementById('mode-description')
+        };
+
+        // ============ AUDIO SYSTEM ============
+        let audioContext = null;
+        const speechSynthesis = window.speechSynthesis;
+
+        function initAudio() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            } catch (e) {
+                console.log('AudioContext not available');
+            }
+        }
+
+        function playTone(frequency, duration, type = 'sine') {
+            if (!audioContext || !gameState.audioEnabled) return;
+
+            try {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                oscillator.frequency.value = frequency;
+                oscillator.type = type;
+
+                gainNode.gain.setValueAtTime(0.25, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + duration);
+            } catch (e) {
+                console.log('Audio playback error');
+            }
+        }
+
+        function playSuccessSound() {
+            playTone(523.25, 0.12);
+            setTimeout(() => playTone(659.25, 0.12), 80);
+            setTimeout(() => playTone(783.99, 0.25), 160);
+        }
+
+        function playTrySound() {
+            playTone(280, 0.12, 'triangle');
+        }
+
+        function speak(text) {
+            if (!gameState.audioEnabled) return;
+
+            speechSynthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'es-ES';
+            utterance.rate = 0.9;
+            utterance.pitch = 1.1;
+
+            const voices = speechSynthesis.getVoices();
+            const spanishVoice = voices.find(v => v.lang.startsWith('es'));
+            if (spanishVoice) {
+                utterance.voice = spanishVoice;
+            }
+
+            speechSynthesis.speak(utterance);
+        }
+
+        // ============ GAME INITIALIZATION ============
+        function initGame() {
+            // Dark mode detection
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.classList.add('dark');
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+                document.documentElement.classList.toggle('dark', event.matches);
+            });
+
+            // Search type buttons
+            document.querySelectorAll('.search-type-btn').forEach(btn => {
+                btn.addEventListener('click', () => selectSearchType(btn.dataset.type));
+            });
+
+            // Generate initial category buttons
+            updateCategoryButtons();
+
+            // Tool mode buttons
+            document.querySelectorAll('.tool-btn').forEach(btn => {
+                btn.addEventListener('click', () => selectToolMode(btn.dataset.tool));
+            });
+
+            // Difficulty buttons
+            document.querySelectorAll('.diff-btn').forEach(btn => {
+                btn.addEventListener('click', () => selectDifficulty(parseInt(btn.dataset.level)));
+            });
+
+            // Start button
+            document.getElementById('start-btn').addEventListener('click', startGame);
+
+            // Menu button
+            document.getElementById('menu-btn').addEventListener('click', showMenu);
+
+            // Audio button
+            document.getElementById('audio-btn').addEventListener('click', toggleAudio);
+
+            // Replay audio button
+            document.getElementById('replay-audio').addEventListener('click', () => {
+                if (gameState.targetItem) {
+                    speak(`Busca ${gameState.targetItem.name}`);
+                }
+            });
+
+            // Level complete buttons
+            document.getElementById('next-level-btn').addEventListener('click', nextLevel);
+            document.getElementById('back-menu-btn').addEventListener('click', showMenu);
+
+            // Audio init
+            document.getElementById('enable-audio-btn').addEventListener('click', () => {
+                initAudio();
+                if (speechSynthesis.getVoices().length === 0) {
+                    speechSynthesis.addEventListener('voiceschanged', () => {});
+                }
+                elements.audioInit.classList.remove('show');
+                speak('¡Bienvenido al juego!');
+            });
+
+            elements.audioInit.classList.add('show');
+
+            setupInputHandlers();
+        }
+
+        function selectSearchType(type) {
+            gameState.searchType = type;
+            document.querySelectorAll('.search-type-btn').forEach(btn => {
+                btn.classList.toggle('selected', btn.dataset.type === type);
+            });
+
+            // Update category buttons for new search type
+            updateCategoryButtons();
+
+            // Update label
+            elements.categoryLabel.textContent = getCategoryLabel();
+        }
+
+        function updateCategoryButtons() {
+            const dataSource = getDataSource();
+            const keys = Object.keys(dataSource);
+
+            // Clear existing buttons
+            elements.categoryButtons.innerHTML = '';
+
+            // Set default category to first item
+            gameState.category = keys[0];
+
+            // Generate new buttons
+            keys.forEach((key, index) => {
+                const cat = dataSource[key];
+                const btn = document.createElement('button');
+                btn.className = 'category-btn' + (index === 0 ? ' selected' : '');
+                btn.textContent = `${cat.icon} ${cat.name}`;
+                btn.dataset.category = key;
+                btn.addEventListener('click', () => selectCategory(key));
+                elements.categoryButtons.appendChild(btn);
+            });
+        }
+
+        function selectToolMode(tool) {
+            gameState.toolMode = tool;
+            document.querySelectorAll('.tool-btn').forEach(btn => {
+                btn.classList.toggle('selected', btn.dataset.tool === tool);
+            });
+            elements.toolIconDisplay.textContent = tool === 'flashlight' ? '🔦' : '🔍';
+
+            // Update description
+            if (tool === 'flashlight') {
+                elements.modeDescription.textContent = '🔦 Objetos ocultos en la oscuridad. ¡Ilumínalos para encontrarlos!';
+            } else {
+                elements.modeDescription.textContent = '🔍 Objetos pequeños visibles. ¡Usa la lupa para agrandarlos y verlos mejor!';
+            }
+        }
+
+        function selectCategory(category) {
+            gameState.category = category;
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.toggle('selected', btn.dataset.category === category);
+            });
+        }
+
+        function selectDifficulty(level) {
+            gameState.difficulty = level;
+            document.querySelectorAll('.diff-btn').forEach(btn => {
+                btn.classList.toggle('selected', parseInt(btn.dataset.level) === level);
+            });
+        }
+
+        function getDifficultyLabel(level = gameState.difficulty) {
+            return DIFFICULTY_LABELS[level] || `Nivel ${level}`;
+        }
+
+        function getClinicalArea() {
+            switch (gameState.searchType) {
+                case 'phonemes':
+                    return 'articulacion';
+                case 'syllables':
+                    return 'conciencia fonologica';
+                case 'words':
+                    return 'lectoescritura';
+                default:
+                    return 'vocabulario';
+            }
+        }
+
+        function getAverageRoundTimeMs() {
+            if (!gameState.roundMetrics.length) return 0;
+            return Math.round(gameState.roundMetrics.reduce((sum, round) => sum + round.elapsedMs, 0) / gameState.roundMetrics.length);
+        }
+
+        function getBestRoundTimeMs() {
+            if (!gameState.roundMetrics.length) return 0;
+            return Math.min(...gameState.roundMetrics.map((round) => round.elapsedMs));
+        }
+
+        function getAccuracyPercent() {
+            if (!gameState.totalClicks) return 100;
+            return Math.round((gameState.correctSelections / gameState.totalClicks) * 100);
+        }
+
+        function computeRoundScore(elapsedMs, errors) {
+            const seconds = elapsedMs / 1000;
+            const speedBonus = seconds <= 4 ? 6 : seconds <= 7 ? 4 : seconds <= 10 ? 2 : 0;
+            const precisionBonus = errors === 0 ? 4 : errors === 1 ? 2 : 0;
+            return Math.max(4, 10 + speedBonus + precisionBonus - errors * 2);
+        }
+
+        function buildMeasurementPayload(status = 'in_progress') {
+            const totalTimeMs = gameState.sessionStartTime ? Date.now() - gameState.sessionStartTime : 0;
+            const averageTimeMs = getAverageRoundTimeMs();
+            const averageErrors = gameState.roundMetrics.length
+                ? Number((gameState.roundMetrics.reduce((sum, round) => sum + round.errors, 0) / gameState.roundMetrics.length).toFixed(2))
+                : 0;
+            const accuracy = getAccuracyPercent();
+            const firstAttemptRate = gameState.roundMetrics.length
+                ? Math.round((gameState.roundMetrics.filter((round) => round.errors === 0).length / gameState.roundMetrics.length) * 100)
+                : 0;
+            const distractorResistance = Math.max(0, Math.min(100, 100 - Math.round(averageErrors * 18)));
+            const consistency = gameState.roundMetrics.length > 1
+                ? Math.max(
+                    0,
+                    Math.min(
+                        100,
+                        100 - Math.round(
+                            Math.sqrt(
+                                gameState.roundMetrics.reduce((sum, round) => sum + Math.pow(round.elapsedMs - averageTimeMs, 2), 0) /
+                                gameState.roundMetrics.length
+                            ) / 120
+                        )
+                    )
+                )
+                : 100;
+            const searchEfficiency = Math.max(
+                0,
+                Math.min(100, Math.round(accuracy * 0.45 + Math.max(0, 100 - (averageTimeMs / 1000) * 8) * 0.35 + distractorResistance * 0.2))
+            );
+            const labelsLarge = [getClinicalArea()];
+            const labelsSmall = [
+                gameState.toolMode === 'magnifier' ? 'exploracion visual fina' : 'atencion visual',
+                gameState.searchType === 'phonemes' ? 'similitud auditiva' :
+                gameState.searchType === 'syllables' ? 'decodificacion silabica' :
+                gameState.searchType === 'words' ? 'reconocimiento lector' : 'discriminacion semantica',
+                'inhibicion de distractores',
+                'velocidad de busqueda'
+            ];
+            const normalizedScore = Math.max(
+                0,
+                Math.min(
+                    100,
+                    Math.round(
+                        accuracy * 0.55 +
+                        Math.max(0, 100 - (averageTimeMs / 1000) * 8) * 0.3 +
+                        Math.max(0, 100 - averageErrors * 18) * 0.15
+                    )
+                )
+            );
+
+            return {
+                game: 'detective-de-palabras',
+                updated_at: new Date().toISOString(),
+                status,
+                level_index: gameState.difficulty,
+                level_label: `${getDifficultyLabel()} · ${gameState.currentRound}/${ROUNDS_PER_LEVEL} rondas`,
+                area: getClinicalArea(),
+                score: normalizedScore,
+                accuracy,
+                raw_score: gameState.score,
+                total_errors: gameState.totalErrors,
+                total_clicks: gameState.totalClicks,
+                correct_selections: gameState.correctSelections,
+                rounds_completed: gameState.roundMetrics.length,
+                rounds_per_level: ROUNDS_PER_LEVEL,
+                average_time_ms: averageTimeMs,
+                best_time_ms: getBestRoundTimeMs(),
+                total_time_ms: totalTimeMs,
+                duration_seconds: Math.max(1, Math.round(totalTimeMs / 1000)),
+                average_errors: averageErrors,
+                reaction_consistency: consistency,
+                first_attempt_rate: firstAttemptRate,
+                distractor_resistance: distractorResistance,
+                search_efficiency: searchEfficiency,
+                tool_mode: gameState.toolMode,
+                search_type: gameState.searchType,
+                category: gameState.category,
+                difficulty_label: getDifficultyLabel(),
+                labels_large: labelsLarge,
+                labels_small: labelsSmall,
+                worked_dimensions: labelsSmall,
+                executive_load: Math.max(0, Math.min(100, Math.round((averageErrors * 14) + (gameState.difficulty * 12) + (100 - consistency) * 0.35))),
+                phonological_load: gameState.searchType === 'phonemes' ? 84 : gameState.searchType === 'syllables' ? 68 : gameState.searchType === 'words' ? 52 : 28,
+                semantic_load: gameState.searchType === 'categories' ? 86 : 38,
+                clinical_summary: `Busqueda ${gameState.searchType}. Precision ${accuracy}%, acierto a la primera ${firstAttemptRate}%, resistencia a distractores ${distractorResistance}% y consistencia ${consistency}%.`,
+                last_target: gameState.targetItem?.name || null,
+                round_metrics: gameState.roundMetrics.slice(-12)
+            };
+        }
+
+        function persistMeasurement(status = 'in_progress') {
+            const payload = buildMeasurementPayload(status);
+            gameState.lastMeasurement = payload;
+            localStorage.setItem(MEASUREMENT_STORAGE_KEY, JSON.stringify(payload));
+            window.__detectivePalabrasMetrics = payload;
+            try {
+                window.parent?.postMessage({ type: 'logopedia-measurement', activity: 'poe-lupas-y-linternas', payload }, '*');
+            } catch (error) {
+                console.log('No se pudo enviar medicion al contenedor');
+            }
+            return payload;
+        }
+
+        function updateRoundTimerDisplay() {
+            const elapsedMs = gameState.roundStartTime ? Date.now() - gameState.roundStartTime : 0;
+            elements.roundTime.textContent = `${(elapsedMs / 1000).toFixed(1)}s`;
+        }
+
+        function stopRoundTimer() {
+            clearInterval(gameState.roundTimerId);
+            gameState.roundTimerId = null;
+        }
+
+        function startRoundTimer() {
+            stopRoundTimer();
+            updateRoundTimerDisplay();
+            gameState.roundTimerId = setInterval(updateRoundTimerDisplay, 100);
+        }
+
+        function startGame() {
+            gameState.currentRound = 0;
+            gameState.score = 0;
+            gameState.totalErrors = 0;
+            gameState.totalClicks = 0;
+            gameState.correctSelections = 0;
+            gameState.currentRoundErrors = 0;
+            gameState.roundMetrics = [];
+            gameState.sessionStartTime = Date.now();
+            gameState.roundStartTime = 0;
+            updateHUD();
+
+            elements.startScreen.classList.add('hidden');
+            elements.gameArea.classList.add('active');
+
+            // Set mode class on game area
+            elements.gameArea.classList.remove('mode-flashlight', 'mode-magnifier');
+            elements.gameArea.classList.add(`mode-${gameState.toolMode}`);
+
+            updateToolVisuals();
+            persistMeasurement('in_progress');
+            startRound();
+        }
+
+        function updateToolVisuals() {
+            const isFlashlight = gameState.toolMode === 'flashlight';
+
+            elements.flashlight.classList.remove('mode-flashlight', 'mode-magnifier');
+            elements.flashlight.classList.add(isFlashlight ? 'mode-flashlight' : 'mode-magnifier');
+            elements.flashlight.classList.add('active');
+
+            if (!isFlashlight) {
+                elements.magnifierHandle.classList.add('active');
+                elements.magnifierShine.classList.add('active');
+            } else {
+                elements.magnifierHandle.classList.remove('active');
+                elements.magnifierShine.classList.remove('active');
+            }
+
+            elements.toolBadge.textContent = isFlashlight ? '🔦 Linterna' : '🔍 Lupa';
+        }
+
+        function startRound() {
+            gameState.currentRound++;
+            gameState.currentRoundErrors = 0;
+
+            const dataSource = getDataSource();
+            const category = dataSource[gameState.category];
+            const isMagnifier = gameState.toolMode === 'magnifier';
+            const diff = DIFFICULTY[gameState.toolMode][gameState.difficulty];
+
+            // Select random items
+            const shuffled = [...category.items].sort(() => Math.random() - 0.5);
+            const selectedItems = shuffled.slice(0, Math.min(diff.objectCount, shuffled.length));
+
+            // Choose target
+            gameState.targetItem = selectedItems[Math.floor(Math.random() * selectedItems.length)];
+
+            // Clear and populate objects
+            elements.objectsContainer.innerHTML = '';
+            gameState.objects = [];
+
+            const containerRect = elements.objectsContainer.getBoundingClientRect();
+            const padding = 50;
+            const baseSize = diff.baseSize;
+
+            // Adjust spacing based on item type (text items need more space)
+            const isTextItem = selectedItems[0] && selectedItems[0].isText;
+            const spacingMultiplier = isTextItem ? 3 : (isMagnifier ? 2 : 1.5);
+
+            const positions = generatePositions(
+                selectedItems.length,
+                containerRect.width - padding * 2,
+                containerRect.height - padding * 2,
+                baseSize * spacingMultiplier
+            );
+
+            selectedItems.forEach((item, index) => {
+                const obj = document.createElement('div');
+                obj.className = 'game-object' + (item.isText ? ' text-item' : '');
+                obj.textContent = item.emoji;
+                obj.dataset.name = item.name;
+                obj.dataset.baseSize = baseSize;
+                obj.style.fontSize = `${baseSize}px`;
+                obj.style.left = `${positions[index].x + padding}px`;
+                obj.style.top = `${positions[index].y + padding}px`;
+
+                obj.addEventListener('click', () => handleObjectClick(item, obj));
+                obj.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    handleObjectClick(item, obj);
+                });
+
+                elements.objectsContainer.appendChild(obj);
+                gameState.objects.push({ element: obj, item: item, baseSize: baseSize });
+            });
+
+            // Update target text based on search type
+            const targetLabel = getTargetLabel();
+            elements.targetText.textContent = `${targetLabel}: ${gameState.targetItem.name}`;
+            gameState.roundStartTime = Date.now();
+            updateHUD();
+            startRoundTimer();
+            persistMeasurement('in_progress');
+
+            setTimeout(() => {
+                speak(`Busca ${gameState.targetItem.name}`);
+            }, 400);
+        }
+
+        function getTargetLabel() {
+            switch (gameState.searchType) {
+                case 'phonemes': return 'Busca la letra';
+                case 'syllables': return 'Busca la sílaba';
+                case 'words': return 'Busca la palabra';
+                default: return 'Busca';
+            }
+        }
+
+        function generatePositions(count, width, height, spacing) {
+            const positions = [];
+            const maxAttempts = 200;
+
+            for (let i = 0; i < count; i++) {
+                let attempts = 0;
+                let pos;
+
+                do {
+                    pos = {
+                        x: Math.random() * (width - spacing),
+                        y: Math.random() * (height - spacing)
+                    };
+                    attempts++;
+                } while (isOverlapping(pos, positions, spacing) && attempts < maxAttempts);
+
+                positions.push(pos);
+            }
+
+            return positions;
+        }
+
+        function isOverlapping(pos, existing, minDistance) {
+            return existing.some(p => {
+                const dx = pos.x - p.x;
+                const dy = pos.y - p.y;
+                return Math.sqrt(dx * dx + dy * dy) < minDistance;
+            });
+        }
+
+        function handleObjectClick(item, element) {
+            gameState.totalClicks++;
+
+            if (item.name === gameState.targetItem.name) {
+                stopRoundTimer();
+                gameState.correctSelections++;
+                const elapsedMs = Math.max(1, Date.now() - gameState.roundStartTime);
+                const roundScore = computeRoundScore(elapsedMs, gameState.currentRoundErrors);
+                gameState.score += roundScore;
+                gameState.roundMetrics.push({
+                    round: gameState.currentRound,
+                    level: gameState.difficulty,
+                    target: item.name,
+                    errors: gameState.currentRoundErrors,
+                    elapsedMs,
+                    roundScore,
+                    firstTry: gameState.currentRoundErrors === 0
+                });
+                playSuccessSound();
+
+                element.style.transform = 'scale(2)';
+                element.style.filter = 'brightness(1.5)';
+
+                elements.successText.textContent = `¡Correcto! ${item.name} · +${roundScore} pts · ${(elapsedMs / 1000).toFixed(1)}s`;
+                elements.successOverlay.classList.add('show');
+
+                createStarBurst(element);
+
+                setTimeout(() => {
+                    speak(`¡Correcto! Es ${item.name}`);
+                }, 150);
+
+                setTimeout(() => {
+                    elements.successOverlay.classList.remove('show');
+                    persistMeasurement(gameState.currentRound >= ROUNDS_PER_LEVEL ? 'completed' : 'in_progress');
+
+                    if (gameState.currentRound >= ROUNDS_PER_LEVEL) {
+                        showLevelComplete();
+                    } else {
+                        startRound();
+                    }
+                }, 1400);
+            } else {
+                gameState.totalErrors++;
+                gameState.currentRoundErrors++;
+                updateHUD();
+                persistMeasurement('in_progress');
+                playTrySound();
+                const currentScale = element.style.transform || '';
+                element.style.transform = currentScale.includes('scale')
+                    ? currentScale.replace(/scale\([^)]+\)/, 'scale(0.8)')
+                    : 'scale(0.8)';
+                setTimeout(() => {
+                    updateObjectsVisibility();
+                }, 200);
+            }
+        }
+
+        function createStarBurst(element) {
+            const rect = element.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            for (let i = 0; i < 10; i++) {
+                const star = document.createElement('div');
+                star.className = 'star-burst';
+                star.textContent = ['⭐', '✨', '🌟'][Math.floor(Math.random() * 3)];
+                star.style.left = `${centerX}px`;
+                star.style.top = `${centerY}px`;
+
+                const angle = (i / 10) * Math.PI * 2;
+                const distance = 80 + Math.random() * 60;
+                star.style.setProperty('--tx', `${Math.cos(angle) * distance}px`);
+                star.style.setProperty('--ty', `${Math.sin(angle) * distance}px`);
+
+                document.body.appendChild(star);
+
+                setTimeout(() => star.remove(), 1000);
+            }
+        }
+
+        function showLevelComplete() {
+            const payload = persistMeasurement('completed');
+            const avgSeconds = payload.average_time_ms ? (payload.average_time_ms / 1000).toFixed(1) : '0.0';
+            elements.completeStats.innerHTML = `
+                Puntuación: ${gameState.score} puntos<br>
+                Acierto: ${payload.accuracy}% · Errores: ${gameState.total_errors}<br>
+                Tiempo medio por ronda: ${avgSeconds}s
+            `;
+
+            const stars = gameState.score >= 50 ? '⭐⭐⭐' :
+                         gameState.score >= 30 ? '⭐⭐' : '⭐';
+            elements.completeStars.textContent = stars;
+            document.getElementById('next-level-btn').textContent = gameState.difficulty < MAX_DIFFICULTY_LEVEL ? 'Siguiente Nivel' : 'Repetir nivel maestro';
+
+            elements.levelComplete.classList.add('show');
+
+            setTimeout(() => {
+                speak('¡Nivel completado! ¡Muy bien!');
+            }, 250);
+        }
+
+        function nextLevel() {
+            elements.levelComplete.classList.remove('show');
+
+            if (gameState.difficulty < MAX_DIFFICULTY_LEVEL) {
+                gameState.difficulty++;
+                document.querySelectorAll('.diff-btn').forEach(btn => {
+                    btn.classList.toggle('selected', parseInt(btn.dataset.level) === gameState.difficulty);
+                });
+            }
+
+            gameState.currentRound = 0;
+            updateHUD();
+            startRound();
+        }
+
+        function showMenu() {
+            stopRoundTimer();
+            if (gameState.sessionStartTime) {
+                persistMeasurement(gameState.roundMetrics.length ? 'in_progress' : 'idle');
+            }
+            elements.levelComplete.classList.remove('show');
+            elements.gameArea.classList.remove('active', 'mode-flashlight', 'mode-magnifier');
+            elements.flashlight.classList.remove('active');
+            elements.magnifierHandle.classList.remove('active');
+            elements.magnifierShine.classList.remove('active');
+            elements.startScreen.classList.remove('hidden');
+            speechSynthesis.cancel();
+        }
+
+        function toggleAudio() {
+            gameState.audioEnabled = !gameState.audioEnabled;
+            document.getElementById('audio-btn').textContent = gameState.audioEnabled ? '🔊' : '🔇';
+            if (!gameState.audioEnabled) {
+                speechSynthesis.cancel();
+            }
+        }
+
+        function updateHUD() {
+            elements.scoreDisplay.textContent = gameState.score;
+            elements.roundDisplay.textContent = `Ronda ${gameState.currentRound}/${ROUNDS_PER_LEVEL}`;
+            elements.levelBadge.textContent = `${getDifficultyLabel()} · N${gameState.difficulty}`;
+            elements.errorCount.textContent = gameState.totalErrors;
+            updateRoundTimerDisplay();
+        }
+
+        // ============ INPUT HANDLERS ============
+        function setupInputHandlers() {
+            const gameArea = elements.gameArea;
+            let isTouch = false;
+
+            // Offset for touch mode - so finger doesn't cover the target
+            // The tool appears ABOVE and slightly left of the finger
+            const TOUCH_OFFSET = { x: -30, y: -120 };
+
+            function updateCursor(rawX, rawY) {
+                // Apply offset for touch so finger doesn't block the view
+                const x = isTouch ? rawX + TOUCH_OFFSET.x : rawX;
+                const y = isTouch ? rawY + TOUCH_OFFSET.y : rawY;
+
+                gameState.cursorPos = { x, y };
+
+                const isMagnifier = gameState.toolMode === 'magnifier';
+                const diff = DIFFICULTY[gameState.toolMode][gameState.difficulty];
+                const size = diff.focusSize;
+
+                // Update flashlight/magnifier position
+                elements.flashlight.style.width = `${size}px`;
+                elements.flashlight.style.height = `${size}px`;
+                elements.flashlight.style.left = `${x}px`;
+                elements.flashlight.style.top = `${y}px`;
+
+                // Update magnifier accessories
+                if (isMagnifier) {
+                    const handleOffset = size / 2;
+                    elements.magnifierHandle.style.left = `${x + handleOffset * 0.6}px`;
+                    elements.magnifierHandle.style.top = `${y + handleOffset * 0.6}px`;
+                    elements.magnifierHandle.style.transform = 'rotate(45deg)';
+
+                    const shineSize = size * 0.35;
+                    elements.magnifierShine.style.width = `${shineSize}px`;
+                    elements.magnifierShine.style.height = `${shineSize}px`;
+                    elements.magnifierShine.style.left = `${x - size * 0.2}px`;
+                    elements.magnifierShine.style.top = `${y - size * 0.2}px`;
+                }
+
+                updateObjectsVisibility();
+            }
+
+            function updateObjectsVisibility() {
+                const { x: fx, y: fy } = gameState.cursorPos;
+                const isMagnifier = gameState.toolMode === 'magnifier';
+                const diff = DIFFICULTY[gameState.toolMode][gameState.difficulty];
+                const radius = diff.focusSize / 2;
+
+                gameState.objects.forEach(({ element, baseSize }) => {
+                    const rect = element.getBoundingClientRect();
+                    const objX = rect.left + rect.width / 2;
+                    const objY = rect.top + rect.height / 2;
+
+                    const distance = Math.sqrt(
+                        Math.pow(objX - fx, 2) + Math.pow(objY - fy, 2)
+                    );
+
+                    const isInside = distance < radius;
+
+                    if (isMagnifier) {
+                        // MAGNIFIER MODE: Objects are TINY (unrecognizable)
+                        // When under magnifier, they grow MASSIVELY to be visible
+                        if (isInside) {
+                            element.classList.add('magnified');
+                            // Calculate zoom based on distance from center (more dramatic)
+                            const proximity = 1 - (distance / radius);
+                            const zoomScale = diff.zoomScale;
+                            // Minimum zoom of 3x even at edge, max at center
+                            const minZoom = 3;
+                            const scale = minZoom + (proximity * (zoomScale - minZoom));
+                            const newSize = baseSize * scale;
+                            element.style.fontSize = `${newSize}px`;
+                            element.style.zIndex = '25';
+                        } else {
+                            element.classList.remove('magnified');
+                            element.style.fontSize = `${baseSize}px`;
+                            element.style.zIndex = '10';
+                        }
+                    } else {
+                        // FLASHLIGHT MODE: Objects are hidden until illuminated
+                        if (isInside) {
+                            element.classList.add('revealed');
+                        } else {
+                            element.classList.remove('revealed');
+                        }
+                    }
+                });
+            }
+
+            // Make updateObjectsVisibility globally accessible
+            window.updateObjectsVisibility = updateObjectsVisibility;
+
+            // Mouse events - no offset needed
+            gameArea.addEventListener('mousemove', (e) => {
+                isTouch = false;
+                updateCursor(e.clientX, e.clientY);
+            });
+
+            gameArea.addEventListener('mouseenter', (e) => {
+                isTouch = false;
+                updateCursor(e.clientX, e.clientY);
+            });
+
+            // Touch events - apply offset so finger doesn't block view
+            gameArea.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                isTouch = true;
+                const touch = e.touches[0];
+                updateCursor(touch.clientX, touch.clientY);
+            }, { passive: false });
+
+            gameArea.addEventListener('touchstart', (e) => {
+                isTouch = true;
+                const touch = e.touches[0];
+                updateCursor(touch.clientX, touch.clientY);
+            }, { passive: true });
+        }
+
+        // ============ START ============
+        document.addEventListener('DOMContentLoaded', initGame);
+
+        if (speechSynthesis.getVoices().length === 0) {
+            speechSynthesis.addEventListener('voiceschanged', () => {});
+        }
+    </script>
+
+
+
+</body></html>
