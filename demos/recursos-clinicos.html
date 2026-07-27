@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Arsenal clínico rápido · Logoped-IA</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@500;650;800&family=Fraunces:opsz,wght@9..144,650;9..144,800&display=swap');
+    :root{--ink:#102321;--muted:#61746f;--paper:#fbfcf6;--green:#245d4b;--lime:#d8f36a;--blue:#2563a8;--coral:#ff7458;--line:#d9e5dd;--shadow:0 24px 70px rgba(16,35,33,.13)}
+    *{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at 12% 10%,#e4f9b9 0 18%,transparent 32%),linear-gradient(135deg,#f8fbf1,#eaf4ee 55%,#fdf9ec);color:var(--ink);font-family:Manrope,system-ui,sans-serif;min-height:100vh}
+    .wrap{width:min(1180px,calc(100% - 34px));margin:0 auto;padding:24px 0 40px}.top{display:flex;justify-content:space-between;align-items:center;gap:16px}.brand{display:flex;align-items:center;gap:12px;font-weight:800}.mark{width:44px;height:44px;border-radius:14px;background:var(--ink);color:var(--lime);display:grid;place-items:center;box-shadow:var(--shadow)}.back{color:var(--green);font-weight:800;text-decoration:none;border:1px solid var(--line);background:#fff9;border-radius:999px;padding:10px 14px}.hero{display:grid;grid-template-columns:1fr .8fr;gap:28px;align-items:end;margin:38px 0 24px}.kicker{font-size:12px;text-transform:uppercase;letter-spacing:.14em;color:var(--green);font-weight:800}.hero h1{font:800 clamp(44px,7vw,88px)/.88 Fraunces,serif;letter-spacing:-.06em;margin:14px 0}.hero p{font-size:18px;line-height:1.55;color:#35504b;max-width:760px}.timer{background:var(--ink);color:white;border-radius:28px;padding:24px;box-shadow:var(--shadow)}.timer b{font:800 58px/.9 Fraunces,serif;color:var(--lime);display:block}.timer span{color:#cfe0dc}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.card{position:relative;display:flex;flex-direction:column;min-height:310px;padding:20px;border:1px solid var(--line);border-radius:26px;background:rgba(255,255,255,.82);box-shadow:0 18px 48px rgba(16,35,33,.08);overflow:hidden;text-decoration:none;color:inherit;transition:.2s}.card:hover{transform:translateY(-6px);box-shadow:var(--shadow)}.card:before{content:attr(data-n);position:absolute;right:14px;top:6px;font:800 86px/.8 Fraunces,serif;color:#1023210b}.chip{align-self:flex-start;border-radius:999px;padding:7px 10px;background:#ecf6df;color:var(--green);font-size:12px;font-weight:800}.card h2{font:800 30px/.95 Fraunces,serif;letter-spacing:-.04em;margin:18px 0 10px}.card p{color:var(--muted);line-height:1.5;margin:0}.demo{margin-top:auto;padding-top:18px}.demo strong{display:block;color:var(--ink);font-size:13px;margin-bottom:7px}.demo span{display:inline-flex;align-items:center;border-radius:14px;background:var(--ink);color:white;font-weight:800;padding:11px 13px}.accent-blue .chip{background:#eaf2ff;color:var(--blue)}.accent-coral .chip{background:#fff0eb;color:#b64027}.accent-dark{background:linear-gradient(140deg,#102321,#234e45);color:white}.accent-dark p,.accent-dark .demo strong{color:#d9e9e5}.accent-dark:before{color:#ffffff12}.accent-dark .demo span{background:var(--lime);color:var(--ink)}.route{margin-top:18px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.step{background:#ffffffb8;border:1px solid var(--line);border-radius:18px;padding:16px}.step b{display:block;margin-bottom:6px}.step small{color:var(--muted);line-height:1.4}.note{margin-top:18px;border:1px dashed #8caf83;background:#f6faed;border-radius:20px;padding:18px;color:#38544e;line-height:1.5}@media(max-width:900px){.hero,.grid,.route{grid-template-columns:1fr}.card{min-height:auto}.timer b{font-size:46px}}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header class="top">
+      <div class="brand"><span class="mark">IA</span><span>Logoped-IA · recursos para enseñar en directo</span></div>
+      <a class="back" href="../index.html">Volver a la presentación</a>
+    </header>
+    <section class="hero">
+      <div>
+        <div class="kicker">por si preguntan “¿y en mi especialidad?”</div>
+        <h1>Un arsenal clínico, no una demo repetida.</h1>
+        <p>Esta página sirve como mesa auxiliar para la webinar: abrir una herramienta distinta según el perfil del grupo. No hace falta enseñarlas todas. La idea es demostrar amplitud: evaluación, adultos, voz, lectoescritura, SAAC y análisis crítico de materiales.</p>
+      </div>
+      <aside class="timer"><b>30-60 s</b><span>por recurso. Enseñar el gesto, no el manual entero.</span></aside>
+    </section>
+
+    <section class="grid">
+      <a class="card accent-blue" data-n="01" href="recursos-clinicos/herramientas/radar-materiales.html" target="_blank" rel="noopener">
+        <span class="chip">criterio profesional</span><h2>Radar de materiales</h2><p>Para mostrar que la IA no solo “crea cosas”: también ayuda a mirar un material y detectar qué trabaja realmente, qué exige y dónde puede fallar.</p><div class="demo"><strong>Enseña:</strong><span>Abrir radar ↗</span></div>
+      </a>
+      <a class="card" data-n="02" href="recursos-clinicos/herramientas/evaluacion-integral.html" target="_blank" rel="noopener">
+        <span class="chip">evaluación</span><h2>Evaluación logopédica integral</h2><p>Un prototipo de recogida estructurada: lenguaje, habla, voz, fluidez, comprensión, lectoescritura y síntesis final.</p><div class="demo"><strong>Enseña:</strong><span>Ver evaluación ↗</span></div>
+      </a>
+      <a class="card accent-coral" data-n="03" href="recursos-clinicos/herramientas/adultos-comunicacion.html" target="_blank" rel="noopener">
+        <span class="chip">adultos</span><h2>Cribado de comunicación</h2><p>Para responder a quien trabaja con adultos: comunicación funcional, comprensión, cognición ligera y calidad de vida comunicativa.</p><div class="demo"><strong>Enseña:</strong><span>Abrir adultos ↗</span></div>
+      </a>
+      <a class="card accent-dark" data-n="04" href="recursos-clinicos/herramientas/voz-entrenamiento.html" target="_blank" rel="noopener">
+        <span class="chip">voz</span><h2>VocalClinic</h2><p>Sistema visual de entrenamiento vocal. Útil para decir: también podemos crear apoyos interactivos para práctica, registro y seguimiento.</p><div class="demo"><strong>Enseña:</strong><span>Entrenar voz ↗</span></div>
+      </a>
+      <a class="card" data-n="05" href="recursos-clinicos/herramientas/visualizador-voz-sz.html" target="_blank" rel="noopener">
+        <span class="chip">biofeedback</span><h2>Visualizador S/Z</h2><p>Una demo mínima y muy entendible: convertir audio en señal visible para explicar, comparar y tomar conciencia.</p><div class="demo"><strong>Enseña:</strong><span>Ver onda ↗</span></div>
+      </a>
+      <a class="card accent-blue" data-n="06" href="recursos-clinicos/herramientas/lector-dislexia.html" target="_blank" rel="noopener">
+        <span class="chip">lectura</span><h2>LectorAmigo</h2><p>Herramienta de apoyo lector: segmentar texto, acompañar el ritmo y hacer más amable una tarea que suele saturar.</p><div class="demo"><strong>Enseña:</strong><span>Abrir lectura ↗</span></div>
+      </a>
+      <a class="card accent-coral" data-n="07" href="recursos-clinicos/herramientas/saac/secuenciador-visual.html" target="_blank" rel="noopener">
+        <span class="chip">SAAC</span><h2>Secuenciador visual</h2><p>Rutinas visuales creadas desde una necesidad concreta. Muy bueno para explicar transferencia a aula y familia.</p><div class="demo"><strong>Enseña:</strong><span>Crear secuencia ↗</span></div>
+      </a>
+      <a class="card" data-n="08" href="recursos-clinicos/herramientas/saac/tablero-pecs.html" target="_blank" rel="noopener">
+        <span class="chip">comunicación</span><h2>Tablero PECS funcional</h2><p>Un tablero manipulable para construir frases. No sustituye el criterio SAAC; muestra cómo prototipar apoyos.</p><div class="demo"><strong>Enseña:</strong><span>Probar tablero ↗</span></div>
+      </a>
+      <a class="card accent-dark" data-n="09" href="mapa-completo-logoped-ia.html" target="_blank" rel="noopener">
+        <span class="chip">respaldo total</span><h2>Mapa completo</h2><p>Si aparece una pregunta rara, aquí está el inventario amplio. No abrir de entrada: es red de seguridad.</p><div class="demo"><strong>Enseña solo si hace falta:</strong><span>Abrir mapa ↗</span></div>
+      </a>
+    </section>
+
+    <section class="route">
+      <div class="step"><b>Si preguntan por niños</b><small>Rub-IA, juegos, SAAC y secuenciador visual.</small></div>
+      <div class="step"><b>Si preguntan por adultos</b><small>Cribado de comunicación y ejemplos funcionales.</small></div>
+      <div class="step"><b>Si preguntan por voz</b><small>VocalClinic o visualizador S/Z: impacto rápido.</small></div>
+      <div class="step"><b>Si preguntan por rigor</b><small>Radar de materiales, Evidence GPT y semáforo ético.</small></div>
+    </section>
+    <p class="note"><b>Frase para decir en directo:</b> “No vamos a enseñarlo todo hoy. Hoy quiero que veáis el rango: desde una ficha sencilla hasta una herramienta clínica. En el curso aprenderemos a construirlo con criterio, revisarlo y adaptarlo a vuestra práctica real.”</p>
+  </main>
+</body>
+</html>

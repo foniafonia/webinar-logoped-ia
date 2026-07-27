@@ -1,0 +1,903 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cribado de comunicación en adultos — Logoped-IA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+
+:root{
+  --paper:#fbf4e6;
+  --card:#fffaf1;
+  --ink:#3d2f22;
+  --ink-dim:rgba(61,47,34,.62);
+  --line:rgba(61,47,34,.18);
+  --coral:#e2775f;
+  --mostaza:#d79a2e;
+  --verde:#6f9e57;
+  --azul:#4f95b8;
+  --good:#5f9a53;
+  --mid:#c98f2b;
+  --low:#c85c47;
+  --radius:16px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{
+  font-family:'Nunito',system-ui,sans-serif;
+  background:var(--paper);
+  background-image:radial-gradient(rgba(61,47,34,.06) 1px, transparent 1.4px);
+  background-size:22px 22px;
+  color:var(--ink);
+  font-size:17px;
+  line-height:1.55;
+  padding:0 0 60px;
+}
+.wrap{max-width:760px;margin:0 auto;padding:22px 18px 40px}
+header.top{max-width:760px;margin:0 auto;padding:18px 18px 0;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+header.top .brand{font-weight:800;font-size:1.05rem;color:var(--ink)}
+header.top .brand span{color:var(--coral)}
+.progress{font-weight:700;font-size:.85rem;color:var(--ink-dim)}
+.progress-bar{height:6px;border-radius:4px;background:rgba(61,47,34,.12);overflow:hidden;margin-top:6px;max-width:760px;margin-left:auto;margin-right:auto}
+.progress-bar > i{display:block;height:100%;background:var(--verde);border-radius:4px;transition:width .3s ease}
+
+.card{
+  background:var(--card);
+  border:1.5px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:0 2px 0 rgba(61,47,34,.08);
+  padding:22px 22px;
+  margin-bottom:16px;
+}
+h1{font-size:1.55rem;font-weight:800;margin-bottom:8px}
+h2{font-size:1.25rem;font-weight:800;margin-bottom:10px}
+h3{font-size:1.05rem;font-weight:700;margin-bottom:8px}
+p{margin-bottom:10px}
+.muted{color:var(--ink-dim);font-size:.92rem}
+.notice{
+  border:1.5px dashed var(--line);
+  border-radius:12px;
+  padding:12px 14px;
+  font-size:.9rem;
+  color:var(--ink-dim);
+  background:rgba(226,119,95,.06);
+  margin-bottom:14px;
+}
+.screen{display:none}
+.screen.active{display:block}
+
+label.field-label{display:block;font-weight:700;font-size:.9rem;margin-bottom:6px}
+input[type=text]{
+  width:100%;font-family:inherit;font-size:1rem;padding:10px 12px;
+  border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);
+}
+input[type=text]:focus{outline:2px solid var(--azul)}
+
+.level-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
+@media (max-width:600px){.level-grid{grid-template-columns:1fr}}
+.level-card{
+  text-align:left;border:2px solid var(--line);border-radius:14px;background:#fff;
+  padding:16px;cursor:pointer;font-family:inherit;color:var(--ink);font-size:.95rem;
+}
+.level-card strong{display:block;font-size:1.05rem;margin-bottom:6px}
+.level-card.selected{border-color:var(--verde);background:rgba(111,158,87,.09);box-shadow:0 0 0 2px rgba(111,158,87,.25)}
+
+button.btn{
+  font-family:inherit;font-weight:800;font-size:1rem;
+  border:2px solid var(--ink);border-radius:12px;
+  background:#fff8ea;color:var(--ink);
+  padding:12px 22px;cursor:pointer;min-height:48px;
+  box-shadow:2px 2px 0 rgba(61,47,34,.15);
+}
+button.btn:disabled{opacity:.4;cursor:not-allowed}
+button.btn.primary{background:var(--verde);color:#fff;border-color:var(--verde)}
+button.btn.ghost{background:transparent;box-shadow:none}
+button.btn.small{padding:8px 14px;font-size:.85rem;min-height:auto}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;align-items:center}
+.skip-link{background:none;border:none;font-family:inherit;color:var(--ink-dim);text-decoration:underline;cursor:pointer;font-size:.85rem;padding:6px}
+
+.exercise{border-top:1.5px dashed var(--line);padding-top:16px;margin-top:16px}
+.exercise:first-of-type{border-top:none;padding-top:0;margin-top:0}
+
+.slider-row{margin:14px 0}
+.slider-row input[type=range]{width:100%;accent-color:var(--verde)}
+.slider-labels{display:flex;justify-content:space-between;font-size:.78rem;color:var(--ink-dim);margin-top:2px}
+
+.check-row{display:flex;align-items:flex-start;gap:8px;margin:8px 0;font-size:.95rem}
+.check-row input{width:20px;height:20px;flex-shrink:0;margin-top:2px}
+
+.shape-grid{display:flex;flex-wrap:wrap;gap:18px;margin:16px 0;justify-content:center}
+.shape-btn{width:96px;height:96px;border:2px solid var(--ink);cursor:pointer;background:#eee;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-family:inherit}
+.shape-circulo{border-radius:50%;background:var(--azul)}
+.shape-cuadrado{border-radius:12px;background:var(--mostaza)}
+.shape-triangulo{width:100px;height:96px;clip-path:polygon(50% 0%,0% 100%,100% 100%);background:var(--verde);border:none}
+.shape-rombo{background:var(--coral);transform:rotate(45deg);width:74px;height:74px;border:2px solid var(--ink)}
+.shape-btn.correct{outline:4px solid var(--good)}
+.shape-btn.wrong{outline:4px solid var(--low)}
+
+.mc-options{display:flex;flex-direction:column;gap:8px;margin:12px 0}
+.mc-option{
+  text-align:left;border:2px solid var(--line);border-radius:10px;background:#fff;
+  padding:10px 14px;cursor:pointer;font-family:inherit;font-size:.97rem;color:var(--ink);
+}
+.mc-option.selected{border-color:var(--azul);background:rgba(79,149,184,.09)}
+.mc-option.correct{border-color:var(--good);background:rgba(95,154,83,.12)}
+.mc-option.incorrect{border-color:var(--low);background:rgba(200,92,71,.12)}
+
+.pad-grid{display:flex;flex-wrap:wrap;gap:12px;margin:16px 0;justify-content:center}
+.pad-btn{
+  width:64px;height:64px;border-radius:50%;border:2px solid var(--ink);
+  background:#fff;font-weight:800;font-size:1.1rem;cursor:pointer;font-family:inherit;color:var(--ink)
+}
+.pad-btn.flash{background:var(--mostaza);color:#fff}
+.pad-btn.picked{background:var(--azul);color:#fff}
+.pad-btn.done{background:var(--good);color:#fff}
+.pad-btn.err{background:var(--low);color:#fff}
+.pad-btn:disabled{opacity:.5;cursor:default}
+
+.plan-list{list-style:none;margin:14px 0;display:flex;flex-direction:column;gap:8px}
+.plan-item{display:flex;align-items:center;gap:10px;border:1.5px solid var(--line);border-radius:10px;background:#fff;padding:10px 12px}
+.plan-item span{flex:1;font-size:.95rem}
+.plan-item .move-btns{display:flex;gap:4px}
+.plan-item button{width:34px;height:34px;border-radius:8px;border:1.5px solid var(--line);background:var(--paper);cursor:pointer;font-weight:800}
+
+.likert-item{margin:16px 0;padding-bottom:14px;border-bottom:1px dashed var(--line)}
+.likert-item:last-child{border-bottom:none}
+.likert-scale{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.likert-btn{
+  flex:1;min-width:78px;text-align:center;border:1.5px solid var(--line);border-radius:10px;
+  background:#fff;padding:8px 4px;font-family:inherit;font-size:.78rem;cursor:pointer;color:var(--ink);
+}
+.likert-btn.selected{border-color:var(--verde);background:rgba(111,158,87,.15);font-weight:800}
+
+.feedback-box{margin-top:12px;font-size:.9rem;font-weight:700}
+.feedback-box.ok{color:var(--good)}
+.feedback-box.bad{color:var(--low)}
+.feedback-box.info{color:var(--ink-dim);font-weight:600}
+
+.result-area{border-bottom:1.5px dashed var(--line);padding:14px 0}
+.result-area:last-child{border-bottom:none}
+.result-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.result-bar{height:14px;border-radius:8px;background:rgba(61,47,34,.1);overflow:hidden;margin:8px 0}
+.result-bar>i{display:block;height:100%;border-radius:8px}
+.badge{font-size:.78rem;font-weight:800;padding:3px 10px;border-radius:20px;color:#fff}
+.badge.good{background:var(--good)}
+.badge.mid{background:var(--mid)}
+.badge.low{background:var(--low)}
+.badge.na{background:var(--ink-dim)}
+
+.code-box{font-family:monospace;font-size:1rem;font-weight:800;background:#fff;border:1.5px dashed var(--line);border-radius:10px;padding:8px 12px;display:inline-block;margin:6px 0}
+footer.foot{max-width:760px;margin:20px auto 0;text-align:center;color:var(--ink-dim);font-size:.82rem;padding:0 18px}
+@media print{ body{padding:0} }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">Logoped<span>-IA</span> · Cribado de comunicación</div>
+  <div class="progress" id="progressLabel">Antes de empezar</div>
+</header>
+<div class="progress-bar" style="max-width:760px;margin:8px auto 0;padding:0 18px 0"><i id="progressFill" style="width:0%"></i></div>
+
+<div class="wrap">
+
+  <!-- INTRO -->
+  <section class="screen active" id="screen-intro">
+    <div class="card">
+      <h1>Cribado breve de comunicación en adultos</h1>
+      <div class="notice">
+        <strong>Esto NO es una prueba diagnóstica.</strong> Es una herramienta de cribado orientativo, pensada como
+        acompañamiento y reflexión, dirigida a personas adultas con parálisis cerebral (incluidas aquellas con buena
+        comunicación funcional que buscan afinar detalles concretos). No sustituye una valoración logopédica
+        profesional. Los resultados son orientativos y no tienen ningún valor clínico ni legal.
+      </div>
+      <p>La evaluación tiene 4 bloques breves con ejercicios interactivos (habla, comprensión, cognición ligera y
+      autopercepción) y dura entre 10 y 20 minutos. Puedes omitir cualquier ejercicio si te resulta cansado.</p>
+      <p>Al final podrás generar un <strong>informe en PDF anonimizado</strong> (sin nombre ni datos identificativos)
+      con un código de sesión, para guardar o compartir con quien tú decidas.</p>
+
+      <label class="field-label" for="aliasInput">Código o alias para tus registros (opcional — no escribas tu nombre real)</label>
+      <input type="text" id="aliasInput" maxlength="24" placeholder="ej: Sesión-junio, o déjalo en blanco">
+
+      <h3 style="margin-top:20px">¿Cómo dirías que es tu comunicación habitual?</h3>
+      <div class="level-grid">
+        <button type="button" class="level-card" id="levelCardA" onclick="selectLevel('A')">
+          <strong>Prefiero apoyo e instrucciones simples</strong>
+          Tengo dificultades notables de comunicación y me viene bien un ritmo tranquilo, con pasos sencillos.
+        </button>
+        <button type="button" class="level-card" id="levelCardB" onclick="selectLevel('B')">
+          <strong>Me comunico bien, quiero afinar detalles</strong>
+          En general me entiendo bien con los demás y quiero una versión algo más exigente, para detectar matices.
+        </button>
+      </div>
+
+      <div class="actions">
+        <button class="btn primary" id="startBtn" disabled onclick="startEvaluation()">Comenzar evaluación</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ÁREA 1: HABLA -->
+  <section class="screen" id="screen-habla">
+    <div class="card">
+      <h2>1 · Comunicación funcional y habla</h2>
+
+      <div class="exercise" id="ex-lectura">
+        <h3>Lectura en voz alta</h3>
+        <p class="muted">Lee la frase en voz alta, a tu ritmo. Pulsa "Empezar" y, cuando termines de leerla, pulsa "He terminado".</p>
+        <p id="lecturaFrase" style="font-size:1.2rem;font-weight:700;margin:14px 0"></p>
+        <div class="actions">
+          <button class="btn" id="lecturaStartBtn" onclick="lecturaStart()">Empezar a leer</button>
+          <button class="btn" id="lecturaEndBtn" onclick="lecturaEnd()" disabled>He terminado</button>
+        </div>
+        <div class="feedback-box info" id="lecturaTiempo"></div>
+
+        <div style="margin-top:14px">
+          <div class="check-row"><input type="checkbox" id="chk1"><label for="chk1">Repetí o corregí alguna palabra</label></div>
+          <div class="check-row"><input type="checkbox" id="chk2"><label for="chk2">Noté más esfuerzo de lo habitual al hablar</label></div>
+        </div>
+        <div class="slider-row">
+          <label class="field-label">¿Qué tan clara sientes que sonó tu habla en esta frase?</label>
+          <input type="range" min="1" max="5" value="3" id="claridadSlider">
+          <div class="slider-labels"><span>Nada clara</span><span>Muy clara</span></div>
+        </div>
+        <div class="actions"><button class="btn primary" onclick="finishEx('lectura')">Continuar</button>
+          <button class="skip-link" onclick="skipEx('lectura')">Omitir este ejercicio</button></div>
+      </div>
+
+      <div class="exercise" id="ex-trabalenguas" style="display:none">
+        <h3>Repetición</h3>
+        <p class="muted">Lee y repite esta frase en voz alta un par de veces.</p>
+        <p id="trabalenguasFrase" style="font-size:1.15rem;font-weight:700;margin:14px 0"></p>
+        <div class="check-row"><input type="checkbox" id="chk3"><label for="chk3">Necesité repetirla más de una vez</label></div>
+        <div class="check-row"><input type="checkbox" id="chk4"><label for="chk4">Sentí que me trababa en alguna sílaba</label></div>
+        <div class="slider-row">
+          <label class="field-label">¿Qué dificultad sentiste al repetirla?</label>
+          <input type="range" min="1" max="5" value="3" id="dificultadSlider">
+          <div class="slider-labels"><span>Fácil</span><span>Muy difícil</span></div>
+        </div>
+        <div class="actions"><button class="btn primary" onclick="finishEx('trabalenguas')">Continuar al siguiente bloque</button>
+          <button class="skip-link" onclick="skipEx('trabalenguas')">Omitir este ejercicio</button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ÁREA 2: COMPRENSIÓN -->
+  <section class="screen" id="screen-comprension">
+    <div class="card">
+      <h2>2 · Comprensión y lenguaje</h2>
+
+      <div class="exercise" id="ex-instrucciones">
+        <h3>Sigue la instrucción</h3>
+        <p id="instruccionTexto" class="muted"></p>
+        <div class="shape-grid" id="shapeGrid"></div>
+        <div class="feedback-box" id="instruccionFeedback"></div>
+        <div class="actions">
+          <button class="btn primary" id="instruccionContinueBtn" onclick="finishEx('instrucciones')" disabled>Continuar</button>
+          <button class="skip-link" onclick="skipEx('instrucciones')">Omitir este ejercicio</button>
+        </div>
+      </div>
+
+      <div class="exercise" id="ex-lecturacomp" style="display:none">
+        <h3>Comprensión de un texto breve</h3>
+        <p id="parrafoTexto" style="margin:10px 0"></p>
+        <div id="lcPreguntas"></div>
+        <div class="actions">
+          <button class="btn primary" onclick="finishEx('lecturacomp')">Continuar</button>
+          <button class="skip-link" onclick="skipEx('lecturacomp')">Omitir este ejercicio</button>
+        </div>
+      </div>
+
+      <div class="exercise" id="ex-vocabulario" style="display:none">
+        <h3>Vocabulario</h3>
+        <p id="vocabPregunta" style="margin:10px 0;font-weight:700"></p>
+        <div class="mc-options" id="vocabOptions"></div>
+        <div class="slider-row">
+          <label class="field-label">¿Con qué frecuencia se te quedan palabras "en la punta de la lengua" en el día a día?</label>
+          <input type="range" min="1" max="5" value="3" id="puntaLenguaSlider">
+          <div class="slider-labels"><span>Nunca</span><span>Muy frecuente</span></div>
+        </div>
+        <div class="actions">
+          <button class="btn primary" onclick="finishEx('vocabulario')">Continuar al siguiente bloque</button>
+          <button class="skip-link" onclick="skipEx('vocabulario')">Omitir este ejercicio</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ÁREA 3: COGNICIÓN -->
+  <section class="screen" id="screen-cognicion">
+    <div class="card">
+      <h2>3 · Cognición y funciones ejecutivas ligeras</h2>
+
+      <div class="exercise" id="ex-memoria">
+        <h3>Memoria de secuencia</h3>
+        <p class="muted">Observa el orden en que se iluminan los círculos y luego repítelo tocándolos en el mismo orden.</p>
+        <div class="actions"><button class="btn" id="memoriaPlayBtn" onclick="memoriaPlay()">Mostrar secuencia</button></div>
+        <div class="pad-grid" id="memoriaPad"></div>
+        <div class="feedback-box" id="memoriaFeedback"></div>
+        <div class="actions">
+          <button class="btn primary" id="memoriaContinueBtn" onclick="finishEx('memoria')" disabled>Continuar</button>
+          <button class="skip-link" onclick="skipEx('memoria')">Omitir este ejercicio</button>
+        </div>
+      </div>
+
+      <div class="exercise" id="ex-atencion" style="display:none">
+        <h3>Atención y secuenciación</h3>
+        <p class="muted">Toca los números en orden ascendente empezando por el 1. Sin límite de tiempo, a tu ritmo.</p>
+        <div class="pad-grid" id="atencionGrid"></div>
+        <div class="feedback-box" id="atencionFeedback"></div>
+        <div class="actions">
+          <button class="btn primary" id="atencionContinueBtn" onclick="finishEx('atencion')" disabled>Continuar</button>
+          <button class="skip-link" onclick="skipEx('atencion')">Omitir este ejercicio</button>
+        </div>
+      </div>
+
+      <div class="exercise" id="ex-planificacion" style="display:none">
+        <h3>Ordena los pasos</h3>
+        <p class="muted">Estos pasos están desordenados. Usa las flechas para colocarlos en el orden correcto.</p>
+        <ul class="plan-list" id="planList"></ul>
+        <div class="feedback-box" id="planFeedback"></div>
+        <div class="actions">
+          <button class="btn primary" onclick="checkPlan()">Comprobar orden</button>
+          <button class="btn primary" onclick="finishEx('planificacion')">Continuar al siguiente bloque</button>
+          <button class="skip-link" onclick="skipEx('planificacion')">Omitir este ejercicio</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ÁREA 4: AUTOPERCEPCIÓN -->
+  <section class="screen" id="screen-autopercepcion">
+    <div class="card">
+      <h2>4 · Autopercepción y calidad de vida comunicativa</h2>
+      <p class="muted">Indica con qué frecuencia te ocurre cada situación.</p>
+      <div id="likertList"></div>
+      <div class="actions">
+        <button class="btn primary" onclick="goResultados()">Ver resultados</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULTADOS -->
+  <section class="screen" id="screen-resultados">
+    <div class="card">
+      <h2>Resultados orientativos</h2>
+      <p>Código de sesión: <span class="code-box" id="resultCode"></span></p>
+      <p class="muted" id="resultMeta"></p>
+      <div class="notice">Recuerda: estas bandas son orientativas, no diagnósticas. Ante cualquier duda, consulta con
+        un/a logopeda colegiado/a para una valoración completa.</div>
+      <div id="resultAreas"></div>
+      <h3 style="margin-top:10px">Visión de conjunto</h3>
+      <p id="globalNarrative" class="muted"></p>
+      <div class="actions">
+        <button class="btn primary" onclick="generarPDF()">Generar informe PDF (anonimizado)</button>
+        <button class="btn ghost" onclick="location.reload()">Repetir evaluación</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer class="foot">Herramienta de cribado no clínico · Logoped-IA · uso educativo y de acompañamiento, sin valor diagnóstico</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function genCode(){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let s='PC-';
+  for(let i=0;i<5;i++) s+=chars[Math.floor(Math.random()*chars.length)];
+  const d=new Date();
+  s+='-'+String(d.getFullYear()).slice(2)+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
+  return s;
+}
+
+const state={
+  level:null, alias:'', code:genCode(), date:new Date(),
+  results:{}, // per-exercise raw scores (0-100) or null if skipped
+};
+
+const SCREENS=['screen-intro','screen-habla','screen-comprension','screen-cognicion','screen-autopercepcion','screen-resultados'];
+function showScreen(id){
+  SCREENS.forEach(s=>document.getElementById(s).classList.toggle('active', s===id));
+  const idx=SCREENS.indexOf(id);
+  document.getElementById('progressFill').style.width=(idx/(SCREENS.length-1)*100)+'%';
+  document.getElementById('progressLabel').textContent = idx===0? 'Antes de empezar' : idx===SCREENS.length-1 ? 'Resultados' : `Bloque ${idx} de 4`;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function selectLevel(l){
+  state.level=l;
+  document.getElementById('levelCardA').classList.toggle('selected', l==='A');
+  document.getElementById('levelCardB').classList.toggle('selected', l==='B');
+  document.getElementById('startBtn').disabled=false;
+}
+
+const CONTENT={
+  A:{
+    lectura:'El perro corre por el parque.',
+    trabalenguas:'Tres tristes tigres tragaban trigo.',
+    instruccion:{text:'Toca el cuadrado amarillo.', steps:['cuadrado']},
+    parrafo:'Marta fue al mercado y compró manzanas y pan. Se le olvidó comprar leche.',
+    preguntas:[
+      {q:'¿Qué compró Marta?', opts:['Manzanas y pan','Leche y pan','Manzanas y leche'], correct:0},
+      {q:'¿Qué se le olvidó comprar?', opts:['Pan','Leche','Manzanas'], correct:1}
+    ],
+    vocab:{q:"¿Cuál de estas palabras significa lo mismo que 'contento'?", opts:['Triste','Alegre','Cansado'], correct:1},
+    spanLen:3, atencionN:8,
+    planSteps:['Coger el pan de la bolsa','Meter el pan en la tostadora','Esperar a que se tueste','Untar con mantequilla']
+  },
+  B:{
+    lectura:'La biblioteca municipal renovó su catálogo bibliográfico este trimestre.',
+    trabalenguas:'El cielo está estrellado, ¿quién lo desestrellará? El desestrellador que lo desestrelle, buen desestrellador será.',
+    instruccion:{text:'Primero toca el triángulo verde y después toca el rombo coral.', steps:['triangulo','rombo']},
+    parrafo:'Aunque el tren llevaba veinte minutos de retraso, Javier decidió esperar en el andén en lugar de tomar un taxi, porque prefería ahorrar el dinero para el fin de semana.',
+    preguntas:[
+      {q:'¿Por qué esperó Javier en el andén?', opts:['Porque no había taxis','Porque prefería ahorrar dinero','Porque el tren no tenía retraso'], correct:1},
+      {q:'¿Qué tipo de decisión tomó Javier?', opts:['Impulsiva','Basada en ahorrar para otro momento','Aleatoria'], correct:1}
+    ],
+    vocab:{q:"¿Cuál de estas palabras es un sinónimo de 'perseverante'?", opts:['Indeciso','Tenaz','Distraído'], correct:1},
+    spanLen:5, atencionN:12,
+    planSteps:['Coger el pan de la bolsa','Meter el pan en la tostadora','Esperar a que se tueste','Untar con mantequilla']
+  }
+};
+let C=null;
+
+function startEvaluation(){
+  state.alias=document.getElementById('aliasInput').value.trim().slice(0,24);
+  C=CONTENT[state.level];
+  document.getElementById('lecturaFrase').textContent=C.lectura;
+  document.getElementById('trabalenguasFrase').textContent=C.trabalenguas;
+  setupInstruccion();
+  document.getElementById('parrafoTexto').textContent=C.parrafo;
+  setupLecturaComp();
+  setupVocab();
+  setupMemoria();
+  setupAtencion();
+  setupPlan();
+  setupLikert();
+  showScreen('screen-habla');
+}
+
+function recordResult(key, value){ state.results[key]=value; }
+function skipEx(key){ recordResult(key, null); advanceAfter(key); }
+function finishEx(key, precomputed){
+  if(precomputed!==undefined){ recordResult(key, precomputed); }
+  advanceAfter(key);
+}
+
+const FLOW={
+  lectura:'trabalenguas', trabalenguas:null,
+  instrucciones:'lecturacomp', lecturacomp:'vocabulario', vocabulario:null,
+  memoria:'atencion', atencion:'planificacion', planificacion:null
+};
+const AREA_END={trabalenguas:'screen-comprension', vocabulario:'screen-cognicion', planificacion:'screen-autopercepcion'};
+
+function advanceAfter(key){
+  if(key==='lectura'){
+    recordResult('lectura', computeLecturaScore());
+  }
+  if(key==='trabalenguas'){
+    recordResult('trabalenguas', computeTrabalenguasScore());
+  }
+  if(key==='vocabulario'){
+    recordResult('vocabulario', computeVocabScore());
+  }
+  const next=FLOW[key];
+  if(next){
+    document.getElementById('ex-'+key).style.display='none';
+    document.getElementById('ex-'+next).style.display='block';
+  } else {
+    showScreen(AREA_END[key]);
+  }
+}
+
+// ---------- LECTURA ----------
+let lecturaT0=null, lecturaSecs=null;
+function lecturaStart(){
+  lecturaT0=performance.now();
+  document.getElementById('lecturaStartBtn').disabled=true;
+  document.getElementById('lecturaEndBtn').disabled=false;
+}
+function lecturaEnd(){
+  lecturaSecs=((performance.now()-lecturaT0)/1000).toFixed(1);
+  document.getElementById('lecturaTiempo').textContent=`Tiempo de lectura: ${lecturaSecs} s (dato informativo, no puntúa)`;
+  document.getElementById('lecturaEndBtn').disabled=true;
+}
+function computeLecturaScore(){
+  const claridad=(+document.getElementById('claridadSlider').value-1)/4*100;
+  let checklist=100;
+  if(document.getElementById('chk1').checked) checklist-=15;
+  if(document.getElementById('chk2').checked) checklist-=15;
+  return Math.round((claridad+checklist)/2);
+}
+function computeTrabalenguasScore(){
+  const dificultad=(5-(+document.getElementById('dificultadSlider').value))/4*100;
+  let checklist=100;
+  if(document.getElementById('chk3').checked) checklist-=15;
+  if(document.getElementById('chk4').checked) checklist-=15;
+  return Math.round((dificultad+checklist)/2);
+}
+
+// ---------- INSTRUCCIONES (formas) ----------
+let instruccionClicks=[];
+function setupInstruccion(){
+  instruccionClicks=[];
+  document.getElementById('instruccionTexto').textContent=C.instruccion.text;
+  document.getElementById('instruccionFeedback').textContent='';
+  document.getElementById('instruccionContinueBtn').disabled=true;
+  const shapes=[
+    {k:'circulo',cls:'shape-circulo',label:'círculo azul'},
+    {k:'cuadrado',cls:'shape-cuadrado',label:'cuadrado amarillo'},
+    {k:'triangulo',cls:'shape-triangulo',label:'triángulo verde'},
+    {k:'rombo',cls:'shape-rombo',label:'rombo coral'}
+  ];
+  const grid=document.getElementById('shapeGrid');
+  grid.innerHTML='';
+  shuffle(shapes).forEach(s=>{
+    const b=document.createElement('button');
+    b.className='shape-btn '+s.cls; b.type='button'; b.setAttribute('aria-label',s.label);
+    b.onclick=()=>onShapeClick(s.k,b);
+    grid.appendChild(b);
+  });
+}
+function onShapeClick(k, btn){
+  const steps=C.instruccion.steps;
+  if(instruccionClicks.length>=steps.length) return;
+  instruccionClicks.push(k);
+  const idx=instruccionClicks.length-1;
+  btn.classList.add(k===steps[idx] ? 'correct':'wrong');
+  if(instruccionClicks.length===steps.length){
+    const matches=steps.filter((s,i)=>instruccionClicks[i]===s).length;
+    const score=Math.round(matches/steps.length*100);
+    recordResult('instrucciones', score);
+    document.getElementById('instruccionFeedback').textContent = matches===steps.length ? '¡Correcto!' : 'Orden no coincide del todo, no pasa nada.';
+    document.getElementById('instruccionFeedback').className='feedback-box '+(matches===steps.length?'ok':'bad');
+    document.getElementById('instruccionContinueBtn').disabled=false;
+  }
+}
+
+// ---------- LECTURA COMPRENSIVA ----------
+function setupLecturaComp(){
+  const cont=document.getElementById('lcPreguntas');
+  cont.innerHTML='';
+  C.preguntas.forEach((p,qi)=>{
+    const box=document.createElement('div');
+    box.style.margin='14px 0';
+    const t=document.createElement('p'); t.style.fontWeight='700'; t.textContent=p.q;
+    box.appendChild(t);
+    const optsWrap=document.createElement('div'); optsWrap.className='mc-options';
+    p.opts.forEach((opt,oi)=>{
+      const b=document.createElement('button');
+      b.type='button'; b.className='mc-option'; b.textContent=opt;
+      b.onclick=()=>{
+        [...optsWrap.children].forEach(c=>c.classList.remove('selected','correct','incorrect'));
+        b.classList.add(oi===p.correct?'correct':'incorrect');
+        b.dataset.picked='1';
+        state['_lc'+qi]=oi;
+      };
+      optsWrap.appendChild(b);
+    });
+    box.appendChild(optsWrap);
+    cont.appendChild(box);
+  });
+}
+function computeLecturaCompScore(){
+  let correct=0;
+  C.preguntas.forEach((p,qi)=>{ if(state['_lc'+qi]===p.correct) correct++; });
+  return Math.round(correct/C.preguntas.length*100);
+}
+
+// ---------- VOCABULARIO ----------
+function setupVocab(){
+  document.getElementById('vocabPregunta').textContent=C.vocab.q;
+  const wrap=document.getElementById('vocabOptions');
+  wrap.innerHTML='';
+  C.vocab.opts.forEach((opt,oi)=>{
+    const b=document.createElement('button');
+    b.type='button'; b.className='mc-option'; b.textContent=opt;
+    b.onclick=()=>{
+      [...wrap.children].forEach(c=>c.classList.remove('selected','correct','incorrect'));
+      b.classList.add(oi===C.vocab.correct?'correct':'incorrect');
+      state['_vocabPick']=oi;
+    };
+    wrap.appendChild(b);
+  });
+}
+function computeVocabScore(){
+  const correct = state['_vocabPick']===C.vocab.correct ? 100 : 0;
+  const punta=(5-(+document.getElementById('puntaLenguaSlider').value))/4*100;
+  return Math.round((correct+punta)/2);
+}
+
+// need lecturacomp finish to also store its score
+const _origFinishEx=finishEx;
+finishEx=function(key,precomputed){
+  if(key==='lecturacomp') recordResult('lecturacomp', computeLecturaCompScore());
+  _origFinishEx(key,precomputed);
+};
+
+// ---------- MEMORIA (span) ----------
+let memoriaSeq=[], memoriaUser=[], memoriaBtns={};
+function setupMemoria(){
+  memoriaSeq=shuffle([1,2,3,4,5,6]).slice(0,C.spanLen);
+  memoriaUser=[];
+  document.getElementById('memoriaFeedback').textContent='';
+  document.getElementById('memoriaContinueBtn').disabled=true;
+  const pad=document.getElementById('memoriaPad');
+  pad.innerHTML=''; memoriaBtns={};
+  [1,2,3,4,5,6].forEach(n=>{
+    const b=document.createElement('button');
+    b.type='button'; b.className='pad-btn'; b.textContent=n; b.disabled=true;
+    b.onclick=()=>onMemoriaPick(n,b);
+    pad.appendChild(b);
+    memoriaBtns[n]=b;
+  });
+}
+function memoriaPlay(){
+  document.getElementById('memoriaPlayBtn').disabled=true;
+  memoriaUser=[];
+  Object.values(memoriaBtns).forEach(b=>{b.disabled=true;b.classList.remove('flash','picked','done','err')});
+  memoriaSeq.forEach((n,i)=>{
+    setTimeout(()=>{ memoriaBtns[n].classList.add('flash'); },i*750);
+    setTimeout(()=>{ memoriaBtns[n].classList.remove('flash'); },i*750+500);
+  });
+  setTimeout(()=>{ Object.values(memoriaBtns).forEach(b=>b.disabled=false); }, memoriaSeq.length*750+200);
+}
+function onMemoriaPick(n,btn){
+  memoriaUser.push(n);
+  const idx=memoriaUser.length-1;
+  btn.classList.add(n===memoriaSeq[idx] ? 'done':'err');
+  if(memoriaUser.length===memoriaSeq.length){
+    const matches=memoriaSeq.filter((s,i)=>memoriaUser[i]===s).length;
+    const score=Math.round(matches/memoriaSeq.length*100);
+    recordResult('memoria', score);
+    document.getElementById('memoriaFeedback').textContent = matches===memoriaSeq.length ? '¡Secuencia completa!' : `Coincidieron ${matches} de ${memoriaSeq.length}.`;
+    document.getElementById('memoriaFeedback').className='feedback-box '+(matches===memoriaSeq.length?'ok':'bad');
+    document.getElementById('memoriaContinueBtn').disabled=false;
+    Object.values(memoriaBtns).forEach(b=>b.disabled=true);
+  }
+}
+
+// ---------- ATENCIÓN (trail) ----------
+let atencionCurrent=1, atencionErrors=0, atencionN=0;
+function setupAtencion(){
+  atencionCurrent=1; atencionErrors=0; atencionN=C.atencionN;
+  document.getElementById('atencionFeedback').textContent='';
+  document.getElementById('atencionContinueBtn').disabled=true;
+  const grid=document.getElementById('atencionGrid');
+  grid.innerHTML='';
+  const nums=shuffle(Array.from({length:atencionN},(_,i)=>i+1));
+  nums.forEach(n=>{
+    const b=document.createElement('button');
+    b.type='button'; b.className='pad-btn'; b.textContent=n;
+    b.onclick=()=>onAtencionClick(n,b);
+    grid.appendChild(b);
+  });
+}
+function onAtencionClick(n,btn){
+  if(n===atencionCurrent){
+    btn.classList.add('done'); btn.disabled=true;
+    atencionCurrent++;
+    if(atencionCurrent>atencionN){
+      const score=Math.max(0,100-atencionErrors*20);
+      recordResult('atencion', score);
+      document.getElementById('atencionFeedback').textContent = atencionErrors===0 ? '¡Completado sin errores!' : `Completado con ${atencionErrors} error(es).`;
+      document.getElementById('atencionFeedback').className='feedback-box '+(atencionErrors===0?'ok':'bad');
+      document.getElementById('atencionContinueBtn').disabled=false;
+    }
+  } else {
+    atencionErrors++;
+    btn.classList.add('err');
+    setTimeout(()=>btn.classList.remove('err'),400);
+  }
+}
+
+// ---------- PLANIFICACIÓN ----------
+let planOrder=[], planCorrect=[];
+function setupPlan(){
+  planCorrect=C.planSteps;
+  planOrder=shuffle(C.planSteps);
+  document.getElementById('planFeedback').textContent='';
+  renderPlan();
+}
+function renderPlan(){
+  const ul=document.getElementById('planList');
+  ul.innerHTML='';
+  planOrder.forEach((step,i)=>{
+    const li=document.createElement('li'); li.className='plan-item';
+    const span=document.createElement('span'); span.textContent=`${i+1}. ${step}`;
+    const mv=document.createElement('div'); mv.className='move-btns';
+    const up=document.createElement('button'); up.type='button'; up.textContent='▲'; up.onclick=()=>movePlan(i,-1);
+    const down=document.createElement('button'); down.type='button'; down.textContent='▼'; down.onclick=()=>movePlan(i,1);
+    mv.appendChild(up); mv.appendChild(down);
+    li.appendChild(span); li.appendChild(mv);
+    ul.appendChild(li);
+  });
+}
+function movePlan(i,dir){
+  const j=i+dir;
+  if(j<0||j>=planOrder.length) return;
+  [planOrder[i],planOrder[j]]=[planOrder[j],planOrder[i]];
+  renderPlan();
+}
+function checkPlan(){
+  const matches=planOrder.filter((s,i)=>s===planCorrect[i]).length;
+  const score=Math.round(matches/planCorrect.length*100);
+  recordResult('planificacion', score);
+  document.getElementById('planFeedback').textContent = matches===planCorrect.length ? '¡Orden correcto!' : `${matches} de ${planCorrect.length} pasos en la posición correcta.`;
+  document.getElementById('planFeedback').className='feedback-box '+(matches===planCorrect.length?'ok':'bad');
+}
+
+// ---------- AUTOPERCEPCIÓN ----------
+const LIKERT_ITEMS=[
+  {t:'Me resulta fácil hacerme entender la primera vez que hablo con alguien nuevo.', reverse:false},
+  {t:'Evito ciertas situaciones sociales por cómo me comunico.', reverse:true},
+  {t:'Me siento cansado/a después de mantener una conversación larga.', reverse:true},
+  {t:'Puedo expresar lo que quiero decir, aunque me cueste más tiempo que a otras personas.', reverse:false},
+  {t:'Las personas de mi entorno entienden bien lo que digo.', reverse:false},
+  {t:'Me siento satisfecho/a con mi forma de comunicarme en el día a día.', reverse:false}
+];
+const LIKERT_LABELS=['Nunca','Rara vez','A veces','Frecuentemente','Siempre'];
+const likertAnswers={};
+function setupLikert(){
+  const cont=document.getElementById('likertList');
+  cont.innerHTML='';
+  LIKERT_ITEMS.forEach((item,i)=>{
+    const box=document.createElement('div'); box.className='likert-item';
+    const t=document.createElement('p'); t.style.fontWeight='700'; t.textContent=item.t;
+    box.appendChild(t);
+    const scale=document.createElement('div'); scale.className='likert-scale';
+    LIKERT_LABELS.forEach((label,v)=>{
+      const b=document.createElement('button');
+      b.type='button'; b.className='likert-btn'; b.textContent=label;
+      b.onclick=()=>{
+        [...scale.children].forEach(c=>c.classList.remove('selected'));
+        b.classList.add('selected');
+        likertAnswers[i]=v+1;
+      };
+      scale.appendChild(b);
+    });
+    box.appendChild(scale);
+    cont.appendChild(box);
+  });
+}
+function computeAutopercepcionScore(){
+  const answered=Object.keys(likertAnswers);
+  if(answered.length===0) return null;
+  let total=0;
+  answered.forEach(i=>{
+    const item=LIKERT_ITEMS[i];
+    const v=likertAnswers[i];
+    total += item.reverse ? (5-v)/4*100 : (v-1)/4*100;
+  });
+  return Math.round(total/answered.length);
+}
+
+// ---------- RESULTADOS ----------
+function band(score){
+  if(score===null||score===undefined) return {label:'No completado', cls:'na'};
+  if(score>=75) return {label:'Zona cómoda', cls:'good'};
+  if(score>=50) return {label:'Zona con margen de mejora', cls:'mid'};
+  return {label:'Zona para reforzar con apoyo profesional', cls:'low'};
+}
+const AREA_TEXT={
+  habla:{good:'El habla se mantuvo clara y con esfuerzo percibido bajo en las tareas de lectura y repetición.',
+    mid:'Se detectaron algunos indicios de esfuerzo o repeticiones puntuales al hablar; puede ser útil trabajar ritmo y articulación.',
+    low:'Se observó esfuerzo notable o dificultad en la producción del habla; se recomienda una valoración logopédica más detallada.',
+    na:'No se completaron ejercicios de esta área.'},
+  comprension:{good:'La comprensión de instrucciones, texto y vocabulario funcionó con fluidez.',
+    mid:'Hubo algunos fallos puntuales en instrucciones, comprensión de texto o acceso a palabras.',
+    low:'Se observaron dificultades relevantes en comprensión o acceso al vocabulario; conviene revisarlo con un/a profesional.',
+    na:'No se completaron ejercicios de esta área.'},
+  cognicion:{good:'Las tareas de memoria, atención y planificación se resolvieron con buen desempeño.',
+    mid:'Se observaron algunos errores en memoria, atención o planificación de pasos.',
+    low:'Se observaron dificultades relevantes en tareas cognitivas ligeras; conviene una valoración más completa.',
+    na:'No se completaron ejercicios de esta área.'},
+  autopercepcion:{good:'La persona percibe su comunicación diaria como cómoda y satisfactoria.',
+    mid:'Hay margen de mejora percibido en algunas situaciones comunicativas cotidianas.',
+    low:'Se percibe bastante esfuerzo o insatisfacción en la comunicación diaria; puede beneficiarse de apoyo específico.',
+    na:'No se respondieron los ítems de esta área.'}
+};
+function areaScore(keys){
+  const vals=keys.map(k=>state.results[k]).filter(v=>v!==null&&v!==undefined);
+  if(vals.length===0) return null;
+  return Math.round(vals.reduce((a,b)=>a+b,0)/vals.length);
+}
+function goResultados(){
+  recordResult('autopercepcion', computeAutopercepcionScore());
+  const areas=[
+    {key:'habla', label:'Comunicación funcional y habla', score:areaScore(['lectura','trabalenguas'])},
+    {key:'comprension', label:'Comprensión y lenguaje', score:areaScore(['instrucciones','lecturacomp','vocabulario'])},
+    {key:'cognicion', label:'Cognición y funciones ejecutivas ligeras', score:areaScore(['memoria','atencion','planificacion'])},
+    {key:'autopercepcion', label:'Autopercepción comunicativa', score:state.results.autopercepcion}
+  ];
+  state.areas=areas;
+  document.getElementById('resultCode').textContent=state.code;
+  document.getElementById('resultMeta').textContent=`Nivel: ${state.level==='A'?'Apoyo con instrucciones simples':'Buena comunicación, más exigente'} · Fecha: ${state.date.toLocaleDateString('es-ES')}`+(state.alias?` · Alias: ${state.alias}`:'');
+  const cont=document.getElementById('resultAreas');
+  cont.innerHTML='';
+  areas.forEach(a=>{
+    const b=band(a.score);
+    const div=document.createElement('div'); div.className='result-area';
+    div.innerHTML=`<div class="result-head"><strong>${a.label}</strong><span class="badge ${b.cls}">${b.label}</span></div>
+      <div class="result-bar"><i style="width:${a.score??0}%;background:var(--${b.cls==='good'?'good':b.cls==='mid'?'mid':b.cls==='low'?'low':'ink-dim'})"></i></div>
+      <p class="muted">${AREA_TEXT[a.key][b.cls]}</p>`;
+    cont.appendChild(div);
+  });
+  const validScores=areas.map(a=>a.score).filter(s=>s!==null);
+  const global=validScores.length? Math.round(validScores.reduce((a,b)=>a+b,0)/validScores.length) : null;
+  state.globalScore=global;
+  const gb=band(global);
+  document.getElementById('globalNarrative').textContent = global===null
+    ? 'No se completaron suficientes ejercicios para una visión de conjunto.'
+    : `Visión general: ${gb.label.toLowerCase()}. Esta es una foto orientativa de un momento puntual, no una etiqueta permanente ni un diagnóstico.`;
+  showScreen('screen-resultados');
+}
+
+// ---------- PDF ----------
+function generarPDF(){
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  const marginX=18; let y=20;
+  doc.setFont('helvetica','bold'); doc.setFontSize(15);
+  doc.text('Informe de cribado — Comunicación en adultos', marginX, y); y+=8;
+  doc.setFont('helvetica','normal'); doc.setFontSize(10);
+  doc.text('Logoped-IA · Documento generado automáticamente, sin valor diagnóstico', marginX, y); y+=10;
+
+  doc.setFontSize(10);
+  doc.text(`Código de sesión (anonimizado): ${state.code}`, marginX, y); y+=6;
+  doc.text(`Fecha: ${state.date.toLocaleDateString('es-ES')}`, marginX, y); y+=6;
+  doc.text(`Nivel elegido: ${state.level==='A'?'Apoyo con instrucciones simples':'Buena comunicación, más exigente'}`, marginX, y); y+=6;
+  if(state.alias){ doc.text(`Alias indicado por la persona: ${state.alias}`, marginX, y); y+=6; }
+  y+=2;
+
+  doc.setDrawColor(200); doc.line(marginX,y,192,y); y+=8;
+
+  doc.setFont('helvetica','bold'); doc.setFontSize(11);
+  doc.text('Aviso importante', marginX, y); y+=6;
+  doc.setFont('helvetica','normal'); doc.setFontSize(9);
+  const aviso='Este documento procede de una herramienta de cribado orientativo, no de una prueba diagnóstica validada. No contiene datos identificativos de la persona evaluada. Los resultados deben interpretarse como una fotografía puntual y contextual, y no sustituyen una valoración logopédica profesional presencial.';
+  const avisoLines=doc.splitTextToSize(aviso, 174);
+  doc.text(avisoLines, marginX, y); y+= avisoLines.length*4.5 + 6;
+
+  doc.setFont('helvetica','bold'); doc.setFontSize(12);
+  doc.text('Resultados por área', marginX, y); y+=8;
+
+  state.areas.forEach(a=>{
+    const b=band(a.score);
+    doc.setFont('helvetica','bold'); doc.setFontSize(10.5);
+    doc.text(`${a.label}: ${a.score===null?'No completado':a.score+'/100'} — ${b.label}`, marginX, y); y+=5;
+    if(a.score!==null){
+      doc.setFillColor(230,230,230); doc.rect(marginX, y, 150, 4, 'F');
+      const [r,g,bl] = b.cls==='good'?[95,154,83]:b.cls==='mid'?[201,143,43]:b.cls==='low'?[200,92,71]:[150,150,150];
+      doc.setFillColor(r,g,bl); doc.rect(marginX, y, 150*(a.score/100), 4, 'F');
+      y+=7;
+    }
+    doc.setFont('helvetica','normal'); doc.setFontSize(9);
+    const txt=doc.splitTextToSize(AREA_TEXT[a.key][b.cls], 174);
+    doc.text(txt, marginX, y); y += txt.length*4.5 + 6;
+    if(y>250){ doc.addPage(); y=20; }
+  });
+
+  doc.setDrawColor(200); doc.line(marginX,y,192,y); y+=8;
+  doc.setFont('helvetica','bold'); doc.setFontSize(11);
+  doc.text('Visión de conjunto', marginX, y); y+=6;
+  doc.setFont('helvetica','normal'); doc.setFontSize(9);
+  const gb=band(state.globalScore);
+  const globalTxt = state.globalScore===null ? 'No se completaron suficientes ejercicios para una visión de conjunto.'
+    : `Visión general: ${gb.label.toLowerCase()}. Esta es una foto orientativa de un momento puntual, no una etiqueta permanente ni un diagnóstico.`;
+  const globalLines=doc.splitTextToSize(globalTxt, 174);
+  doc.text(globalLines, marginX, y); y+= globalLines.length*4.5 + 10;
+
+  doc.setFontSize(8); doc.setTextColor(120);
+  doc.text('Generado por la herramienta de cribado de comunicación de Logoped-IA. Sin datos identificativos. Sin valor clínico ni legal.', marginX, 285);
+
+  doc.save(`informe-cribado-${state.code}.pdf`);
+}
+</script>
+</body>
+</html>

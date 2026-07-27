@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tablero PECS funcional</title>
+  <style>
+    :root {
+      --ink: #25180f;
+      --muted: #6f5d50;
+      --line: #ead8cd;
+      --paper: #fff7ed;
+      --accent: #c2410c;
+      --green: #15803d;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+    }
+
+    main {
+      width: min(1240px, calc(100% - 36px));
+      margin: 0 auto;
+      padding: 28px 0;
+      display: grid;
+      gap: 18px;
+    }
+
+    header {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 18px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 16px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(34px, 5vw, 66px);
+      line-height: 0.96;
+      letter-spacing: 0;
+    }
+
+    p { margin: 0; color: var(--muted); line-height: 1.42; }
+
+    .top-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    button {
+      min-height: 44px;
+      border: 1px solid var(--accent);
+      border-radius: 6px;
+      background: var(--accent);
+      color: #fff;
+      padding: 0 14px;
+      font: inherit;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    button.secondary {
+      background: #fff;
+      color: var(--ink);
+      border-color: var(--line);
+    }
+
+    .sentence {
+      display: grid;
+      gap: 10px;
+      border: 2px solid #7c2d12;
+      border-radius: 8px;
+      background: #fff;
+      padding: 14px;
+      box-shadow: 0 12px 28px rgba(124, 45, 18, 0.08);
+    }
+
+    .sentence h2 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .strip {
+      display: flex;
+      min-height: 118px;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      border-radius: 7px;
+      background: #fff3e8;
+      padding: 12px;
+    }
+
+    .slot, .choice {
+      display: grid;
+      width: 112px;
+      min-height: 96px;
+      place-items: center;
+      gap: 5px;
+      border: 3px solid #111827;
+      border-radius: 6px;
+      background: #fff;
+      color: var(--ink);
+      text-align: center;
+      font-weight: 950;
+    }
+
+    .slot .emoji, .choice .emoji {
+      font-size: 34px;
+      line-height: 1;
+    }
+
+    .spoken {
+      min-height: 46px;
+      border-radius: 6px;
+      background: #f8fafc;
+      padding: 12px;
+      font-size: 22px;
+      font-weight: 950;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 16px;
+    }
+
+    .column, .choices {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 14px;
+    }
+
+    .column {
+      display: grid;
+      gap: 10px;
+      align-content: start;
+    }
+
+    .tab {
+      justify-content: start;
+      width: 100%;
+      background: #fff;
+      color: var(--ink);
+      border-color: var(--line);
+      text-align: left;
+    }
+
+    .tab.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .choices {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+      gap: 12px;
+      align-content: start;
+    }
+
+    .choice {
+      width: 100%;
+      cursor: pointer;
+      transition: transform 150ms ease, outline-color 150ms ease;
+    }
+
+    .choice:hover {
+      transform: translateY(-2px);
+      outline: 3px solid rgba(194, 65, 12, 0.22);
+    }
+
+    .choice.starter {
+      border-color: var(--green);
+    }
+
+    @media (max-width: 860px) {
+      header { align-items: stretch; flex-direction: column; }
+      .board { grid-template-columns: 1fr; }
+      .column { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>Tablero PECS</h1>
+        <p>Construye peticiones funcionales: inicio de frase, elección, necesidad y cierre comunicativo.</p>
+      </div>
+      <div class="top-actions">
+        <button type="button" id="speak">Leer frase</button>
+        <button type="button" class="secondary" id="reset">Reiniciar</button>
+      </div>
+    </header>
+
+    <section class="sentence">
+      <h2>Tira frase</h2>
+      <div class="strip" id="strip"></div>
+      <div class="spoken" id="spoken">Selecciona tarjetas para formar una petición.</div>
+    </section>
+
+    <section class="board">
+      <nav class="column" aria-label="Categorías PECS">
+        <button class="tab active" type="button" data-cat="inicio">Inicio</button>
+        <button class="tab" type="button" data-cat="comida">Comida y bebida</button>
+        <button class="tab" type="button" data-cat="juego">Juego</button>
+        <button class="tab" type="button" data-cat="necesidades">Necesidades</button>
+        <button class="tab" type="button" data-cat="personas">Personas</button>
+        <button class="tab" type="button" data-cat="emociones">Emociones</button>
+      </nav>
+      <div class="choices" id="choices"></div>
+    </section>
+  </main>
+
+  <script>
+    const data = {
+      inicio: [
+        ["☝️", "yo quiero", true],
+        ["👀", "yo veo", true],
+        ["🗣", "yo digo", true],
+        ["🙏", "por favor", true]
+      ],
+      comida: [
+        ["💧", "agua"], ["🍎", "manzana"], ["🍪", "galleta"], ["🥛", "leche"], ["🍽", "comer"], ["🥤", "beber"]
+      ],
+      juego: [
+        ["⚽", "pelota"], ["🧩", "puzzle"], ["🎨", "pintar"], ["📖", "cuento"], ["🎵", "música"], ["🚗", "coche"]
+      ],
+      necesidades: [
+        ["🆘", "ayuda"], ["⏸", "descanso"], ["🚽", "baño"], ["✅", "terminé"], ["🔁", "otra vez"], ["🚪", "salir"]
+      ],
+      personas: [
+        ["👩", "mamá"], ["👨", "papá"], ["🧑‍🏫", "profe"], ["👧", "amiga"], ["🧒", "amigo"], ["👩‍⚕️", "logopeda"]
+      ],
+      emociones: [
+        ["😊", "feliz"], ["😟", "triste"], ["😡", "enfadado"], ["😴", "cansado"], ["😨", "miedo"], ["🤕", "dolor"]
+      ]
+    };
+
+    const state = { cat: "inicio", phrase: [] };
+    const choices = document.querySelector("#choices");
+    const strip = document.querySelector("#strip");
+    const spoken = document.querySelector("#spoken");
+
+    function renderChoices() {
+      choices.innerHTML = data[state.cat].map(item => `
+        <button class="choice ${item[2] ? "starter" : ""}" type="button" data-word="${item[1]}" data-emoji="${item[0]}">
+          <span class="emoji">${item[0]}</span>
+          <span>${item[1]}</span>
+        </button>
+      `).join("");
+      document.querySelectorAll(".tab").forEach(tab => {
+        tab.classList.toggle("active", tab.dataset.cat === state.cat);
+      });
+    }
+
+    function renderPhrase() {
+      strip.innerHTML = state.phrase.map(item => `
+        <button class="slot" type="button" title="Quitar ${item.word}">
+          <span class="emoji">${item.emoji}</span>
+          <span>${item.word}</span>
+        </button>
+      `).join("");
+      spoken.textContent = state.phrase.length
+        ? state.phrase.map(item => item.word).join(" ")
+        : "Selecciona tarjetas para formar una petición.";
+    }
+
+    document.querySelector(".column").addEventListener("click", event => {
+      const tab = event.target.closest(".tab");
+      if (!tab) return;
+      state.cat = tab.dataset.cat;
+      renderChoices();
+    });
+
+    choices.addEventListener("click", event => {
+      const choice = event.target.closest(".choice");
+      if (!choice) return;
+      state.phrase.push({ emoji: choice.dataset.emoji, word: choice.dataset.word });
+      renderPhrase();
+    });
+
+    strip.addEventListener("click", event => {
+      const slot = event.target.closest(".slot");
+      if (!slot) return;
+      const index = [...strip.children].indexOf(slot);
+      state.phrase.splice(index, 1);
+      renderPhrase();
+    });
+
+    document.querySelector("#reset").addEventListener("click", () => {
+      state.phrase = [];
+      renderPhrase();
+    });
+
+    document.querySelector("#speak").addEventListener("click", () => {
+      const text = state.phrase.map(item => item.word).join(" ");
+      if (!text || !window.speechSynthesis) return;
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+    });
+
+    renderChoices();
+    renderPhrase();
+  </script>
+</body>
+</html>

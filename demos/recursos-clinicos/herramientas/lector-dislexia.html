@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LectorAmigo - Herramienta de Lectura para Dislexia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: 'OpenDyslexic';
+            src: url('data:font/woff2;base64,') format('woff2');
+            font-display: swap;
+        }
+        
+        @font-face {
+            font-family: 'Sarakanda';
+            src: url('data:font/woff2;base64,') format('woff2');
+            font-display: swap;
+        }
+        
+        .dyslexic-font { font-family: 'OpenDyslexic', 'Comic Sans MS', cursive; }
+        .sarakanda-font { font-family: 'Sarakanda', 'OpenDyslexic', 'Comic Sans MS', cursive; }
+        
+        .reading-ruler { 
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,0,0.3) 50%, transparent 100%);
+            background-size: 100% 2em;
+            background-repeat: repeat-y;
+        }
+        
+        .word-highlight { 
+            background: linear-gradient(120deg, #a8e6cf 0%, #dcedc8 100%);
+            padding: 2px 4px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .word-focus {
+            transform: scale(1.2);
+            font-weight: 700;
+            background: linear-gradient(120deg, #ffeb3b 0%, #fff176 100%);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 10;
+            position: relative;
+        }
+        
+        .bionic-reading .word-part-1 {
+            font-weight: 700;
+            color: #2563eb;
+        }
+        
+        .syllable-separated {
+            border-right: 2px solid #e5e7eb;
+            padding-right: 2px;
+            margin-right: 2px;
+        }
+        
+        .word-underlined {
+            text-decoration: underline;
+            text-decoration-color: #3b82f6;
+            text-decoration-thickness: 2px;
+        }
+        
+        /* BeeLine Reader gradiente */
+        .beeline-1 { background: linear-gradient(90deg, #ff6b6b, #4ecdc4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .beeline-2 { background: linear-gradient(90deg, #4ecdc4, #45b7d1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .beeline-3 { background: linear-gradient(90deg, #45b7d1, #f9ca24); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .beeline-4 { background: linear-gradient(90deg, #f9ca24, #6c5ce7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .beeline-5 { background: linear-gradient(90deg, #6c5ce7, #a0e7e5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .beeline-6 { background: linear-gradient(90deg, #a0e7e5, #ff6b6b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .chunk-1 { color: #dc2626; }
+        .chunk-2 { color: #2563eb; }
+        .chunk-3 { color: #059669; }
+        .chunk-4 { color: #7c3aed; }
+        .chunk-5 { color: #ea580c; }
+        .chunk-6 { color: #0891b2; }
+        
+        .line-alternate-1 { background-color: rgba(59, 130, 246, 0.1); }
+        .line-alternate-2 { background-color: rgba(16, 185, 129, 0.1); }
+        
+        .reading-background-cream { background-color: #faf8f3; }
+        .reading-background-blue { background-color: #f0f8ff; }
+        .reading-background-yellow { background-color: #fffacd; }
+        .reading-background-mint { background-color: #f0fdfa; }
+        .reading-background-lavender { background-color: #faf5ff; }
+        .reading-background-dark { background-color: #1f2937; color: #f9fafb; }
+        .reading-background-high-contrast { background-color: #000000; color: #ffffff; }
+        
+        .column-reading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .column-reading .word {
+            display: block;
+            text-align: center;
+            padding: 4px 8px;
+            border-radius: 4px;
+            min-width: 120px;
+        }
+        
+        .control-panel {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .rsvp-word {
+            font-size: 2rem;
+            font-weight: bold;
+            text-align: center;
+            min-height: 4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .panel-collapsed { max-height: 0; opacity: 0; }
+        .panel-expanded { max-height: 600px; opacity: 1; }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'dyslexic': ['OpenDyslexic', 'Comic Sans MS', 'cursive'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="h-full bg-gray-50 dark:bg-gray-900">
+    <script>
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+    </script>
+
+    <div class="min-h-full flex flex-col">
+        <!-- Header con controles principales -->
+        <header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">📚 LectorAmigo</h1>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">Herramienta de lectura asistida para dislexia</p>
+                    </div>
+                    
+                    <!-- Controles principales -->
+                    <div class="flex items-center space-x-3">
+                        <button id="ttsBtn" class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-md text-sm font-medium">
+                            🔊 Audio
+                        </button>
+                        
+                        <button id="togglePanel" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium">
+                            ⚙️ Configurar
+                        </button>
+                        
+                        <div class="flex space-x-2">
+                            <button id="quickPlayBtn" class="bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-md text-sm">▶️</button>
+                            <button id="quickPauseBtn" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded-md text-sm">⏸️</button>
+                            <button id="quickResetBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-3 py-2 rounded-md text-sm">🔄</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Panel de Control Colapsable -->
+        <div id="controlPanel" class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 transition-all duration-300 overflow-hidden panel-collapsed">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4 max-w-7xl mx-auto">
+                <!-- Modo de Lectura -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Modo de Lectura</label>
+                    <select id="readingMode" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base">
+                        <option value="normal">Texto Normal</option>
+                        <option value="highlight">Resaltado Secuencial</option>
+                        <option value="rsvp">RSVP (Una palabra)</option>
+                        <option value="chunking">Agrupación por Sentido</option>
+                        <option value="focus">Enfoque con Zoom</option>
+                        <option value="disappearing">Palabras que Desaparecen</option>
+                        <option value="bionic">Lectura Biónica</option>
+                        <option value="syllables">Separación por Sílabas</option>
+                        <option value="columns">Palabras en Columna</option>
+                        <option value="lines">Líneas Alternadas</option>
+                        <option value="underline">Subrayado Progresivo</option>
+                        <option value="beeline">BeeLine Reader</option>
+                    </select>
+                </div>
+
+                <!-- Fuente -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Fuente</label>
+                    <select id="fontFamily" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base">
+                        <option value="dyslexic">OpenDyslexic (Recomendada)</option>
+                        <option value="sarakanda">Sarakanda (Especial Dislexia)</option>
+                        <option value="comic">Comic Sans MS</option>
+                        <option value="lexend">Lexend (Fácil Lectura)</option>
+                        <option value="arial">Arial</option>
+                        <option value="verdana">Verdana</option>
+                    </select>
+                </div>
+
+                <!-- Texto -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Transformación</label>
+                    <select id="textTransform" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base">
+                        <option value="normal">Normal</option>
+                        <option value="uppercase">MAYÚSCULAS</option>
+                        <option value="lowercase">minúsculas</option>
+                        <option value="capitalize">Primera Letra Mayúscula</option>
+                    </select>
+                </div>
+
+                <!-- Fondo -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Color de Fondo</label>
+                    <select id="backgroundColor" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base">
+                        <option value="cream">Crema (Recomendado)</option>
+                        <option value="white">Blanco</option>
+                        <option value="blue">Azul Claro</option>
+                        <option value="yellow">Amarillo Claro</option>
+                        <option value="mint">Verde Menta</option>
+                        <option value="lavender">Lavanda</option>
+                        <option value="dark">Modo Oscuro</option>
+                        <option value="highcontrast">Alto Contraste</option>
+                    </select>
+                </div>
+
+                <!-- Tamaño de Fuente -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tamaño: <span id="fontSizeValue">20px</span></label>
+                    <input type="range" id="fontSize" min="14" max="40" value="20" class="w-full">
+                </div>
+
+                <!-- Velocidad -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Velocidad: <span id="speedValue">1000ms</span></label>
+                    <input type="range" id="speed" min="300" max="3000" value="1000" step="100" class="w-full">
+                </div>
+
+                <!-- Palabras por Grupo -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Palabras: <span id="wordsPerGroupValue">1</span></label>
+                    <input type="range" id="wordsPerGroup" min="1" max="5" value="1" class="w-full">
+                </div>
+
+                <!-- Espaciado -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Espaciado: <span id="letterSpacingValue">1px</span></label>
+                    <input type="range" id="letterSpacing" min="0" max="5" value="1" step="0.5" class="w-full">
+                </div>
+            </div>
+        </div>
+
+        <!-- Área de entrada de texto -->
+        <div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-4">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex flex-col lg:flex-row gap-4">
+                    <div class="flex-1">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Texto para leer:</label>
+                        <textarea 
+                            id="inputText" 
+                            placeholder="Escribe o pega el texto que quieres leer..."
+                            class="w-full h-20 p-3 border border-gray-300 dark:border-gray-600 rounded-md resize-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-base"
+                        ></textarea>
+                    </div>
+                    
+                    <div class="flex flex-col gap-2 lg:w-48">
+                        <button id="loadTextBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium">
+                            📝 Cargar Texto
+                        </button>
+                        <button id="simplifyBtn" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium">
+                            🎯 Simplificar
+                        </button>
+                        <input type="file" id="fileInput" accept=".txt,.pdf" class="hidden">
+                        <button id="fileBtn" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-md text-sm font-medium">
+                            📁 Subir Archivo
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Área Principal de Lectura (AMPLIADA) -->
+        <main class="flex-1 relative">
+            <div id="readingArea" class="h-full p-8 overflow-auto reading-background-cream">
+                <div id="textDisplay" class="max-w-6xl mx-auto">
+                    <div class="text-center text-gray-500 dark:text-gray-400 py-20">
+                        <p class="text-xl mb-4">👆 Pega un texto arriba y presiona "Cargar Texto"</p>
+                        <p class="text-lg">Luego elige el modo de lectura que prefieras</p>
+                    </div>
+                </div>
+                
+                <!-- Área RSVP -->
+                <div id="rsvpDisplay" class="hidden max-w-2xl mx-auto">
+                    <div id="rsvpWord" class="rsvp-word bg-white dark:bg-gray-800 rounded-lg shadow-lg p-12 text-gray-900 dark:text-white mb-6"></div>
+                    <div class="text-center">
+                        <div class="text-lg text-gray-600 dark:text-gray-400 mb-2">
+                            Palabra <span id="wordProgress">0</span> de <span id="totalWords">0</span>
+                        </div>
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+                            <div id="progressBar" class="bg-blue-500 h-3 rounded-full transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        class DyslexiaReader {
+            constructor() {
+                this.words = [];
+                this.currentIndex = 0;
+                this.isPlaying = false;
+                this.interval = null;
+                this.readingMode = 'normal';
+                this.wordsPerGroup = 1;
+                this.speed = 1000;
+                this.panelVisible = false;
+                this.speechSynth = null;
+                
+                this.initializeElements();
+                this.bindEvents();
+                this.loadSampleText();
+                this.initializeTTS();
+            }
+
+            initializeElements() {
+                this.inputText = document.getElementById('inputText');
+                this.textDisplay = document.getElementById('textDisplay');
+                this.rsvpDisplay = document.getElementById('rsvpDisplay');
+                this.rsvpWord = document.getElementById('rsvpWord');
+                this.readingArea = document.getElementById('readingArea');
+                this.progressBar = document.getElementById('progressBar');
+                this.wordProgress = document.getElementById('wordProgress');
+                this.totalWords = document.getElementById('totalWords');
+                this.controlPanel = document.getElementById('controlPanel');
+                
+                // Controls
+                this.readingModeSelect = document.getElementById('readingMode');
+                this.wordsPerGroupSlider = document.getElementById('wordsPerGroup');
+                this.speedSlider = document.getElementById('speed');
+                this.fontFamilySelect = document.getElementById('fontFamily');
+                this.fontSizeSlider = document.getElementById('fontSize');
+                this.letterSpacingSlider = document.getElementById('letterSpacing');
+                this.backgroundColorSelect = document.getElementById('backgroundColor');
+                this.textTransformSelect = document.getElementById('textTransform');
+            }
+
+            bindEvents() {
+                // Main controls
+                document.getElementById('loadTextBtn').addEventListener('click', () => this.loadText());
+                document.getElementById('simplifyBtn').addEventListener('click', () => this.simplifyText());
+                document.getElementById('fileBtn').addEventListener('click', () => document.getElementById('fileInput').click());
+                document.getElementById('fileInput').addEventListener('change', (e) => this.handleFileUpload(e));
+                
+                // Panel toggle
+                document.getElementById('togglePanel').addEventListener('click', () => this.togglePanel());
+                
+                // Quick controls
+                document.getElementById('quickPlayBtn').addEventListener('click', () => this.play());
+                document.getElementById('quickPauseBtn').addEventListener('click', () => this.pause());
+                document.getElementById('quickResetBtn').addEventListener('click', () => this.reset());
+                document.getElementById('ttsBtn').addEventListener('click', () => this.toggleTTS());
+                
+                // Settings
+                this.readingModeSelect.addEventListener('change', (e) => {
+                    this.readingMode = e.target.value;
+                    this.reset();
+                });
+                
+                this.wordsPerGroupSlider.addEventListener('input', (e) => {
+                    this.wordsPerGroup = parseInt(e.target.value);
+                    document.getElementById('wordsPerGroupValue').textContent = e.target.value;
+                    this.reset();
+                });
+                
+                this.speedSlider.addEventListener('input', (e) => {
+                    this.speed = parseInt(e.target.value);
+                    document.getElementById('speedValue').textContent = e.target.value + 'ms';
+                });
+                
+                this.fontSizeSlider.addEventListener('input', (e) => {
+                    document.getElementById('fontSizeValue').textContent = e.target.value + 'px';
+                    this.updateStyles();
+                });
+                
+                this.letterSpacingSlider.addEventListener('input', (e) => {
+                    document.getElementById('letterSpacingValue').textContent = e.target.value + 'px';
+                    this.updateStyles();
+                });
+                
+                this.fontFamilySelect.addEventListener('change', () => this.updateStyles());
+                this.backgroundColorSelect.addEventListener('change', () => this.updateStyles());
+                this.textTransformSelect.addEventListener('change', () => this.updateStyles());
+            }
+
+            togglePanel() {
+                this.panelVisible = !this.panelVisible;
+                if (this.panelVisible) {
+                    this.controlPanel.classList.remove('panel-collapsed');
+                    this.controlPanel.classList.add('panel-expanded');
+                } else {
+                    this.controlPanel.classList.remove('panel-expanded');
+                    this.controlPanel.classList.add('panel-collapsed');
+                }
+            }
+
+            initializeTTS() {
+                if ('speechSynthesis' in window) {
+                    this.speechSynth = window.speechSynthesis;
+                }
+            }
+
+            toggleTTS() {
+                if (this.speechSynth && this.words.length > 0) {
+                    const currentWords = this.getCurrentGroupWords();
+                    const utterance = new SpeechSynthesisUtterance(currentWords.join(' '));
+                    utterance.rate = 1.5 - (this.speed / 3000); // Ajustar velocidad
+                    utterance.lang = 'es-ES';
+                    this.speechSynth.speak(utterance);
+                }
+            }
+
+            simplifyText() {
+                let text = this.inputText.value;
+                // Simplificación básica
+                text = text.replace(/\b(muy|realmente|extremadamente|increíblemente)\s+/gi, '');
+                text = text.replace(/\b(que|el cual|la cual|los cuales|las cuales)\b/gi, 'que');
+                text = text.replace(/([.!?])\s*([A-Z])/g, '$1 $2');
+                this.inputText.value = text;
+                this.loadText();
+            }
+
+            handleFileUpload(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        this.inputText.value = e.target.result;
+                        this.loadText();
+                    };
+                    reader.readAsText(file);
+                }
+            }
+
+            loadSampleText() {
+                this.inputText.value = `El pequeño ratón corrió rápidamente por el jardín colorido. Las flores brillaban bajo el sol radiante de la mañana. Los pájaros cantaban melodías alegres en los árboles verdes. María sonrió al ver la hermosa escena desde su ventana.`;
+                this.loadText();
+            }
+
+            loadText() {
+                const text = this.inputText.value.trim();
+                if (!text) {
+                    this.showAlert('Por favor, ingresa un texto para leer.');
+                    return;
+                }
+                
+                this.words = text.split(/\s+/).filter(word => word.length > 0);
+                this.currentIndex = 0;
+                this.totalWords.textContent = this.words.length;
+                this.displayText();
+                this.updateStyles();
+            }
+
+            displayText() {
+                if (this.words.length === 0) return;
+                
+                switch (this.readingMode) {
+                    case 'rsvp':
+                        this.displayRSVP();
+                        break;
+                    default:
+                        this.displayNormalText();
+                        break;
+                }
+            }
+
+            displayNormalText() {
+                this.textDisplay.style.display = 'block';
+                this.rsvpDisplay.style.display = 'none';
+                
+                let html = '';
+                
+                if (this.readingMode === 'columns') {
+                    html = '<div class="column-reading">';
+                    for (let i = 0; i < this.words.length; i++) {
+                        const word = this.words[i];
+                        const isInGroup = this.isWordInCurrentGroup(i);
+                        const isRead = i < this.currentIndex;
+                        
+                        let className = 'word';
+                        if (isInGroup) className += ' word-highlight';
+                        if (isRead) className += ' opacity-50';
+                        
+                        html += `<span class="${className}" data-index="${i}">${this.processWord(word, i)}</span>`;
+                    }
+                    html += '</div>';
+                } else if (this.readingMode === 'lines') {
+                    const wordsPerLine = 10;
+                    html = '<div>';
+                    for (let i = 0; i < this.words.length; i += wordsPerLine) {
+                        const lineWords = this.words.slice(i, i + wordsPerLine);
+                        const lineClass = Math.floor(i / wordsPerLine) % 2 === 0 ? 'line-alternate-1' : 'line-alternate-2';
+                        html += `<div class="p-3 mb-2 rounded ${lineClass}">`;
+                        
+                        lineWords.forEach((word, idx) => {
+                            const wordIndex = i + idx;
+                            const isInGroup = this.isWordInCurrentGroup(wordIndex);
+                            const isRead = wordIndex < this.currentIndex;
+                            
+                            let className = 'inline-block mr-3';
+                            if (isInGroup) className += ' word-highlight';
+                            if (isRead) className += ' opacity-50';
+                            
+                            html += `<span class="${className}" data-index="${wordIndex}">${this.processWord(word, wordIndex)}</span>`;
+                        });
+                        html += '</div>';
+                    }
+                    html += '</div>';
+                } else {
+                    html = '<div class="leading-relaxed text-lg">';
+                    for (let i = 0; i < this.words.length; i++) {
+                        const word = this.words[i];
+                        const isInGroup = this.isWordInCurrentGroup(i);
+                        const isRead = i < this.currentIndex;
+                        
+                        let className = 'inline-block mr-3 mb-2';
+                        
+                        if (this.readingMode === 'highlight' && isInGroup) {
+                            className += ' word-highlight';
+                        } else if (this.readingMode === 'focus' && isInGroup) {
+                            className += ' word-focus';
+                        } else if (this.readingMode === 'chunking') {
+                            className += ` chunk-${(Math.floor(i / 3) % 6) + 1}`;
+                        } else if (this.readingMode === 'disappearing' && isRead) {
+                            className += ' opacity-30';
+                        } else if (this.readingMode === 'underline' && isInGroup) {
+                            className += ' word-underlined';
+                        } else if (this.readingMode === 'beeline') {
+                            className += ` beeline-${(i % 6) + 1}`;
+                        }
+                        
+                        html += `<span class="${className}" data-index="${i}">${this.processWord(word, i)}</span>`;
+                    }
+                    html += '</div>';
+                }
+                
+                this.textDisplay.innerHTML = html;
+            }
+
+            processWord(word, index) {
+                if (this.readingMode === 'bionic') {
+                    const midPoint = Math.ceil(word.length / 2);
+                    const firstPart = word.substring(0, midPoint);
+                    const secondPart = word.substring(midPoint);
+                    return `<span class="word-part-1">${firstPart}</span>${secondPart}`;
+                } else if (this.readingMode === 'syllables') {
+                    return this.separateSyllables(word);
+                }
+                
+                return word;
+            }
+
+            separateSyllables(word) {
+                const vowels = 'aeiouáéíóúü';
+                let syllables = [];
+                let currentSyllable = '';
+                
+                for (let i = 0; i < word.length; i++) {
+                    const char = word[i].toLowerCase();
+                    currentSyllable += word[i];
+                    
+                    if (vowels.includes(char)) {
+                        if (i + 1 < word.length && !vowels.includes(word[i + 1].toLowerCase())) {
+                            if (i + 2 < word.length && !vowels.includes(word[i + 2].toLowerCase())) {
+                                currentSyllable += word[i + 1];
+                                syllables.push(currentSyllable);
+                                currentSyllable = '';
+                                i++;
+                            } else {
+                                syllables.push(currentSyllable);
+                                currentSyllable = '';
+                            }
+                        }
+                    }
+                }
+                
+                if (currentSyllable) {
+                    syllables.push(currentSyllable);
+                }
+                
+                return syllables.map(syl => `<span class="syllable-separated">${syl}</span>`).join('');
+            }
+
+            displayRSVP() {
+                this.textDisplay.style.display = 'none';
+                this.rsvpDisplay.style.display = 'block';
+                
+                if (this.currentIndex < this.words.length) {
+                    const currentWords = this.getCurrentGroupWords();
+                    this.rsvpWord.textContent = currentWords.join(' ');
+                    this.wordProgress.textContent = this.currentIndex + 1;
+                    this.updateProgressBar();
+                }
+            }
+
+            getCurrentGroupWords() {
+                const startIndex = this.currentIndex;
+                const endIndex = Math.min(startIndex + this.wordsPerGroup, this.words.length);
+                return this.words.slice(startIndex, endIndex);
+            }
+
+            isWordInCurrentGroup(index) {
+                return index >= this.currentIndex && index < this.currentIndex + this.wordsPerGroup;
+            }
+
+            updateProgressBar() {
+                const progress = ((this.currentIndex + 1) / this.words.length) * 100;
+                this.progressBar.style.width = progress + '%';
+            }
+
+            play() {
+                if (this.words.length === 0) {
+                    this.showAlert('Primero carga un texto para leer.');
+                    return;
+                }
+                
+                this.isPlaying = true;
+                this.interval = setInterval(() => {
+                    this.nextGroup();
+                }, this.speed);
+            }
+
+            pause() {
+                this.isPlaying = false;
+                if (this.interval) {
+                    clearInterval(this.interval);
+                    this.interval = null;
+                }
+            }
+
+            reset() {
+                this.pause();
+                this.currentIndex = 0;
+                this.displayText();
+                this.updateProgressBar();
+            }
+
+            nextGroup() {
+                if (this.currentIndex >= this.words.length) {
+                    this.pause();
+                    this.showAlert('¡Lectura completada! 🎉');
+                    return;
+                }
+                
+                this.currentIndex += this.wordsPerGroup;
+                this.displayText();
+            }
+
+            updateStyles() {
+                const fontSize = this.fontSizeSlider.value + 'px';
+                const letterSpacing = this.letterSpacingSlider.value + 'px';
+                const fontFamily = this.getFontFamily();
+                const backgroundColor = this.getBackgroundColor();
+                const textTransform = this.textTransformSelect.value;
+                
+                [this.textDisplay, this.rsvpWord].forEach(element => {
+                    element.style.fontSize = fontSize;
+                    element.style.letterSpacing = letterSpacing;
+                    element.style.fontFamily = fontFamily;
+                    element.style.textTransform = textTransform === 'normal' ? 'none' : textTransform;
+                });
+                
+                this.readingArea.className = `h-full p-8 overflow-auto ${backgroundColor}`;
+                
+                if (this.words.length > 0) {
+                    this.displayText();
+                }
+            }
+
+            getFontFamily() {
+                const value = this.fontFamilySelect.value;
+                const fonts = {
+                    'dyslexic': 'OpenDyslexic, "Comic Sans MS", cursive',
+                    'sarakanda': 'Sarakanda, OpenDyslexic, "Comic Sans MS", cursive',
+                    'comic': '"Comic Sans MS", cursive',
+                    'lexend': 'Lexend, -apple-system, BlinkMacSystemFont, sans-serif',
+                    'arial': 'Arial, sans-serif',
+                    'verdana': 'Verdana, sans-serif'
+                };
+                return fonts[value] || fonts.dyslexic;
+            }
+
+            getBackgroundColor() {
+                const value = this.backgroundColorSelect.value;
+                const colors = {
+                    'white': 'bg-white dark:bg-gray-900',
+                    'cream': 'reading-background-cream',
+                    'blue': 'reading-background-blue',
+                    'yellow': 'reading-background-yellow',
+                    'mint': 'reading-background-mint',
+                    'lavender': 'reading-background-lavender',
+                    'dark': 'reading-background-dark',
+                    'highcontrast': 'reading-background-high-contrast'
+                };
+                return colors[value] || colors.cream;
+            }
+
+            showAlert(message) {
+                const modal = document.createElement('div');
+                modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+                modal.innerHTML = `
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-sm w-full mx-4">
+                        <p class="text-gray-700 dark:text-gray-300 mb-4">${message}</p>
+                        <div class="flex justify-end">
+                            <button class="px-4 py-2 bg-blue-500 text-white hover:bg-blue-600 rounded" onclick="this.closest('.fixed').remove()">OK</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            }
+        }
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', () => {
+            new DyslexiaReader();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Banco de pictogramas SAAC</title>
+  <style>
+    :root {
+      --ink: #172033;
+      --muted: #5f6b7a;
+      --line: #d8e0ea;
+      --paper: #f5f8fc;
+      --accent: #1768ac;
+      --soft: #eaf4ff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+    }
+
+    main {
+      display: grid;
+      width: min(1280px, calc(100% - 36px));
+      margin: 0 auto;
+      padding: 26px 0;
+      gap: 18px;
+      grid-template-columns: 1fr 340px;
+    }
+
+    header {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 18px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 16px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(31px, 4vw, 56px);
+      line-height: 0.98;
+      letter-spacing: 0;
+    }
+
+    p { margin: 0; color: var(--muted); line-height: 1.4; }
+
+    .tools {
+      display: grid;
+      min-width: 300px;
+      gap: 10px;
+    }
+
+    input, select, button {
+      min-height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      color: var(--ink);
+      font: inherit;
+      font-weight: 750;
+      padding: 0 12px;
+    }
+
+    button {
+      cursor: pointer;
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(138px, 1fr));
+      gap: 12px;
+    }
+
+    .picto {
+      display: grid;
+      gap: 8px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      cursor: pointer;
+      min-height: 174px;
+      box-shadow: 0 8px 20px rgba(23, 32, 51, 0.06);
+    }
+
+    .picto:hover { outline: 3px solid rgba(23, 104, 172, 0.24); }
+
+    .symbol {
+      display: grid;
+      aspect-ratio: 1;
+      place-items: center;
+      border: 3px solid #111827;
+      border-radius: 6px;
+      background: #fff;
+      overflow: hidden;
+      font-size: 48px;
+      font-weight: 900;
+    }
+
+    .symbol img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: 6px;
+    }
+
+    .name {
+      text-align: center;
+      font-size: 15px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    aside {
+      position: sticky;
+      top: 18px;
+      align-self: start;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 16px;
+      box-shadow: 0 14px 34px rgba(23, 32, 51, 0.08);
+    }
+
+    h2 { margin: 0 0 10px; font-size: 24px; }
+
+    .strip {
+      display: flex;
+      min-height: 112px;
+      flex-wrap: wrap;
+      align-content: flex-start;
+      gap: 8px;
+      padding: 10px;
+      border: 2px dashed #9ab0c7;
+      border-radius: 8px;
+      background: var(--soft);
+    }
+
+    .token {
+      display: grid;
+      width: 74px;
+      gap: 4px;
+      border: 2px solid #111827;
+      border-radius: 6px;
+      background: #fff;
+      padding: 5px;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .token span:first-child { font-size: 27px; }
+
+    .phrase {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 6px;
+      background: #f8fafc;
+      color: var(--ink);
+      font-size: 18px;
+      font-weight: 850;
+      line-height: 1.3;
+    }
+
+    .aside-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .ghost {
+      background: #fff;
+      color: var(--ink);
+      border-color: var(--line);
+    }
+
+    @media (max-width: 900px) {
+      main { grid-template-columns: 1fr; }
+      header { align-items: stretch; flex-direction: column; }
+      .tools { min-width: 0; }
+      aside { position: static; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>Banco visual tipo ARASAAC</h1>
+        <p>Filtra pictogramas, toca tarjetas y monta una frase funcional para SAAC.</p>
+      </div>
+      <div class="tools">
+        <input id="search" type="search" placeholder="Buscar: comer, casa, feliz...">
+        <select id="category">
+          <option value="todas">Todas las categorías</option>
+          <option value="acciones">Acciones</option>
+          <option value="emociones">Emociones</option>
+          <option value="lugares">Lugares</option>
+          <option value="objetos">Objetos</option>
+          <option value="necesidades">Necesidades</option>
+        </select>
+      </div>
+    </header>
+
+    <section class="grid" id="grid" aria-label="Pictogramas disponibles"></section>
+
+    <aside>
+      <h2>Frase visual</h2>
+      <div class="strip" id="strip" aria-label="Frase pictográfica"></div>
+      <div class="phrase" id="phrase">Toca pictogramas para construir una frase.</div>
+      <div class="aside-actions">
+        <button type="button" id="speak">Leer</button>
+        <button type="button" class="ghost" id="clear">Limpiar</button>
+      </div>
+    </aside>
+  </main>
+
+  <script>
+    const base = "file:///Users/joseaserraf/Desktop/TODO%20PROYECTO%20LOGOPED%20IA%20VICTOR%20Y%20DEMAS%20DESDE%20CENTRO/mi_arasaac/salida_pictos_pngtest/";
+    const pictos = [
+      { word: "yo quiero", cat: "necesidades", emoji: "☝️" },
+      { word: "ayuda", cat: "necesidades", emoji: "🆘" },
+      { word: "descanso", cat: "necesidades", emoji: "⏸" },
+      { word: "beber", cat: "acciones", img: base + "acciones/beber.png", emoji: "🥤" },
+      { word: "comer", cat: "acciones", img: base + "acciones/comer.png", emoji: "🍽" },
+      { word: "leer", cat: "acciones", img: base + "acciones/leer.png", emoji: "📖" },
+      { word: "caminar", cat: "acciones", img: base + "acciones/caminar.png", emoji: "🚶" },
+      { word: "dormir", cat: "acciones", img: base + "acciones/dormir.png", emoji: "🛌" },
+      { word: "feliz", cat: "emociones", img: base + "emociones/feliz.png", emoji: "😊" },
+      { word: "triste", cat: "emociones", img: base + "emociones/triste.png", emoji: "😟" },
+      { word: "casa", cat: "lugares", img: base + "lugares/casa.png", emoji: "🏠" },
+      { word: "colegio", cat: "lugares", img: base + "lugares/colegio.png", emoji: "🏫" },
+      { word: "pelota", cat: "objetos", img: base + "objetos/pelota.png", emoji: "⚽" }
+    ];
+
+    const state = { selected: [] };
+    const grid = document.querySelector("#grid");
+    const search = document.querySelector("#search");
+    const category = document.querySelector("#category");
+    const strip = document.querySelector("#strip");
+    const phrase = document.querySelector("#phrase");
+
+    function symbol(item) {
+      if (!item.img) return `<span>${item.emoji}</span>`;
+      return `<img src="${item.img}" alt="" onerror="this.replaceWith(document.createTextNode('${item.emoji}'))">`;
+    }
+
+    function renderGrid() {
+      const q = search.value.trim().toLowerCase();
+      const cat = category.value;
+      const items = pictos.filter(item => {
+        const matchText = item.word.includes(q) || item.cat.includes(q);
+        const matchCat = cat === "todas" || item.cat === cat;
+        return matchText && matchCat;
+      });
+
+      grid.innerHTML = items.map((item, index) => `
+        <button class="picto" type="button" data-word="${item.word}" data-index="${index}">
+          <span class="symbol">${symbol(item)}</span>
+          <span class="name">${item.word}</span>
+        </button>
+      `).join("");
+    }
+
+    function renderStrip() {
+      strip.innerHTML = state.selected.map(item => `
+        <button class="token" type="button" title="Quitar ${item.word}">
+          <span>${item.emoji}</span>
+          <span>${item.word}</span>
+        </button>
+      `).join("");
+      phrase.textContent = state.selected.length
+        ? state.selected.map(item => item.word).join(" ")
+        : "Toca pictogramas para construir una frase.";
+    }
+
+    grid.addEventListener("click", event => {
+      const card = event.target.closest(".picto");
+      if (!card) return;
+      const word = card.dataset.word;
+      const item = pictos.find(p => p.word === word);
+      if (item) {
+        state.selected.push(item);
+        renderStrip();
+      }
+    });
+
+    strip.addEventListener("click", event => {
+      const token = event.target.closest(".token");
+      if (!token) return;
+      const index = [...strip.children].indexOf(token);
+      state.selected.splice(index, 1);
+      renderStrip();
+    });
+
+    search.addEventListener("input", renderGrid);
+    category.addEventListener("change", renderGrid);
+    document.querySelector("#clear").addEventListener("click", () => {
+      state.selected = [];
+      renderStrip();
+    });
+    document.querySelector("#speak").addEventListener("click", () => {
+      const text = state.selected.map(item => item.word).join(" ");
+      if (!text || !window.speechSynthesis) return;
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+    });
+
+    renderGrid();
+    renderStrip();
+  </script>
+</body>
+</html>

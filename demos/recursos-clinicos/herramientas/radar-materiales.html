@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Radar de Materiales Educativos · Logoped-IA</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #faf8f3;
+  --paper-2: #f5f0e8;
+  --paper-3: #efe9d9;
+  --ink: #1a1612;
+  --ink-soft: #3d3530;
+  --ink-muted: #7a6e65;
+  --ink-dim: #b8afa5;
+  --marker-blue: #2563a8;
+  --marker-teal: #1a8a7a;
+  --marker-orange: #d4660a;
+  --marker-purple: #6b3fa0;
+  --marker-red: #e8453c;
+  --marker-green: #2d7a4f;
+  --highlight-yellow: rgba(245,200,66,0.35);
+  --shadow-paper: 2px 4px 16px rgba(60,40,20,0.10);
+  --shadow-card: 3px 6px 24px rgba(60,40,20,0.12);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ─── PAPER TEXTURE ─── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(180,160,130,0.07) 27px, rgba(180,160,130,0.07) 28px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─── TABS HEADER (horizontal top) ─── */
+.tabs-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: white;
+  border-bottom: 2px solid var(--paper-3);
+  box-shadow: var(--shadow-paper);
+  padding: 0 48px;
+}
+
+.tabs-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  height: 70px;
+}
+
+.logo-tab {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 20px;
+  border-right: 2px solid var(--paper-3);
+  text-decoration: none;
+  min-width: 200px;
+}
+
+.logo-mark {
+  width: 36px;
+  height: 36px;
+  background: rgba(37,99,168,0.08);
+  border: 1.5px solid var(--marker-blue);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.logo-mark svg { width: 20px; height: 20px; color: var(--marker-blue); }
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.logo-title {
+  font-family: 'Caveat', cursive;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1;
+}
+
+.logo-sub {
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--marker-blue);
+}
+
+.tabs-list {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  flex: 1;
+  gap: 0;
+}
+
+.tab-btn {
+  padding: 0 20px;
+  height: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: var(--ink-muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  font-family: 'Inter', sans-serif;
+}
+
+.tab-btn:hover {
+  color: var(--ink);
+  background: rgba(37,99,168,0.04);
+}
+
+.tab-btn.active {
+  color: var(--marker-blue);
+  border-bottom-color: var(--marker-blue);
+  font-weight: 600;
+}
+
+/* ─── MAIN CONTENT ─── */
+.content {
+  min-height: 100vh;
+  padding: 60px 48px;
+  position: relative;
+  z-index: 1;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.tab-section {
+  display: none;
+}
+
+.tab-section.active {
+  display: block;
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.section-head {
+  margin-bottom: 48px;
+}
+
+.section-label {
+  display: inline-block;
+  padding: 6px 16px;
+  background: var(--marker-blue);
+  color: white;
+  border-radius: 4px 4px 0 0;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0;
+}
+
+.section-label.green { background: var(--marker-green); }
+.section-label.orange { background: var(--marker-orange); }
+.section-label.purple { background: var(--marker-purple); }
+.section-label.teal { background: var(--marker-teal); }
+
+.section-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  margin: 20px 0 12px;
+  line-height: 1.2;
+  color: var(--ink);
+}
+
+.section-title .hl { background: var(--highlight-yellow); padding: 0 4px; border-radius: 2px; }
+
+.section-sub {
+  font-size: 0.95rem;
+  color: var(--ink-muted);
+  max-width: 700px;
+  line-height: 1.75;
+}
+
+/* ─── HERO SECTION ─── */
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+  margin-top: 40px;
+}
+
+.hero-copy p {
+  font-size: 1rem;
+  color: var(--ink-soft);
+  margin-bottom: 20px;
+  line-height: 1.8;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 28px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 26px;
+  background: var(--marker-blue);
+  color: white;
+  border: none;
+  border-radius: 3px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: 4px 4px 0 rgba(37,99,168,0.25);
+  transition: transform 0.15s, box-shadow 0.15s;
+  font-family: 'Inter', sans-serif;
+}
+
+.btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0 rgba(37,99,168,0.3);
+}
+
+.btn.secondary {
+  background: transparent;
+  color: var(--ink-soft);
+  border: 2px solid var(--ink-dim);
+  box-shadow: none;
+}
+
+.btn.secondary:hover {
+  border-color: var(--marker-blue);
+  color: var(--marker-blue);
+}
+
+/* ─── RADAR VISUAL ─── */
+.radar-visual {
+  position: relative;
+  height: 380px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.radar-rings {
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+}
+
+.radar-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1.5px solid;
+  inset: 0;
+}
+
+.ring-1 { border-color: rgba(37,99,168,0.15); }
+.ring-2 { border-color: rgba(37,99,168,0.25); inset: 25px; }
+.ring-3 { border-color: rgba(37,99,168,0.35); inset: 50px; }
+.ring-4 { border-color: var(--marker-blue); inset: 75px; }
+
+.radar-point {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--marker-blue);
+  border: 2px solid white;
+  box-shadow: 0 2px 6px rgba(37,99,168,0.4);
+}
+
+.point-1 { top: 0%; left: 50%; transform: translateX(-50%); }
+.point-2 { top: 15%; right: 5%; }
+.point-3 { bottom: 15%; right: 5%; }
+.point-4 { bottom: 0%; left: 50%; transform: translateX(-50%); }
+.point-5 { bottom: 15%; left: 5%; }
+.point-6 { top: 15%; left: 5%; }
+
+.radar-center {
+  position: absolute;
+  width: 100px;
+  height: 130px;
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  padding: 10px;
+  border: 1.5px solid var(--paper-3);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+}
+
+.pdf-header { width: 100%; height: 7px; background: var(--marker-red); border-radius: 2px; margin-bottom: 7px; }
+.pdf-line { height: 3px; background: var(--ink-dim); border-radius: 1px; margin-bottom: 3px; width: 85%; }
+.pdf-label { font-size: 0.65rem; color: var(--ink-muted); text-align: center; margin-top: auto; }
+
+.radar-tags {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.radar-tag {
+  position: absolute;
+  padding: 5px 10px;
+  border-radius: 100px;
+  font-size: 0.62rem;
+  font-weight: 600;
+  border: 1.5px solid;
+  background: white;
+  box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+  white-space: nowrap;
+}
+
+.tag-1 { border-color: rgba(37,99,168,0.4); color: var(--marker-blue); top: -25px; left: 50%; transform: translateX(-50%); }
+.tag-2 { border-color: rgba(212,96,138,0.4); color: #d4608a; top: 8%; right: -35px; }
+.tag-3 { border-color: rgba(26,138,122,0.4); color: var(--marker-teal); bottom: 8%; right: -35px; }
+.tag-4 { border-color: rgba(107,63,160,0.4); color: var(--marker-purple); bottom: -25px; left: 50%; transform: translateX(-50%); }
+.tag-5 { border-color: rgba(212,102,10,0.4); color: var(--marker-orange); bottom: 8%; left: -35px; }
+.tag-6 { border-color: rgba(45,122,79,0.4); color: var(--marker-green); top: 8%; left: -35px; }
+
+/* ─── CARDS & BOXES ─── */
+.card {
+  background: white;
+  border: 1.5px solid var(--paper-3);
+  border-radius: 8px;
+  padding: 32px;
+  box-shadow: var(--shadow-paper);
+  position: relative;
+  margin-top: 32px;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(180deg, transparent, transparent 27px, rgba(180,160,130,0.06) 27px, rgba(180,160,130,0.06) 28px);
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+.card > * { position: relative; }
+
+/* analysis grid */
+.analysis-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.analysis-box {
+  background: var(--paper);
+  border: 1.5px solid var(--paper-3);
+  border-radius: 8px;
+  padding: 26px;
+  border-left: 5px solid;
+}
+
+.analysis-box.blue { border-left-color: var(--marker-blue); }
+.analysis-box.teal { border-left-color: var(--marker-teal); }
+
+.box-mode { font-family: 'Caveat', cursive; font-size: 0.8rem; font-weight: 700; color: var(--ink-dim); margin-bottom: 6px; }
+.box-title { font-size: 1.1rem; font-weight: 800; color: var(--ink); margin-bottom: 2px; }
+.box-sub { font-size: 0.72rem; color: var(--ink-muted); margin-bottom: 16px; font-style: italic; }
+
+.box-items {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.box-items li {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  line-height: 1.4;
+}
+
+.li-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 1px;
+  background: rgba(37,99,168,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.li-dot::after { content: ''; width: 4px; height: 4px; background: var(--marker-blue); border-radius: 50%; }
+
+.analysis-box.teal .li-dot { background: rgba(26,138,122,0.15); }
+.analysis-box.teal .li-dot::after { background: var(--marker-teal); }
+
+/* disclaimer */
+.disclaimer {
+  background: #fffbea;
+  border: 1.5px solid rgba(245,200,66,0.5);
+  border-radius: 8px;
+  padding: 14px 16px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  margin-top: 24px;
+}
+
+.disclaimer strong { color: var(--marker-orange); }
+
+/* ─── FICHA GRID ─── */
+.ficha-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 32px;
+}
+
+.ficha {
+  background: white;
+  border: 1px solid var(--paper-3);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--shadow-paper);
+  transition: transform 0.2s;
+}
+
+.ficha:hover { transform: translateY(-3px); box-shadow: var(--shadow-card); }
+
+.ficha-tape {
+  height: 7px;
+  background: repeating-linear-gradient(90deg, #5b9bd5 0px, #5b9bd5 10px, rgba(91,155,213,0.6) 10px, rgba(91,155,213,0.6) 12px);
+}
+
+.ficha-tape.red { background: repeating-linear-gradient(90deg, #e8614f 0px, #e8614f 10px, rgba(232,97,79,0.6) 10px, rgba(232,97,79,0.6) 12px); }
+.ficha-tape.green { background: repeating-linear-gradient(90deg, #68c47e 0px, #68c47e 10px, rgba(104,196,126,0.6) 10px, rgba(104,196,126,0.6) 12px); }
+.ficha-tape.yellow { background: repeating-linear-gradient(90deg, #f7d060 0px, #f7d060 10px, rgba(247,208,96,0.6) 10px, rgba(247,208,96,0.6) 12px); }
+.ficha-tape.orange { background: repeating-linear-gradient(90deg, #f4845a 0px, #f4845a 10px, rgba(244,132,90,0.6) 10px, rgba(244,132,90,0.6) 12px); }
+
+.ficha-body {
+  padding: 14px;
+  position: relative;
+}
+
+.ficha-body::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(180,160,130,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(180,160,130,0.06) 1px, transparent 1px);
+  background-size: 18px 18px;
+  pointer-events: none;
+}
+
+.ficha-meta { font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-dim); margin-bottom: 6px; position: relative; }
+.ficha-title { font-size: 0.78rem; font-weight: 700; color: var(--ink); margin-bottom: 10px; line-height: 1.35; position: relative; }
+
+.ficha-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.chip {
+  padding: 3px 8px;
+  border-radius: 100px;
+  font-size: 0.6rem;
+  font-weight: 600;
+  border: 1px solid;
+}
+
+.chip-b { background: rgba(37,99,168,0.08); border-color: rgba(37,99,168,0.3); color: var(--marker-blue); }
+.chip-r { background: rgba(232,69,60,0.08); border-color: rgba(232,69,60,0.3); color: var(--marker-red); }
+.chip-g { background: rgba(45,122,79,0.08); border-color: rgba(45,122,79,0.3); color: var(--marker-green); }
+.chip-o { background: rgba(212,102,10,0.08); border-color: rgba(212,102,10,0.3); color: var(--marker-orange); }
+.chip-p { background: rgba(107,63,160,0.08); border-color: rgba(107,63,160,0.3); color: var(--marker-purple); }
+.chip-t { background: rgba(26,138,122,0.08); border-color: rgba(26,138,122,0.3); color: var(--marker-teal); }
+
+.ficha-insight {
+  font-family: 'Caveat', cursive;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--marker-blue);
+  line-height: 1.35;
+  padding: 7px 9px;
+  background: rgba(37,99,168,0.06);
+  border-left: 2.5px solid var(--marker-blue);
+  border-radius: 0 3px 3px 0;
+  position: relative;
+}
+
+/* ─── COMPARISON TABLE ─── */
+.compare-table {
+  background: var(--paper);
+  border: 1.5px solid var(--paper-3);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 24px;
+  box-shadow: var(--shadow-paper);
+}
+
+.compare-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: var(--paper-2);
+  border-bottom: 1.5px solid var(--paper-3);
+}
+
+.compare-header-cell {
+  padding: 11px 14px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.compare-header-cell:first-child { border-right: 1px solid var(--paper-3); color: var(--ink-dim); }
+.compare-header-cell:last-child { color: var(--marker-blue); }
+
+.compare-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 1px solid var(--paper-3);
+}
+
+.compare-row:last-child { border-bottom: none; }
+.compare-row:nth-child(odd) { background: rgba(250,248,243,0.6); }
+
+.compare-cell {
+  padding: 12px 14px;
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.compare-cell:first-child { border-right: 1px solid var(--paper-3); color: var(--ink-dim); }
+
+.compare-cell:last-child {
+  color: var(--ink-soft);
+  display: flex;
+  gap: 5px;
+  align-items: flex-start;
+}
+
+.compare-cell:last-child::before { content: '→'; color: var(--marker-teal); font-weight: 700; flex-shrink: 0; font-size: 0.7rem; margin-top: 1px; }
+
+/* ─── AUDIENCE GRID ─── */
+.audience-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin-top: 32px;
+}
+
+.audience-card {
+  background: white;
+  border: 1.5px solid var(--paper-3);
+  border-radius: 8px;
+  padding: 22px;
+  box-shadow: var(--shadow-paper);
+  transition: transform 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.audience-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-card); }
+
+.audience-card::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 36px; height: 36px;
+  border-radius: 0 8px 0 100%;
+  opacity: 0.1;
+}
+
+.aud-b::before { background: var(--marker-blue); }
+.aud-t::before { background: var(--marker-teal); }
+.aud-g::before { background: var(--marker-green); }
+.aud-o::before { background: var(--marker-orange); }
+.aud-p::before { background: var(--marker-purple); }
+.aud-r::before { background: var(--marker-red); }
+
+.aud-emoji { font-size: 1.5rem; margin-bottom: 8px; display: block; }
+.aud-role { font-size: 0.88rem; font-weight: 800; color: var(--ink); margin-bottom: 4px; }
+.aud-desc { font-size: 0.76rem; color: var(--ink-muted); line-height: 1.5; }
+
+/* ─── RADAR EMBED ─── */
+.radar-embed {
+  background: white;
+  border: 2px solid var(--paper-3);
+  border-radius: 8px;
+  padding: 56px 48px;
+  text-align: center;
+  margin-top: 32px;
+  min-height: 380px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.radar-embed::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(180deg, transparent, transparent 27px, rgba(180,160,130,0.08) 27px, rgba(180,160,130,0.08) 28px);
+  pointer-events: none;
+}
+
+.radar-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 3px solid var(--marker-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+  margin-bottom: 18px;
+  position: relative;
+  z-index: 1;
+  background: rgba(37,99,168,0.04);
+  animation: spin 8s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.radar-embed h3 {
+  font-family: 'Caveat', cursive;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--marker-blue);
+  margin-bottom: 6px;
+  position: relative;
+  z-index: 1;
+}
+
+.radar-embed p {
+  font-size: 0.82rem;
+  color: var(--ink-muted);
+  max-width: 380px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 1200px) {
+  .ficha-grid { grid-template-columns: 1fr 1fr; }
+  .audience-grid { grid-template-columns: 1fr 1fr; }
+  .analysis-grid { grid-template-columns: 1fr; }
+  .hero-grid { gap: 60px; }
+}
+
+@media (max-width: 768px) {
+  .content { padding: 40px 20px; }
+  .tabs-inner { padding: 0 12px; }
+  .logo-tab { padding: 0 12px; min-width: 160px; }
+  .tab-btn { padding: 0 12px; font-size: 0.75rem; }
+  .ficha-grid { grid-template-columns: 1fr; }
+  .audience-grid { grid-template-columns: 1fr; }
+  .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+  .radar-visual { height: 280px; }
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--paper); }
+::-webkit-scrollbar-thumb { background: var(--ink-dim); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- ─── TABS HEADER (STICKY TOP) ─── -->
+<div class="tabs-header">
+  <div class="tabs-inner">
+    <a href="#" class="logo-tab">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="12" r="9"/>
+          <circle cx="12" cy="12" r="6" opacity="0.5"/>
+          <circle cx="12" cy="12" r="3" opacity="0.3"/>
+          <circle cx="12" cy="6" r="1.5" fill="currentColor"/>
+          <line x1="12" y1="12" x2="12" y2="6"/>
+          <line x1="12" y1="12" x2="16" y2="14" opacity="0.6"/>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <span class="logo-title">Radar</span>
+        <span class="logo-sub">Materiales</span>
+      </div>
+    </a>
+
+    <ul class="tabs-list">
+      <li><button class="tab-btn active" data-tab="inicio">🏠 Inicio</button></li>
+      <li><button class="tab-btn" data-tab="que-hace">🔍 Qué hace</button></li>
+      <li><button class="tab-btn" data-tab="ejemplos">📋 Ejemplos</button></li>
+      <li><button class="tab-btn" data-tab="comparativa">⚖️ Por qué</button></li>
+      <li><button class="tab-btn" data-tab="audiencia">👥 Para quién</button></li>
+      <li><button class="tab-btn" data-tab="herramienta">📡 Herramienta</button></li>
+    </ul>
+  </div>
+</div>
+
+<!-- ─── MAIN CONTENT ─── -->
+<div class="content">
+
+<!-- TAB: INICIO -->
+<section class="tab-section active" id="inicio">
+  <div class="container">
+    <div class="section-head">
+      <h1 class="section-title">Muchos materiales parecen trabajar <span class="hl">una cosa</span>…<br>y realmente están midiendo <span class="hl">otra</span>.</h1>
+      <p class="section-sub">El Radar de Materiales escanea PDFs educativos y detecta qué demanda realmente: funciones cognitivas, perfiles en riesgo, orientación clínica.</p>
+    </div>
+
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <p>Sube un material educativo. El Radar escanea las demandas cognitivas, detecta qué perfiles pueden fallar, y te orienta sobre qué observar antes y después de usarlo.</p>
+        <p style="font-size: 0.9rem; color: var(--ink-dim); margin-bottom: 16px;">Análisis a priori (antes) • Análisis a posteriori (después) • Hipótesis funcionales • Sin diagnóstico • Con criterio clínico.</p>
+        <div class="hero-actions">
+          <button class="btn" onclick="document.querySelector('[data-tab=\"herramienta\"]').click()">📡 Usar Radar</button>
+          <button class="btn secondary" onclick="document.querySelector('[data-tab=\"ejemplos\"]').click()">Ver ejemplos →</button>
+        </div>
+      </div>
+
+      <div class="radar-visual">
+        <div class="radar-rings">
+          <div class="radar-ring ring-1"></div>
+          <div class="radar-ring ring-2"></div>
+          <div class="radar-ring ring-3"></div>
+          <div class="radar-ring ring-4"></div>
+          <div class="radar-point point-1"></div>
+          <div class="radar-point point-2"></div>
+          <div class="radar-point point-3"></div>
+          <div class="radar-point point-4"></div>
+          <div class="radar-point point-5"></div>
+          <div class="radar-point point-6"></div>
+        </div>
+        <div class="radar-center">
+          <div class="pdf-header"></div>
+          <div class="pdf-line"></div>
+          <div class="pdf-line"></div>
+          <div class="pdf-line"></div>
+          <div class="pdf-line"></div>
+          <div class="pdf-label">PDF Material</div>
+        </div>
+        <div class="radar-tags">
+          <div class="radar-tag tag-1">📊 Memoria</div>
+          <div class="radar-tag tag-2">💭 Inferencia</div>
+          <div class="radar-tag tag-3">👁️ Atención</div>
+          <div class="radar-tag tag-4">📚 Vocabulario</div>
+          <div class="radar-tag tag-5">🔤 Morfosintaxis</div>
+          <div class="radar-tag tag-6">⚙️ Funciones Ejecutivas</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TAB: QUÉ HACE -->
+<section class="tab-section" id="que-hace">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-label">Funciones</div>
+      <h1 class="section-title">Dos lecturas. Una herramienta.</h1>
+      <p class="section-sub">Antes de usar el material o después de ver qué hace el niño con él. El Radar se adapta al momento clínico.</p>
+    </div>
+
+    <div class="card">
+      <div class="analysis-grid">
+        <div class="analysis-box blue">
+          <div class="box-mode">— Modo 01</div>
+          <div class="box-title">Análisis A Priori</div>
+          <div class="box-sub">Antes de usar el material con el estudiante</div>
+          <ul class="box-items">
+            <li><div class="li-dot"></div>Qué trabaja realmente (más allá del título)</li>
+            <li><div class="li-dot"></div>Edad orientativa y nivel de desarrollo</li>
+            <li><div class="li-dot"></div>Prerrequisitos cognitivos y lingüísticos</li>
+            <li><div class="li-dot"></div>Funciones cognitivas implicadas</li>
+            <li><div class="li-dot"></div>Errores esperables y por qué ocurren</li>
+            <li><div class="li-dot"></div>Perfiles que pueden tener dificultades</li>
+          </ul>
+        </div>
+
+        <div class="analysis-box teal">
+          <div class="box-mode">— Modo 02</div>
+          <div class="box-title">Análisis A Posteriori</div>
+          <div class="box-sub">Cuando ya hay errores o respuestas</div>
+          <ul class="box-items">
+            <li><div class="li-dot"></div>Lectura funcional de los errores observados</li>
+            <li><div class="li-dot"></div>Patrones que pueden indicar qué falla</li>
+            <li><div class="li-dot"></div>Hipótesis funcionales sobre la dificultad</li>
+            <li><div class="li-dot"></div>Indicadores compatibles con distintos perfiles</li>
+            <li><div class="li-dot"></div>Orientación para ajustar la intervención</li>
+            <li><div class="li-dot"></div>Qué observar en la siguiente sesión</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="disclaimer">
+        <span>⚖️</span>
+        <span><strong>Sin diagnóstico.</strong> El Radar trabaja con orientaciones, hipótesis funcionales e indicadores observables. La interpretación clínica es responsabilidad del profesional.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TAB: EJEMPLOS -->
+<section class="tab-section" id="ejemplos">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-label green">Casos reales</div>
+      <h1 class="section-title">Lo que el Radar <span class="hl">detecta que el ojo no ve</span></h1>
+      <p class="section-sub">Materiales habituales del aula y la consulta, analizados desde una mirada funcional.</p>
+    </div>
+
+    <div class="ficha-grid">
+      <div class="ficha">
+        <div class="ficha-tape"></div>
+        <div class="ficha-body">
+          <div class="ficha-meta">Comprensión lectora · 3º EP</div>
+          <div class="ficha-title">Texto + preguntas de inferencia + respuesta escrita</div>
+          <div class="ficha-chips">
+            <span class="chip chip-b">Memoria trabajo</span>
+            <span class="chip chip-o">Carga lingüística</span>
+            <span class="chip chip-p">Planificación</span>
+          </div>
+          <div class="ficha-insight">"Parece comprensión… pero penaliza memoria de trabajo y velocidad de procesamiento."</div>
+        </div>
+      </div>
+
+      <div class="ficha">
+        <div class="ficha-tape red"></div>
+        <div class="ficha-body">
+          <div class="ficha-meta">Dictado · 2º EP</div>
+          <div class="ficha-title">Grupos consonánticos + ortografía arbitraria</div>
+          <div class="ficha-chips">
+            <span class="chip chip-r">Bucle fonológico</span>
+            <span class="chip chip-g">Secuenciación</span>
+            <span class="chip chip-o">Procesam. serial</span>
+          </div>
+          <div class="ficha-insight">"Mide bucle fonológico y velocidad, no solo ortografía."</div>
+        </div>
+      </div>
+
+      <div class="ficha">
+        <div class="ficha-tape yellow"></div>
+        <div class="ficha-body">
+          <div class="ficha-meta">Lógica-matemática · 4º EP</div>
+          <div class="ficha-title">Secuencias de figuras con regla cambiante</div>
+          <div class="ficha-chips">
+            <span class="chip chip-o">Inhibición</span>
+            <span class="chip chip-b">Flexibilidad cognitiva</span>
+            <span class="chip chip-t">Atención sostenida</span>
+          </div>
+          <div class="ficha-insight">"Requiere inhibición del patrón previo. Difícil para perfiles inflexibles."</div>
+        </div>
+      </div>
+
+      <div class="ficha">
+        <div class="ficha-tape green"></div>
+        <div class="ficha-body">
+          <div class="ficha-meta">Respuesta escrita · análisis a posteriori</div>
+          <div class="ficha-title">"El nino fue al parke y jugo con su amigo porke queria"</div>
+          <div class="ficha-chips">
+            <span class="chip chip-r">Dificultad fonológica</span>
+            <span class="chip chip-g">No inatención</span>
+          </div>
+          <div class="ficha-insight">"Patrón compatible con dificultades fonológicas."</div>
+        </div>
+      </div>
+
+      <div class="ficha">
+        <div class="ficha-tape orange"></div>
+        <div class="ficha-body">
+          <div class="ficha-meta">Test evaluación comercial · 6–8 años</div>
+          <div class="ficha-title">Subprueba de "vocabulario" con imágenes</div>
+          <div class="ficha-chips">
+            <span class="chip chip-p">Categorización</span>
+            <span class="chip chip-b">Abstracción visual</span>
+            <span class="chip chip-r">Inferencia</span>
+          </div>
+          <div class="ficha-insight">"Mide categorización semántica y abstracción visual, no solo léxico."</div>
+        </div>
+      </div>
+
+      <div class="ficha">
+        <div class="ficha-tape" style="background: repeating-linear-gradient(90deg, #6b72c8 0px, #6b72c8 10px, rgba(107,114,200,0.6) 10px, rgba(107,114,200,0.6) 12px);"></div>
+        <div class="ficha-body">
+          <div class="ficha-meta">Habilidades sociales · Infantil 5 años</div>
+          <div class="ficha-title">"¿Cómo se siente el personaje?"</div>
+          <div class="ficha-chips">
+            <span class="chip chip-g">Pragmática</span>
+            <span class="chip chip-t">ToM básica</span>
+            <span class="chip chip-o">Inferencia social</span>
+          </div>
+          <div class="ficha-insight">"Requiere Teoría de la Mente, no solo reconocimiento facial."</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TAB: COMPARATIVA -->
+<section class="tab-section" id="comparativa">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-label orange">Por qué importa</div>
+      <h1 class="section-title">No es un resumidor de PDFs.</h1>
+      <p class="section-sub">El Radar interpreta demandas cognitivas reales, detecta qué perfiles pueden fallar y ofrece orientación funcional para la intervención.</p>
+    </div>
+
+    <div class="card">
+      <div class="compare-table">
+        <div class="compare-header">
+          <div class="compare-header-cell">Resumidor de PDF</div>
+          <div class="compare-header-cell">Radar de Materiales</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell">Describe el contenido visible</div>
+          <div class="compare-cell">Analiza demandas cognitivas reales</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell">Repite lo que está escrito</div>
+          <div class="compare-cell">Interpreta qué procesos activa en el estudiante</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell">Sin perspectiva clínica</div>
+          <div class="compare-cell">Mirada clínico-pedagógica funcional</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell">No distingue perfiles</div>
+          <div class="compare-cell">Señala qué perfiles fallan y por qué</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell">Solo texto o imágenes</div>
+          <div class="compare-cell">A priori y a posteriori integrado</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TAB: AUDIENCIA -->
+<section class="tab-section" id="audiencia">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-label purple">Para quién</div>
+      <h1 class="section-title">Pensada desde la práctica.</h1>
+      <p class="section-sub">No para sustituir al especialista. Para potenciar su mirada y criterio clínico.</p>
+    </div>
+
+    <div class="audience-grid">
+      <div class="audience-card aud-b">
+        <span class="aud-emoji">🧠</span>
+        <div class="aud-role">Logopedas</div>
+        <div class="aud-desc">Analiza materiales de evaluación o intervención antes de usarlos.</div>
+      </div>
+      <div class="audience-card aud-t">
+        <span class="aud-emoji">📚</span>
+        <div class="aud-role">Maestros y profesores</div>
+        <div class="aud-desc">Entiende por qué ciertos alumnos fallan en materiales que deberían dominar.</div>
+      </div>
+      <div class="audience-card aud-g">
+        <span class="aud-emoji">🎯</span>
+        <div class="aud-role">PT y AL</div>
+        <div class="aud-desc">Ajusta materiales a necesidades reales. Intervención más precisa.</div>
+      </div>
+      <div class="audience-card aud-o">
+        <span class="aud-emoji">🔍</span>
+        <div class="aud-role">Orientación educativa</div>
+        <div class="aud-desc">Argumenta decisiones sobre adaptaciones con datos funcionales.</div>
+      </div>
+      <div class="audience-card aud-p">
+        <span class="aud-emoji">👨‍👩‍👧</span>
+        <div class="aud-role">Familias</div>
+        <div class="aud-desc">Entiende qué exige el material a tu hijo. Cómo acompañar en casa.</div>
+      </div>
+      <div class="audience-card aud-r">
+        <span class="aud-emoji">🏛️</span>
+        <div class="aud-role">Formadores</div>
+        <div class="aud-desc">Forma criterio clínico-pedagógico en tu equipo.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TAB: HERRAMIENTA -->
+<section class="tab-section" id="herramienta">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-label teal">Herramienta</div>
+      <h1 class="section-title">El Radar en acción.</h1>
+      <p class="section-sub">Sube un PDF. El Radar escanea, detecta, orienta.</p>
+    </div>
+
+    <div style="background: white; border: 2px solid var(--paper-3); border-radius: 8px; padding: 56px 48px; text-align: center; margin-top: 32px; box-shadow: var(--shadow-card);">
+      <div style="background: rgba(37,99,168,0.04); border-radius: 50%; width: 100px; height: 100px; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center; font-size: 2.4rem; animation: spin 8s linear infinite;">
+        📡
+      </div>
+      <h3 style="font-family: 'Caveat', cursive; font-size: 1.6rem; font-weight: 700; color: var(--marker-blue); margin-bottom: 12px;">Radar de Materiales Terapéuticos y Educativos</h3>
+      <p style="font-size: 0.9rem; color: var(--ink-muted); max-width: 500px; margin: 0 auto 32px; line-height: 1.7;">
+        Sube un PDF educativo o terapéutico. El Radar analiza las demandas cognitivas, detecta perfiles en riesgo y ofrece orientación clínico-pedagógica funcional.
+      </p>
+      <a href="https://chatgpt.com/g/g-6a097a4c73548191aa0e4d5d027bc4dc-radar-de-materiales-terapeuticos-y-educativos" target="_blank" style="display: inline-flex; align-items: center; gap: 10px; padding: 14px 32px; background: var(--marker-blue); color: white; border: none; border-radius: 3px; font-size: 0.95rem; font-weight: 700; cursor: pointer; text-decoration: none; box-shadow: 4px 4px 0 rgba(37,99,168,0.25); transition: transform 0.15s, box-shadow 0.15s;">
+        🚀 Abrir Radar en ChatGPT
+      </a>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<!-- ─── FOOTER ─── -->
+<footer style="border-top: 2px solid var(--paper-3); padding: 48px; background: var(--paper); text-align: center; position: relative; z-index: 1;">
+  <div style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 200px 1fr; gap: 48px; align-items: center; text-align: left;">
+    <!-- Logo LOGOPED-IA -->
+    <div style="text-align: center;">
+      <svg viewBox="0 0 200 200" style="width: 140px; height: 140px; margin: 0 auto; display: block;">
+        <!-- Fondo Matrix estilo -->
+        <defs>
+          <linearGradient id="matrixGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#0a0;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#060;stop-opacity:1" />
+          </linearGradient>
+        </defs>
+        <rect width="200" height="200" fill="#000" opacity="0.9"/>
+        <!-- Líneas de código fondo -->
+        <text x="10" y="20" font-size="8" fill="#0a0" opacity="0.3">1A2B3Z</text>
+        <text x="120" y="30" font-size="8" fill="#0a0" opacity="0.3">5FG#9</text>
+        <text x="20" y="180" font-size="8" fill="#0a0" opacity="0.3">K7L@M2</text>
+        <!-- Círculos radar -->
+        <circle cx="100" cy="100" r="80" fill="none" stroke="#0a0" stroke-width="1" opacity="0.4"/>
+        <circle cx="100" cy="100" r="55" fill="none" stroke="#0a0" stroke-width="1" opacity="0.5"/>
+        <circle cx="100" cy="100" r="30" fill="none" stroke="#0a0" stroke-width="1.5" opacity="0.7"/>
+        <!-- Puntos de radar -->
+        <circle cx="100" cy="25" r="4" fill="#0f0"/>
+        <circle cx="160" cy="70" r="3" fill="#0a0" opacity="0.7"/>
+        <circle cx="150" cy="140" r="3" fill="#0a0" opacity="0.7"/>
+        <circle cx="100" cy="175" r="4" fill="#0f0"/>
+        <circle cx="50" cy="140" r="3" fill="#0a0" opacity="0.7"/>
+        <circle cx="40" cy="70" r="3" fill="#0a0" opacity="0.7"/>
+        <!-- Centro -->
+        <circle cx="100" cy="100" r="12" fill="none" stroke="#0f0" stroke-width="2"/>
+        <circle cx="100" cy="100" r="6" fill="#0f0"/>
+        <!-- Líneas conectoras -->
+        <line x1="100" y1="100" x2="100" y2="25" stroke="#0a0" stroke-width="0.5" opacity="0.5"/>
+        <line x1="100" y1="100" x2="160" y2="70" stroke="#0a0" stroke-width="0.5" opacity="0.5"/>
+        <line x1="100" y1="100" x2="100" y2="175" stroke="#0a0" stroke-width="0.5" opacity="0.5"/>
+        <line x1="100" y1="100" x2="50" y2="140" stroke="#0a0" stroke-width="0.5" opacity="0.5"/>
+        <!-- Texto LOGOPED-IA -->
+        <text x="100" y="155" font-size="11" font-weight="bold" fill="#0f0" text-anchor="middle" font-family="monospace" letter-spacing="2">LOGOPED-IA</text>
+      </svg>
+    </div>
+
+    <!-- Texto footer -->
+    <div>
+      <p style="font-size: 0.9rem; color: var(--ink-soft); margin: 0 0 12px 0; line-height: 1.6;">
+        <strong style="color: var(--marker-blue); font-size: 1rem;">Herramientas clínicas con criterio.</strong><br>
+        Sin diagnóstico, sin etiquetas, sin magia.
+      </p>
+      <p style="font-size: 0.78rem; color: var(--ink-dim); margin: 0 0 12px 0;">
+        © 2026 Logoped-IA<br>
+        <strong style="color: var(--marker-blue);">Diseño & Desarrollo: Jose Aserraf Cohen</strong><br>
+        Logopeda • Formador IA • Desarrollador
+      </p>
+      <a href="https://t.me/logoped_ia" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; background: rgba(37,99,168,0.1); border: 1.5px solid var(--marker-blue); border-radius: 4px; color: var(--marker-blue); text-decoration: none; font-size: 0.78rem; font-weight: 600; transition: all 0.2s;">
+        📱 Únete a Telegram
+      </a>
+    </div>
+  </div>
+</footer>
+
+<script>
+const navTabs = document.querySelectorAll('[data-tab]');
+
+navTabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    const tabName = tab.getAttribute('data-tab');
+
+    navTabs.forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+
+    tab.classList.add('active');
+    document.getElementById(tabName).classList.add('active');
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
+</script>
+
+</body>
+</html>
