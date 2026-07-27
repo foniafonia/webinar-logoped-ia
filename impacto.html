@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#07140f">
+  <title>Logoped-IA · Webinar impacto</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,650;9..144,850&family=Manrope:wght@500;700;850;950&display=swap');
+    :root{--ink:#07140f;--green:#0e4c3a;--mint:#75e7b6;--lime:#e4f46d;--cream:#f7f0df;--paper:#fffaf0;--coral:#ff7b5f;--sky:#9fd3ff;--muted:#6d7b75;--line:#dce7de;--navy:#081b28}
+    *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#07140f;color:var(--ink);font-family:Manrope,system-ui,sans-serif}a,button{font:inherit}.deck{height:100svh;width:100vw;display:grid;place-items:center;background:radial-gradient(circle at 18% 12%,#164d3b 0,transparent 30%),radial-gradient(circle at 82% 86%,#28390f 0,transparent 32%),#06110e}.stage{position:relative;width:min(100vw,177.777vh);aspect-ratio:16/9;overflow:hidden;border-radius:0;background:#07140f;box-shadow:0 34px 110px #000a}.slide{position:absolute;inset:0;padding:clamp(34px,5vw,72px);opacity:0;transform:translateX(4%);pointer-events:none;transition:.35s ease;overflow:hidden}.slide.active{opacity:1;transform:none;pointer-events:auto}.dark{color:white;background:radial-gradient(circle at 25% 10%,#174c3d 0,transparent 34%),radial-gradient(circle at 92% 75%,#403c10 0,transparent 32%),linear-gradient(135deg,#07140f,#0b2130)}.light{background:radial-gradient(circle at 16% 18%,#e7ffc2 0,transparent 28%),linear-gradient(135deg,#fffaf0,#eef7ec);color:var(--ink)}.shock{background:radial-gradient(circle at 68% 30%,#e4f46d 0,transparent 20%),linear-gradient(135deg,#07140f,#102c21);color:white}.split{height:100%;display:grid;grid-template-columns:1fr .88fr;gap:42px;align-items:center}.split.reverse{grid-template-columns:.88fr 1fr}.kicker{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:#ffffff12;border:1px solid #ffffff25;color:var(--mint);font-size:12px;font-weight:950;letter-spacing:.11em;text-transform:uppercase}.light .kicker{background:#dff4e8;color:#17614b;border-color:#c6e5d6}h1,h2,h3,p{margin:0}h1,h2{font-family:Fraunces,Georgia,serif;letter-spacing:-.065em;line-height:.9}h1{font-size:clamp(54px,7.4vw,108px)}h2{font-size:clamp(42px,5.7vw,84px)}h3{font-size:clamp(22px,2.3vw,34px);line-height:1.03}.lead{margin-top:22px;max-width:780px;font-size:clamp(18px,1.8vw,28px);line-height:1.34}.soft{color:#c7d7d5}.muted{color:var(--muted)}.yellow{color:var(--lime)}.mint{color:var(--mint)}.coral{color:var(--coral)}.serif{font-family:Fraunces,Georgia,serif;font-style:italic;font-weight:650}.hero-mark{position:absolute;right:5vw;bottom:4.8vw;width:min(34vw,420px);aspect-ratio:1;border-radius:40px;background:#ffffff10;border:1px solid #ffffff20;display:grid;place-items:center;transform:rotate(-2deg);box-shadow:0 30px 80px #0004}.hero-mark img{width:82%;height:82%;object-fit:contain;filter:drop-shadow(0 18px 30px #0004)}.warning-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:34px}.warning{padding:20px;border-radius:20px;background:#ffffff12;border:1px solid #ffffff20}.warning b{display:block;color:var(--lime);font-size:12px;letter-spacing:.1em;text-transform:uppercase}.warning span{display:block;margin-top:10px;font-size:22px;font-weight:850;line-height:1.1}.screen{position:relative;border-radius:28px;overflow:hidden;background:#0c241d;border:1px solid #ffffff24;box-shadow:0 28px 80px #0005;min-height:380px}.screen img{width:100%;height:100%;min-height:380px;object-fit:cover;display:block}.screen.contain img{object-fit:contain;background:#fff}.badge{position:absolute;left:18px;bottom:18px;right:18px;display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px 14px;border-radius:16px;background:#07140ee8;color:white;backdrop-filter:blur(12px);font-size:12px;font-weight:900}.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:32px}.step{padding:18px;border-radius:22px;background:#fff;border:1px solid var(--line);box-shadow:0 18px 45px #10201814}.step small{color:#20715a;font-size:11px;font-weight:950;letter-spacing:.1em;text-transform:uppercase}.step strong{display:block;margin-top:8px;font-size:23px;line-height:1.02}.step p{margin-top:8px;color:var(--muted);font-size:14px;line-height:1.38}.demo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-top:32px}.demo{position:relative;display:flex;flex-direction:column;min-height:250px;padding:18px;border-radius:24px;background:#ffffffef;color:var(--ink);text-decoration:none;border:1px solid #ffffff55;box-shadow:0 22px 65px #0003;transition:.18s ease}.demo:hover{transform:translateY(-5px)}.demo small{color:#26715d;font-weight:950;letter-spacing:.1em;text-transform:uppercase;font-size:10px}.demo strong{margin-top:12px;font:850 28px/.92 Fraunces,serif;letter-spacing:-.04em}.demo span{margin-top:10px;color:#596b65;font-size:14px;line-height:1.35}.demo em{margin-top:auto;display:inline-flex;align-self:flex-start;border-radius:999px;background:#07140f;color:white;padding:10px 12px;font-style:normal;font-weight:950;font-size:11px}.course{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:30px}.course-card{padding:22px;border-radius:24px;background:#ffffff12;border:1px solid #ffffff24}.course-card:nth-child(2){background:#e4f46d;color:#07140f}.course-card:nth-child(3){background:#75e7b6;color:#07140f}.course-card small{font-size:11px;font-weight:950;letter-spacing:.1em;text-transform:uppercase;color:inherit;opacity:.75}.course-card h3{margin-top:10px}.course-card ul{margin:16px 0 0;padding-left:18px;font-size:15px;line-height:1.52}.phrase{margin-top:28px;padding:18px 20px;border-radius:20px;background:#ffffff12;border:1px dashed #ffffff33;color:#e6f3ed;font-size:20px;font-weight:850;line-height:1.25}.cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}.btn{display:inline-flex;align-items:center;justify-content:center;padding:13px 16px;border-radius:14px;background:var(--lime);color:var(--ink);text-decoration:none;font-weight:950;box-shadow:0 16px 38px #0003}.btn.secondary{background:var(--mint)}.nav{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);display:flex;align-items:center;gap:9px;z-index:10;padding:8px;border-radius:999px;background:#06110ed8;border:1px solid #ffffff1f;backdrop-filter:blur(12px)}.nav button{width:34px;height:34px;border:0;border-radius:50%;background:#ffffff12;color:white;font-size:20px;cursor:pointer}.count{color:#d5e5e0;font-size:11px;font-weight:950;min-width:54px;text-align:center}.rescue{position:absolute;right:18px;bottom:18px;z-index:11;padding:10px 13px;border-radius:999px;background:#e4f46d;color:#07140f;text-decoration:none;font-size:11px;font-weight:950}.progress{position:absolute;left:0;top:0;height:4px;background:var(--lime);width:0;z-index:20;transition:.25s ease}.foot{position:absolute;left:clamp(34px,5vw,72px);right:clamp(34px,5vw,72px);bottom:18px;display:flex;justify-content:space-between;color:#7e958e;font-size:9px;font-weight:950;letter-spacing:.1em;text-transform:uppercase}.notes{position:absolute;left:18px;bottom:70px;z-index:12;width:min(560px,calc(100% - 36px));max-height:48vh;overflow:auto;padding:16px 18px;border-radius:18px;background:#fffdf8f2;color:#07140f;border:1px solid #ffffffaa;box-shadow:0 20px 60px #0006}.notes b{color:#0e4c3a}.notes-title{font-weight:950}.notes-body{margin-top:8px;font-size:14px;line-height:1.45}.notes-btn{position:absolute;left:18px;bottom:18px;z-index:11;padding:10px 13px;border-radius:999px;background:#ffffff18;color:white;border:1px solid #ffffff22;font-size:11px;font-weight:950;cursor:pointer}.logo-strip{display:flex;align-items:center;gap:18px;margin-top:26px}.logo-strip img{height:74px;width:auto;max-width:280px;object-fit:contain;background:#fff;border-radius:18px;padding:10px}.qr{width:170px;height:170px;border-radius:24px;background:#fff;padding:12px}.qr img{width:100%;height:100%;object-fit:contain}@media(max-width:800px){.stage{height:100svh;width:100vw;aspect-ratio:auto}.slide{padding:44px 18px 72px}.split,.split.reverse{grid-template-columns:1fr;gap:16px}.screen{min-height:210px}.screen img{min-height:210px}.hero-mark{display:none}h1{font-size:48px}h2{font-size:39px}.lead{font-size:17px}.warning-grid,.steps,.demo-grid,.course{grid-template-columns:1fr;gap:9px;margin-top:18px}.warning span{font-size:17px}.demo{min-height:auto}.course-card{padding:16px}.phrase{font-size:16px}.foot{display:none}.rescue{right:10px;bottom:62px}.notes-btn{left:10px;bottom:62px}.logo-strip img{height:54px}.qr{width:120px;height:120px}}
+  </style>
+</head>
+<body>
+  <main class="deck">
+    <div class="stage" id="stage">
+      <div class="progress" id="progress"></div>
+
+      <article class="slide shock active">
+        <span class="kicker">Webinar COLOGEX · 30 minutos</span>
+        <h1 style="margin-top:24px;max-width:900px">La IA no viene a pedir permiso.</h1>
+        <p class="lead soft">La cuestión es si la logopedia va a usarla con criterio sanitario, o si otros van a ocupar nuestro espacio con herramientas bonitas, rápidas y peligrosamente simples.</p>
+        <div class="warning-grid">
+          <div class="warning"><b>riesgo</b><span>Datos sensibles tratados como si fueran una búsqueda.</span></div>
+          <div class="warning"><b>valor</b><span>Mucho trabajo clínico invisible que nadie ve ni paga.</span></div>
+          <div class="warning"><b>oportunidad</b><span>Preparar menos desde cero para estar más con la persona.</span></div>
+        </div>
+        <div class="hero-mark"><img src="assets/brand/cologex.png" alt="COLOGEX"></div>
+        <div class="foot"><span>LOGOPED-IA · APERTURA</span><span>01</span></div>
+      </article>
+
+      <article class="slide light">
+        <span class="kicker">La promesa realista</span>
+        <h2 style="margin-top:22px;max-width:980px">No vamos a enseñar “trucos”.<br><span class="serif" style="color:#17614b">Vamos a enseñar una forma de pensar.</span></h2>
+        <p class="lead muted">En media hora solo merece la pena abrir cuatro puertas. Si se entienden, el curso ya tiene sentido.</p>
+        <div class="steps">
+          <div class="step"><small>01</small><strong>Pedir con criterio</strong><p>Que la IA entienda objetivo, caso, límites y nivel.</p></div>
+          <div class="step"><small>02</small><strong>Crear práctica</strong><p>Materiales, juegos y apoyos que sirvan, no solo que luzcan.</p></div>
+          <div class="step"><small>03</small><strong>Proteger</strong><p>Datos, evidencia, revisión y responsabilidad profesional.</p></div>
+          <div class="step"><small>04</small><strong>Transferir</strong><p>Consulta, aula y familia trabajando con más continuidad.</p></div>
+        </div>
+        <div class="foot"><span>LOGOPED-IA · EL MAPA MENTAL</span><span>02</span></div>
+      </article>
+
+      <article class="slide dark">
+        <span class="kicker">Cuatro golpes, no veinte enlaces</span>
+        <h2 style="margin-top:22px">Esto se abre.<br><span class="serif yellow">Y se entiende rápido.</span></h2>
+        <p class="lead soft">La clave es no enseñar todo. Enseñar justo lo suficiente para que se vea la potencia y se entienda qué hay que aprender.</p>
+        <div class="demo-grid">
+          <a class="demo" href="demos/gpts-personalizados.html" target="_blank" rel="noopener"><small>golpe 1</small><strong>GPTs con criterio</strong><span>Adapta, Evidence, Shield y Cuadernillos: pedir mejor, citar mejor, proteger mejor.</span><em>Abrir ↗</em></a>
+          <a class="demo" href="https://fonomundos.vercel.app/monitor.html" target="_blank" rel="noopener"><small>golpe 2</small><strong>Juego + seguimiento</strong><span>No solo jugar: mirar progresión, práctica y qué toca ajustar.</span><em>Abrir ↗</em></a>
+          <a class="demo" href="demos/formulario-bonito.html" target="_blank" rel="noopener"><small>golpe 3</small><strong>De feo a útil</strong><span>Lo de esta mañana: un Google Form convertido en experiencia y panel.</span><em>Abrir ↗</em></a>
+          <a class="demo" href="demos/etica-60-segundos.html" target="_blank" rel="noopener"><small>golpe 4</small><strong>Semáforo ético</strong><span>La parte seria: no datos, no piloto automático, no decisiones delegadas.</span><em>Abrir ↗</em></a>
+        </div>
+        <div class="foot"><span>LOGOPED-IA · DEMOS MÁXIMAS</span><span>03</span></div>
+      </article>
+
+      <article class="slide light">
+        <div class="split">
+          <div>
+            <span class="kicker">Lo que quiero que piensen</span>
+            <h2 style="margin-top:22px">“Esto no es magia.<br><span class="serif" style="color:#17614b">Esto se puede aprender.”</span></h2>
+            <p class="lead muted">La IA parece otra historia porque responde rápido, habla bonito y aparenta seguridad. Por eso el curso no puede ser una lista de herramientas: tiene que ser entrenamiento de criterio.</p>
+            <div class="phrase">La diferencia no está en saber abrir ChatGPT. Está en saber qué pedir, qué no pedir, qué revisar y cómo llevarlo a una persona concreta.</div>
+          </div>
+          <div class="screen contain"><img src="assets/fresh/ingenieria-prompts.jpeg" alt="Ingeniería de prompts"><div class="badge"><span>prompt = pensamiento clínico ordenado</span><span>criterio</span></div></div>
+        </div>
+        <div class="foot"><span>LOGOPED-IA · IDEA FUERZA</span><span>04</span></div>
+      </article>
+
+      <article class="slide dark">
+        <div class="split reverse">
+          <div class="screen"><img src="assets/showcase/fonosuika.png" alt="Juego logopédico"><div class="badge"><span>juego, práctica, feedback, dato</span><span>no juguete</span></div></div>
+          <div>
+            <span class="kicker">La demo que cambia el tono</span>
+            <h2 style="margin-top:22px">No queremos pantallas.<br><span class="serif yellow">Queremos más práctica.</span></h2>
+            <p class="lead soft">Un juego vale si consigue repeticiones, motivación, ajuste de dificultad y una conversación clínica mejor. Si solo entretiene, no nos sirve.</p>
+            <div class="phrase">Aquí se ve por qué la profesión no puede quedarse mirando: quien controle los recursos controlará parte de la intervención.</div>
+            <div class="cta-row"><a class="btn" href="https://fonomundos.vercel.app/monitor.html" target="_blank" rel="noopener">Abrir monitor ↗</a><a class="btn secondary" href="demos/juegos-interactivos.html" target="_blank" rel="noopener">Ver laboratorio ↗</a></div>
+          </div>
+        </div>
+        <div class="foot"><span>LOGOPED-IA · PRÁCTICA MEDIBLE</span><span>05</span></div>
+      </article>
+
+      <article class="slide shock">
+        <span class="kicker">La parte sanitaria</span>
+        <h2 style="margin-top:22px;max-width:1040px">La IA puede ayudar mucho.<br><span class="serif yellow">También puede hacer daño muy rápido.</span></h2>
+        <p class="lead soft">Por eso el curso empieza y termina con protección de datos, evidencia, límites y revisión. No para frenar la innovación, sino para poder usarla sin perder responsabilidad profesional.</p>
+        <div class="warning-grid">
+          <div class="warning"><b>privacidad</b><span>Si identifica a una persona, no entra.</span></div>
+          <div class="warning"><b>evidencia</b><span>Si suena seguro, se revisa igual.</span></div>
+          <div class="warning"><b>decisión</b><span>La IA propone. La logopeda decide.</span></div>
+        </div>
+        <div class="cta-row"><a class="btn" href="demos/etica-60-segundos.html" target="_blank" rel="noopener">Abrir semáforo ético ↗</a><a class="btn secondary" href="demos/gpts-personalizados.html" target="_blank" rel="noopener">Abrir Shield / Evidence ↗</a></div>
+        <div class="foot"><span>LOGOPED-IA · PRUDENCIA ACTIVA</span><span>06</span></div>
+      </article>
+
+      <article class="slide dark">
+        <span class="kicker">Curso COLOGEX · lo importante</span>
+        <h2 style="margin-top:22px">¿Cómo se aprende esto?<br><span class="serif yellow">Haciéndolo juntos.</span></h2>
+        <p class="lead soft">No con vídeos infinitos. No copiando prompts sin entender. Se aprende construyendo algo propio, equivocándonos poco a poco y revisando con criterio.</p>
+        <div class="course">
+          <div class="course-card"><small>antes</small><h3>Tutorial breve</h3><ul><li>Vídeos cortos y claros.</li><li>Primer prompt de partida.</li><li>Una necesidad real preparada.</li></ul></div>
+          <div class="course-card"><small>durante</small><h3>Directo con interacción</h3><ul><li>Clase en vivo.</li><li>Disponible en diferido.</li><li>Preguntas y decisiones en pantalla.</li></ul></div>
+          <div class="course-card"><small>después</small><h3>Tarea y revisión</h3><ul><li>Moodle.</li><li>Casos y ejemplos del grupo.</li><li>Corrección y mejora en directo.</li></ul></div>
+        </div>
+        <div class="phrase">Si hoy ves cuatro posibilidades, en el curso aprendes a construirlas con tus casos, tu voz y tu responsabilidad clínica.</div>
+        <div class="logo-strip"><img src="assets/brand/cologex.png" alt="COLOGEX"><div class="qr"><img src="assets/brand/telegram-qr.png" alt="Telegram Logoped-IA"></div></div>
+        <div class="foot"><span>LOGOPED-IA · APRENDER HACIENDO</span><span>07</span></div>
+      </article>
+
+      <button class="notes-btn" id="notesBtn">Guion</button>
+      <aside class="notes" id="notes" hidden><div class="notes-title" id="notesTitle"></div><div class="notes-body" id="notesBody"></div></aside>
+      <nav class="nav"><button id="prev">‹</button><span class="count" id="count">01 / 07</span><button id="next">›</button></nav>
+      <a class="rescue" href="https://raw.githack.com/foniafonia/webinar-logoped-ia/main/demos/recursos-clinicos.html" target="_blank" rel="noopener">Vitrina útil ↗</a>
+    </div>
+  </main>
+  <script>
+    const slides=[...document.querySelectorAll('.slide')];
+    const count=document.getElementById('count');
+    const progress=document.getElementById('progress');
+    const notes=document.getElementById('notes');
+    const notesTitle=document.getElementById('notesTitle');
+    const notesBody=document.getElementById('notesBody');
+    let current=0;
+    const SCRIPT=[
+      ['0:00 · Apertura','Tensión sin alarmismo. Frase: “La IA ya está entrando. La pregunta es si la usaremos con criterio sanitario o si otros ocuparán nuestro espacio”. Pide chat rápido: privacidad, tiempo, materiales o familias.'],
+      ['3:30 · Mapa mental','No prometas enseñar todo. Di: “en media hora solo abro cuatro puertas”. Presenta pedir, crear, proteger, transferir. Esto ordena toda la sesión.'],
+      ['6:30 · Cuatro golpes','Aquí haces las demos. Máximo 90 s cada una. Si el tiempo aprieta: GPTs, monitor FonoMundos y semáforo ético. El Form bonito es ejemplo de velocidad real.'],
+      ['14:00 · Esto se aprende','Baja el ritmo. Idea: prompt no es frase mágica, es pensamiento clínico ordenado. Lo importante no es la herramienta, sino cómo se formula y revisa.'],
+      ['18:00 · Juego + dato','No vender videojuegos. Vender práctica: repeticiones, motivación, feedback y seguimiento. Frase: “si solo entretiene, no nos sirve”.'],
+      ['22:00 · Riesgo','Tono serio. Tres reglas: no datos identificables, revisar evidencia, la decisión es profesional. Aquí se gana confianza.'],
+      ['26:00 · Curso','Cierre honesto: tutorial breve, directo con interacción, diferido, Moodle, tarea y revisión. Frase final: “hoy ves posibilidades; en el curso las construyes con tus casos”.']
+    ];
+    function show(i){current=(i+slides.length)%slides.length;slides.forEach((s,n)=>s.classList.toggle('active',n===current));count.textContent=`${String(current+1).padStart(2,'0')} / ${String(slides.length).padStart(2,'0')}`;progress.style.width=`${((current+1)/slides.length)*100}%`;notesTitle.textContent=SCRIPT[current][0];notesBody.innerHTML=SCRIPT[current][1];}
+    document.getElementById('next').onclick=()=>show(current+1);
+    document.getElementById('prev').onclick=()=>show(current-1);
+    document.getElementById('notesBtn').onclick=()=>{notes.hidden=!notes.hidden};
+    addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' ')show(current+1); if(e.key==='ArrowLeft')show(current-1); if(e.key.toLowerCase()==='n')notes.hidden=!notes.hidden;});
+    let sx=0;document.getElementById('stage').addEventListener('touchstart',e=>sx=e.touches[0].clientX,{passive:true});document.getElementById('stage').addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>40)show(current+(dx<0?1:-1));},{passive:true});
+    show(0);
+  </script>
+</body>
+</html>
