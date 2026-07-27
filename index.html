@@ -64,13 +64,21 @@
       transform: none;
       pointer-events: auto;
     }
-    .dark { color: white; background: var(--navy); }
-    .light { color: var(--ink); background: var(--cream); }
+    /* Cinematic vignette baked into each background — no overlay, no z-index fights */
+    .dark {
+      color: white;
+      background: radial-gradient(125% 105% at 50% 34%, #12293c 0%, var(--navy) 58%, #04101c 100%);
+    }
+    .light {
+      color: var(--ink);
+      background: radial-gradient(120% 100% at 50% 0%, #fbf8f0 0%, var(--cream) 70%);
+    }
     .paper { color: var(--ink); background: var(--paper); }
     .warm {
       color: var(--ink);
       background:
-        radial-gradient(circle at 82% 20%, #e1f6c8 0, transparent 27%),
+        radial-gradient(circle at 82% 18%, #e1f6c8 0, transparent 30%),
+        radial-gradient(circle at 8% 92%, #ffe6df 0, transparent 26%),
         var(--cream);
     }
     h1, h2, h3, p { margin: 0; }
@@ -162,7 +170,7 @@
       border-radius: 28px;
       object-fit: cover;
       object-position: center 24%;
-      filter: saturate(.88);
+      filter: saturate(.9);
     }
     .promise-row {
       display: flex;
@@ -241,6 +249,7 @@
       border-color: var(--mint);
       background: #19334b;
     }
+    .show-card.backup { background: #0e2233; border-style: dashed; }
     .show-card small {
       display: block;
       color: var(--mint);
@@ -270,6 +279,14 @@
       font-weight: 900;
       font-style: normal;
       text-transform: uppercase;
+    }
+    .show-index {
+      position: absolute;
+      top: 14px;
+      right: 15px;
+      color: #3f5f78;
+      font-size: 11px;
+      font-weight: 950;
     }
     .route {
       display: flex;
@@ -332,6 +349,8 @@
     }
     .demo-button:hover { transform: translateY(-2px); }
     .demo-button.secondary { background: var(--mint); }
+    .demo-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .demo-row .demo-button { margin-top: 23px; }
     .micro-list {
       display: grid;
       gap: 9px;
@@ -537,6 +556,12 @@
       font-size: 10px;
       font-weight: 850;
     }
+    .takeaway {
+      margin-top: 14px;
+      color: var(--yellow);
+      font-size: 13px;
+      font-weight: 850;
+    }
 
     .closing-link {
       display: inline-flex;
@@ -575,7 +600,7 @@
       font-size: 18px;
     }
     .nav button:hover { background: #ffffff19; }
-    .nav .demo-jump {
+    .nav .demo-jump, .nav .notes-jump {
       width: auto;
       padding: 0 10px;
       border-radius: 999px;
@@ -585,6 +610,7 @@
       letter-spacing: .05em;
       text-transform: uppercase;
     }
+    .nav .notes-jump.on { color: var(--ink); background: var(--mint); }
     .counter {
       min-width: 58px;
       color: #d5e4e3;
@@ -618,6 +644,76 @@
       font-weight: 800;
     }
 
+    /* Presenter notes overlay — hidden until the speaker presses N */
+    .notes {
+      position: fixed;
+      z-index: 20;
+      left: 15px;
+      bottom: 62px;
+      width: min(420px, calc(100vw - 30px));
+      max-height: 46vh;
+      overflow: auto;
+      padding: 16px 17px 17px;
+      border-radius: 18px;
+      background: #050f1af2;
+      border: 1px solid #ffffff26;
+      color: #dfeaec;
+      box-shadow: 0 24px 60px #000a;
+      backdrop-filter: blur(14px);
+    }
+    .notes[hidden] { display: none; }
+    .notes-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 11px;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      color: var(--mint);
+    }
+    .notes-time {
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: var(--mint);
+      color: var(--ink);
+      font-weight: 950;
+    }
+    .notes-title { color: #9fb4b9; }
+    .notes-demo {
+      margin-bottom: 10px;
+      padding: 9px 11px;
+      border-radius: 10px;
+      background: #143b2c;
+      border: 1px solid #2b6b4f;
+      color: var(--lime);
+      font-size: 11.5px;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+    .notes-body { font-size: 13px; line-height: 1.5; color: #d3e0e2; }
+    .notes-body b { color: white; }
+    .notes-hint {
+      margin-top: 11px;
+      color: #6f8790;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .slide.active .reveal { animation: rise .55s cubic-bezier(.2,.72,.2,1) both; }
+      .slide.active .reveal:nth-child(2) { animation-delay: .07s; }
+      .slide.active .reveal:nth-child(3) { animation-delay: .14s; }
+      .slide.active .reveal:nth-child(4) { animation-delay: .21s; }
+      .slide.active .reveal:nth-child(5) { animation-delay: .28s; }
+      .slide.active .reveal:nth-child(6) { animation-delay: .35s; }
+      .slide.active .screen,
+      .slide.active .colmenia-viewer { animation: pop .6s cubic-bezier(.2,.72,.2,1) both; animation-delay: .12s; }
+    }
+    @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+    @keyframes pop { from { opacity: 0; transform: translateY(22px) scale(.985); } to { opacity: 1; transform: none; } }
+
     @media (max-width: 800px) {
       .deck, .stage { width: 100vw; height: 100svh; }
       .stage { aspect-ratio: auto; }
@@ -638,6 +734,7 @@
       .show-card strong { font-size: 13px; }
       .show-card span { font-size: 9px; }
       .show-card em { margin-top: 6px; font-size: 8px; }
+      .show-index { display: none; }
       .route { display: none; }
       .split, .split.reverse { grid-template-columns: 1fr; gap: 16px; align-content: center; }
       .screen img { height: 210px; }
@@ -666,6 +763,7 @@
       .module h3 { font-size: 18px; }
       .module ul { margin-top: 9px; font-size: 10px; }
       .method-row { grid-template-columns: repeat(3, 1fr); }
+      .notes { left: 8px; right: 8px; width: auto; bottom: 56px; max-height: 52vh; }
       .nav { bottom: 8px; }
       .fullscreen { top: 9px; right: 9px; }
     }
@@ -677,153 +775,165 @@
     <button class="fullscreen" id="fullscreen">Pantalla completa</button>
 
     <section class="stage" id="stage">
+      <!-- 01 · APERTURA -->
       <article class="slide dark active">
         <div class="hero">
           <div class="hero-copy">
-            <span class="eyebrow">Webinar · Colegio de Logopedas de Extremadura</span>
-            <h1>No vengo a hablarte de IA.<br><span class="serif mint">Vengo a enseñártela.</span></h1>
-            <p class="intro">En 30 minutos vamos a abrir proyectos reales: un GPT, materiales, videojuegos, rehabilitación, ética y una comunidad profesional que sigue trabajando cuando termina la clase.</p>
-            <div class="promise-row">
-              <span><b>6</b> demos reales</span>
+            <span class="eyebrow reveal">Webinar · Colegio de Logopedas de Extremadura</span>
+            <h1 class="reveal">No vengo a hablarte de IA.<br><span class="serif mint">Vengo a enseñártela.</span></h1>
+            <p class="intro reveal">En 30 minutos vas a ver funcionando lo que una logopeda puede llegar a construir: un asistente que busca evidencia, materiales que no existían esta mañana, juegos con propósito y una comunidad que sigue contigo cuando acaba la clase.</p>
+            <div class="promise-row reveal">
+              <span><b>5</b> demos reales</span>
               <span><b>30</b> minutos</span>
               <span><b>0</b> tecnicismos innecesarios</span>
             </div>
-            <p class="soft" style="margin-top:25px;font-size:12px">José Aserraf Cohén · Logoped-IA · Colmenia</p>
+            <p class="soft reveal" style="margin-top:25px;font-size:12px">José Aserraf Cohén · Logoped-IA · Colmenia</p>
           </div>
           <div class="portrait-wrap"><img src="assets/fresh/portrait.png" alt="José Aserraf Cohén"></div>
         </div>
         <div class="foot"><span>LOGOPED-IA · EMPEZAMOS</span><span>01</span></div>
       </article>
 
+      <!-- 02 · PROBLEMAS CERCANOS -->
       <article class="slide warm">
-        <span class="eyebrow">01 · ENTRE COMPAÑEROS</span>
-        <h2 style="margin-top:24px">Seguro que alguna vez<br><span class="serif">te ha pasado esto.</span></h2>
-        <div class="familiar-grid">
-          <div class="familiar"><small>IDEA</small><strong>“Sé lo que quiero trabajar, pero no tengo tiempo para crear el material.”</strong></div>
-          <div class="familiar"><small>CHATGPT</small><strong>“Le pido algo y me devuelve una actividad genérica que no usaría.”</strong></div>
-          <div class="familiar"><small>TECNOLOGÍA</small><strong>“Veo cosas increíbles, pero no sabría construirlas ni adaptarlas.”</strong></div>
-          <div class="familiar"><small>RESPONSABILIDAD</small><strong>“Me interesa la IA, pero no quiero meter la pata con un paciente.”</strong></div>
+        <span class="eyebrow reveal">01 · DE PROFESIONAL A PROFESIONAL</span>
+        <h2 class="reveal" style="margin-top:24px">Seguro que esto<br><span class="serif">ya te ha pasado.</span></h2>
+        <div class="familiar-grid reveal">
+          <div class="familiar"><small>LA IDEA</small><strong>“Sé lo que quiero trabajar, pero no tengo tiempo para preparar el material.”</strong></div>
+          <div class="familiar"><small>EL CHAT</small><strong>“Le pido algo y me devuelve una ficha genérica que yo no usaría.”</strong></div>
+          <div class="familiar"><small>LA TECNOLOGÍA</small><strong>“Veo cosas impresionantes, pero no sabría hacerlas ni adaptarlas.”</strong></div>
+          <div class="familiar"><small>LA RESPONSABILIDAD</small><strong>“Me interesa, pero me da miedo equivocarme con un paciente.”</strong></div>
         </div>
-        <div class="human-quote">La formación empieza justo ahí: <span class="coral">con lo que ya sabes como logopeda.</span></div>
+        <div class="human-quote reveal">Aquí empieza la formación: <span class="coral">en lo que ya sabes hacer como logopeda.</span></div>
         <div class="foot"><span>LOGOPED-IA · PUNTO DE PARTIDA</span><span>02</span></div>
       </article>
 
+      <!-- 03 · MESA DE DEMOSTRACIÓN (el menú) -->
       <article class="slide dark">
-        <span class="eyebrow">02 · MESA DE DEMOSTRACIÓN</span>
-        <h2 style="margin-top:22px">Estas son las cosas<br>que vamos a <span class="mint">abrir.</span></h2>
-        <p class="lead soft">Pulsa cualquier tarjeta. Cada demostración está pensada para entenderse en 60–90 segundos.</p>
-        <div class="showroom">
-          <a class="show-card" href="demos/gpts-personalizados.html" target="_blank" rel="noopener" onclick="event.stopPropagation()"><small>4 GPTs personalizados</small><strong>Tu equipo de asistentes</strong><span>Adaptar, proteger datos, buscar evidencia y crear cuadernillos.</span><em>Elegir GPT ↗</em></a>
-          <a class="show-card" href="https://foniafonia.github.io/logoped-ia-tools/codex-assets/rubi-ia/index.html" target="_blank" rel="noopener" onclick="event.stopPropagation()"><small>Material terapéutico</small><strong>Cuaderno Rub-IA</strong><span>Crear y personalizar un cuaderno listo para imprimir.</span><em>Abrir cuaderno ↗</em></a>
-          <a class="show-card" href="demos/juegos-interactivos.html" target="_blank" rel="noopener" onclick="event.stopPropagation()"><small>4 juegos interactivos</small><strong>Laboratorio de juego</strong><span>FonoSuika, FonoMundos, Sónica y Detective de Palabras.</span><em>Elegir juego ↗</em></a>
-          <a class="show-card" href="https://foniawatch-rehab-demo.vercel.app" target="_blank" rel="noopener" onclick="event.stopPropagation()"><small>Rehabilitación</small><strong>FoniaWatch Rehab</strong><span>Voz, ritmo, afasia, lectura, movimiento y resultados.</span><em>Tocar el reloj ↗</em></a>
-          <a class="show-card" href="demos/etica-60-segundos.html" target="_blank" rel="noopener" onclick="event.stopPropagation()"><small>Ética aplicada</small><strong>Semáforo ético</strong><span>Tres preguntas antes de utilizar una salida con un paciente.</span><em>Practicar 60 s ↗</em></a>
-          <a class="show-card" href="#colmenia" onclick="event.preventDefault();event.stopPropagation();show(8)"><small>El ecosistema vivo</small><strong>Colmenia</strong><span>Personas, casos, laboratorios, proyectos e IA conectados.</span><em>Ver Nexo y Enjambre →</em></a>
+        <span class="eyebrow reveal">02 · MESA DE DEMOSTRACIÓN</span>
+        <h2 class="reveal" style="margin-top:22px">Esto no se cuenta.<br>Se <span class="mint">abre.</span></h2>
+        <p class="lead soft reveal">Cada demostración se entiende en menos de 90 segundos y no hace falta instalar nada. Pulsa cualquier tarjeta.</p>
+        <div class="showroom reveal">
+          <a class="show-card" href="demos/gpts-personalizados.html" target="_blank" rel="noopener" onclick="event.stopPropagation()"><span class="show-index">1</span><small>4 GPTs con criterio</small><strong>Tu equipo de asistentes</strong><span>Adaptar, buscar evidencia, proteger datos y crear cuadernillos.</span><em>Elegir GPT ↗</em></a>
+          <a class="show-card" href="demos/juegos-interactivos.html" target="_blank" rel="noopener" onclick="event.stopPropagation()"><span class="show-index">2</span><small>4 juegos con propósito</small><strong>Laboratorio de juego</strong><span>FonoSuika, Detective de Palabras, FonoMundos y Sónica.</span><em>Elegir juego ↗</em></a>
+          <a class="show-card" href="https://claude.ai/code/artifact/7ca48a01-2f56-4e21-a9d2-1c3343747d29" target="_blank" rel="noopener" onclick="event.stopPropagation()"><span class="show-index">3</span><small>Para familias</small><strong>Antes de consultar</strong><span>Ayuda a ordenar una preocupación antes de la primera cita. No diagnostica.</span><em>Abrir experiencia ↗</em></a>
+          <a class="show-card" href="https://foniafonia.github.io/logoped-ia-tools/codex-assets/rubi-ia/index.html" target="_blank" rel="noopener" onclick="event.stopPropagation()"><span class="show-index">4</span><small>Material terapéutico</small><strong>Cuaderno Rub-IA</strong><span>Crear y personalizar un cuaderno listo para imprimir.</span><em>Abrir cuaderno ↗</em></a>
+          <a class="show-card" href="#colmenia" onclick="event.preventDefault();event.stopPropagation();show(8)"><span class="show-index">5</span><small>El ecosistema vivo</small><strong>Colmenia</strong><span>Personas, casos, laboratorios, proyectos e IA conectados.</span><em>Ver Nexo y Enjambre →</em></a>
+          <a class="show-card backup" href="https://foniawatch-rehab-demo.vercel.app" target="_blank" rel="noopener" onclick="event.stopPropagation()"><span class="show-index">+</span><small>Respaldo opcional</small><strong>FoniaWatch Rehab</strong><span>Maqueta de seguimiento entre sesiones: voz, ritmo, afasia y lectura.</span><em>Tocar el reloj ↗</em></a>
         </div>
-        <div class="route"><span><b>La lógica:</b> preguntar → crear → probar → evaluar → revisar.</span><span>Y después, seguir aprendiendo juntos en Colmenia.</span></div>
+        <div class="route reveal"><span><b>El hilo de hoy:</b> pensar → pedir bien → crear → probar → revisar.</span><span>Y después, seguir aprendiendo juntas en Colmenia.</span></div>
         <div class="foot"><span>LOGOPED-IA · PULSA PARA ABRIR</span><span>03</span></div>
       </article>
 
+      <!-- 04 · GPT PERSONALIZADO -->
       <article class="slide dark">
         <div class="split">
           <div class="split-copy">
-            <span class="eyebrow">03 · GPT PERSONALIZADO</span>
-            <h2 style="margin-top:22px">No se trata de preguntar más.<br><span class="serif mint">Se trata de preguntar mejor.</span></h2>
-            <p class="lead soft">Un GPT especializado puede ayudarte a buscar evidencia, comparar opciones y convertir artículos en preguntas que sí tienen sentido para tu práctica.</p>
-            <div class="prompt-box"><b>Ejemplo:</b> “Quiero revisar qué sabemos sobre intervención en conciencia fonológica en escolares. Separa evidencia, límites y preguntas pendientes.”</div>
-            <a class="demo-button" href="demos/gpts-personalizados.html" target="_blank" rel="noopener" onclick="event.stopPropagation()">Ver los 4 GPTs personalizados ↗</a>
+            <span class="eyebrow reveal">03 · UN ASISTENTE CON CRITERIO</span>
+            <h2 class="reveal" style="margin-top:22px">No se trata de preguntar más.<br><span class="serif mint">Se trata de preguntar mejor.</span></h2>
+            <p class="lead soft reveal">Un GPT preparado para logopedia no inventa por su cuenta: busca en la evidencia, separa lo que está probado de lo que no, y te devuelve preguntas que sí sirven en tu práctica.</p>
+            <div class="prompt-box reveal"><b>Le pides:</b> “Revisa qué sabemos sobre intervención en conciencia fonológica en escolares. Sepárame evidencia, límites y preguntas pendientes.”</div>
+            <a class="demo-button reveal" href="demos/gpts-personalizados.html" target="_blank" rel="noopener" onclick="event.stopPropagation()">Abrir los GPTs: Adapta · Evidence · Shield · Cuadernillos ↗</a>
           </div>
           <div class="screen">
-            <img src="assets/fresh/ingenieria-prompts.jpeg" alt="Ingeniería de prompts aplicada a la logopedia">
-            <div class="caption"><span>La herramienta busca. Tú formulas, contrastas y decides.</span><span>90 s</span></div>
+            <img src="assets/fresh/ingenieria-prompts.jpeg" alt="Un GPT de logopedia buscando y ordenando evidencia">
+            <div class="caption"><span>La herramienta busca. Tú contrastas y decides.</span><span>90 s</span></div>
           </div>
         </div>
         <div class="foot"><span>LOGOPED-IA · EVIDENCIA Y PREGUNTAS</span><span>04</span></div>
       </article>
 
+      <!-- 05 · CREAR MATERIALES -->
       <article class="slide paper">
         <div class="split reverse">
           <div class="screen">
             <img src="assets/showcase/rubia.png" alt="Cuaderno terapéutico Rub-IA">
-            <div class="caption"><span>18 páginas y opciones de personalización profesional.</span><span>90 s</span></div>
+            <div class="caption"><span>Un cuaderno completo, personalizable y listo para imprimir.</span><span>90 s</span></div>
           </div>
           <div class="split-copy">
-            <span class="eyebrow">04 · CREAR MATERIALES</span>
-            <h2 style="margin-top:22px">Un material que<br><span class="serif" style="color:#267461">no existía esta mañana.</span></h2>
-            <p class="lead muted">No hablamos de pedir una ficha al azar. Hablamos de decidir objetivo, nivel, pauta, progresión y formato hasta conseguir algo que puedas imprimir y adaptar.</p>
-            <div class="micro-list">
-              <span><i>1</i> Elegir qué queremos entrenar.</span>
-              <span><i>2</i> Graduar dificultad y tipo de ayuda.</span>
-              <span><i>3</i> Revisar y personalizar antes de usar.</span>
+            <span class="eyebrow reveal">04 · CREAR MATERIAL A MEDIDA</span>
+            <h2 class="reveal" style="margin-top:22px">Un cuaderno que<br><span class="serif" style="color:#267461">no existía esta mañana.</span></h2>
+            <p class="lead muted reveal">No es pedir “una ficha” al azar. Es decidir objetivo, nivel, tipo de ayuda y progresión hasta tener algo que puedes imprimir, revisar y adaptar a tu paciente.</p>
+            <div class="micro-list reveal">
+              <span><i>1</i> Eliges qué quieres entrenar y con quién.</span>
+              <span><i>2</i> Gradúas la dificultad y el tipo de ayuda.</span>
+              <span><i>3</i> Revisas y personalizas antes de usarlo.</span>
             </div>
-            <a class="demo-button secondary" href="https://foniafonia.github.io/logoped-ia-tools/codex-assets/rubi-ia/index.html" target="_blank" rel="noopener" onclick="event.stopPropagation()">Abrir Cuaderno Rub-IA ↗</a>
+            <a class="demo-button secondary reveal" href="https://foniafonia.github.io/logoped-ia-tools/codex-assets/rubi-ia/index.html" target="_blank" rel="noopener" onclick="event.stopPropagation()">Abrir Cuaderno Rub-IA ↗</a>
           </div>
         </div>
         <div class="foot"><span>LOGOPED-IA · DEL OBJETIVO AL MATERIAL</span><span>05</span></div>
       </article>
 
+      <!-- 06 · VIDEOJUEGOS CON PROPÓSITO -->
       <article class="slide light">
         <div class="split">
           <div class="split-copy">
-            <span class="eyebrow">05 · VIDEOJUEGOS CON PROPÓSITO</span>
-            <h2 style="margin-top:22px">Y sí: también podemos<br><span class="serif" style="color:#267461">hacer videojuegos.</span></h2>
-            <p class="lead muted">Pero el juego no es el objetivo. El objetivo es que una persona practique más, entienda qué tiene que hacer y reciba una respuesta clara.</p>
-            <div class="micro-list">
-              <span><i>✓</i> Conciencia fonológica y silábica.</span>
-              <span><i>✓</i> Diferentes niveles y perfiles.</span>
-              <span><i>✓</i> Uso como invitado y feedback real.</span>
+            <span class="eyebrow reveal">05 · JUGAR CON UN OBJETIVO</span>
+            <h2 class="reveal" style="margin-top:22px">Y sí: también<br><span class="serif" style="color:#267461">se hacen juegos.</span></h2>
+            <p class="lead muted reveal">Pero el juego no es el premio. El objetivo es que una persona practique más, entienda qué tiene que hacer y reciba una respuesta clara.</p>
+            <div class="micro-list reveal">
+              <span><i>✓</i> <b style="color:inherit">FonoSuika:</b> fonemas, sílabas y palabras que caen y se combinan.</span>
+              <span><i>✓</i> <b style="color:inherit">Detective de Palabras:</b> eliges fonema, sílaba o campo semántico.</span>
+              <span><i>✓</i> Distintos niveles, uso como invitado y feedback inmediato.</span>
             </div>
-            <a class="demo-button" href="https://fonomundos.vercel.app" target="_blank" rel="noopener" onclick="event.stopPropagation()">Entrar en FonoMundos ↗</a>
+            <div class="demo-row reveal">
+              <a class="demo-button" href="https://orange-valley-262.higgsfield.gg/" target="_blank" rel="noopener" onclick="event.stopPropagation()">Jugar a FonoSuika ↗</a>
+              <a class="demo-button secondary" href="https://foniafonia.github.io/logoped-ia-tools/codex-assets/academia-suite-medible/POE/lupas%20y%20linternas/index.html" target="_blank" rel="noopener" onclick="event.stopPropagation()">Detective de Palabras ↗</a>
+            </div>
           </div>
           <div class="screen">
-            <img src="assets/showcase/fonomundos.png" alt="FonoMundos">
-            <div class="caption"><span>Entra como invitado y elige “Empieza aquí”.</span><span>90 s</span></div>
+            <img src="assets/showcase/fonosuika.png" alt="FonoSuika: fonemas, sílabas y palabras">
+            <div class="caption"><span>Entra como invitado. En 60 segundos ya se está jugando.</span><span>60 s</span></div>
           </div>
         </div>
         <div class="foot"><span>LOGOPED-IA · JUGAR PARA PRACTICAR</span><span>06</span></div>
       </article>
 
-      <article class="slide dark">
+      <!-- 07 · ANTES DE CONSULTAR (experiencia para familias) -->
+      <article class="slide warm">
         <div class="split reverse">
           <div class="screen">
-            <img src="assets/showcase/foniawatch.png" alt="FoniaWatch Rehab">
-            <div class="caption"><span>Una maqueta interactiva: los botones funcionan.</span><span>90 s</span></div>
+            <img src="assets/showcase/antes-de-consultar.png" alt="Antes de consultar: experiencia para familias">
+            <div class="caption"><span>Datos solo en su navegador. No diagnostica.</span><span>60 s</span></div>
           </div>
           <div class="split-copy">
-            <span class="eyebrow">06 · EVALUAR Y ACOMPAÑAR</span>
-            <h2 style="margin-top:22px">La sesión puede continuar<br><span class="serif mint">fuera de la mesa.</span></h2>
-            <p class="lead soft">FoniaWatch reúne voz, ritmo, afasia, lectura, escritura, movimiento y resultados. Sirve para imaginar seguimiento, biofeedback y práctica entre sesiones.</p>
-            <div class="micro-list">
-              <span><i>1</i> Registrar ejecución y tiempos.</span>
-              <span><i>2</i> Dar una señal visual o háptica.</span>
-              <span><i>3</i> Revisar resultados con el profesional.</span>
+            <span class="eyebrow reveal">06 · ANTES DE LA PRIMERA CONSULTA</span>
+            <h2 class="reveal" style="margin-top:22px">Cuando una familia<br><span class="serif" style="color:#b25a44">no sabe ni cómo empezar.</span></h2>
+            <p class="lead muted reveal">Una experiencia que ayuda a una familia a ordenar su preocupación antes de sentarse contigo. Le enseña a observar y a explicar. No diagnostica y no sustituye tu valoración.</p>
+            <div class="micro-list reveal">
+              <span><i>1</i> La familia cuenta lo que le preocupa, con sus palabras.</span>
+              <span><i>2</i> La experiencia le ayuda a ordenarlo y a poner nombre.</span>
+              <span><i>3</i> Llega a tu consulta con la información que necesitas.</span>
             </div>
-            <a class="demo-button" href="https://foniawatch-rehab-demo.vercel.app" target="_blank" rel="noopener" onclick="event.stopPropagation()">Tocar FoniaWatch ↗</a>
+            <a class="demo-button reveal" href="https://claude.ai/code/artifact/7ca48a01-2f56-4e21-a9d2-1c3343747d29" target="_blank" rel="noopener" onclick="event.stopPropagation()">Abrir “Antes de consultar” ↗</a>
           </div>
         </div>
-        <div class="foot"><span>LOGOPED-IA · SEGUIMIENTO Y BIOFEEDBACK</span><span>07</span></div>
+        <div class="foot"><span>LOGOPED-IA · ACOMPAÑAR A LAS FAMILIAS</span><span>07</span></div>
       </article>
 
+      <!-- 08 · ÉTICA Y PRIVACIDAD -->
       <article class="slide warm">
-        <span class="eyebrow">07 · LA PARTE MÁS IMPORTANTE</span>
-        <h2 style="margin-top:24px">Aprender IA también es<br><span class="serif">saber cuándo parar.</span></h2>
-        <p class="lead muted">Una respuesta bonita puede estar equivocada. Por eso la ética no irá al final del curso: estará dentro de cada práctica.</p>
-        <div class="ethics-grid">
-          <div class="ethics-card"><div class="signal red"></div><h3>No compartimos datos identificables</h3><p>Nombres, imágenes, historias clínicas o información que pueda reconocer a una persona.</p></div>
-          <div class="ethics-card"><div class="signal amber"></div><h3>No aceptamos una respuesta sin revisarla</h3><p>La IA puede inventar, simplificar o sonar segura cuando no debería.</p></div>
-          <div class="ethics-card"><div class="signal green"></div><h3>La decisión profesional sigue siendo nuestra</h3><p>La herramienta ayuda a pensar y construir. No diagnostica ni decide por nosotros.</p></div>
+        <span class="eyebrow reveal">07 · LA PARTE MÁS IMPORTANTE</span>
+        <h2 class="reveal" style="margin-top:24px">Usar IA también es<br><span class="serif">saber cuándo parar.</span></h2>
+        <p class="lead muted reveal">Una respuesta bonita puede estar equivocada. Por eso la ética no va al final del curso: está dentro de cada práctica.</p>
+        <div class="ethics-grid reveal">
+          <div class="ethics-card"><div class="signal red"></div><h3>No compartimos datos identificables</h3><p>Ni nombres, ni imágenes, ni historias clínicas, ni nada que reconozca a una persona.</p></div>
+          <div class="ethics-card"><div class="signal amber"></div><h3>No damos por buena una respuesta sin revisarla</h3><p>La IA puede inventar, simplificar o sonar segura cuando no debería.</p></div>
+          <div class="ethics-card"><div class="signal green"></div><h3>La decisión profesional sigue siendo tuya</h3><p>La herramienta ayuda a pensar y a construir. No diagnostica ni decide por ti.</p></div>
         </div>
-        <a class="demo-button" href="demos/etica-60-segundos.html" target="_blank" rel="noopener" onclick="event.stopPropagation()">Hacer el semáforo ético ↗</a>
+        <a class="demo-button reveal" href="demos/etica-60-segundos.html" target="_blank" rel="noopener" onclick="event.stopPropagation()">Hacer el semáforo ético (60 s) ↗</a>
         <div class="foot"><span>LOGOPED-IA · PRIVACIDAD, REVISIÓN Y RESPONSABILIDAD</span><span>08</span></div>
       </article>
 
+      <!-- 09 · COLMENIA -->
       <article class="slide dark" id="colmenia">
         <div class="colmenia-layout">
           <div class="colmenia-copy">
-            <span class="eyebrow">08 · COLMENIA, POR DENTRO</span>
-            <h2 style="margin-top:22px">La formación termina.<br><span class="serif yellow">La colmena sigue despierta.</span></h2>
-            <p class="lead soft">No es una carpeta llena de vídeos. Es un lugar para entrar con una duda, construir algo útil, enseñarlo, recibir ayuda y volver a mejorarlo.</p>
-            <div class="colmenia-points">
+            <span class="eyebrow reveal">08 · COLMENIA, POR DENTRO</span>
+            <h2 class="reveal" style="margin-top:22px">La formación termina.<br><span class="serif yellow">La colmena sigue despierta.</span></h2>
+            <p class="lead soft reveal">No es una carpeta de vídeos. Es el sitio donde entras con una duda, construyes algo útil, lo enseñas, recibes ayuda y vuelves a mejorarlo. Con más profesionales y con la IA de Colmenia al lado.</p>
+            <div class="colmenia-points reveal">
               <span><b>Aprender</b>Formación breve y práctica</span>
               <span><b>Construir</b>Laboratorios y prototipos</span>
               <span><b>Compartir</b>Casos y comunidad</span>
@@ -844,51 +954,54 @@
         <div class="foot"><span>LOGOPED-IA · SISTEMA OPERATIVO PROFESIONAL</span><span>09</span></div>
       </article>
 
+      <!-- 10 · LA FORMACIÓN DE EXTREMADURA -->
       <article class="slide dark">
-        <span class="eyebrow">09 · LA FORMACIÓN DE EXTREMADURA</span>
-        <h2 style="margin-top:23px">Verlo impresiona.<br><span class="serif yellow">Aprender a hacerlo transforma.</span></h2>
-        <p class="lead soft">Dos módulos potentes para pasar de “yo no sé de IA” a construir, revisar y aplicar proyectos propios.</p>
-        <div class="modules">
+        <span class="eyebrow reveal">09 · LA FORMACIÓN DE EXTREMADURA</span>
+        <h2 class="reveal" style="margin-top:23px">Verlo impresiona.<br><span class="serif yellow">Aprender a hacerlo te cambia el trabajo.</span></h2>
+        <p class="lead soft reveal">Dos módulos para pasar de “yo no sé de IA” a construir, revisar y aplicar tus propios proyectos.</p>
+        <div class="modules reveal">
           <div class="module">
             <small>MÓDULO 1 · CONSTRUIR</small>
             <h3>De la idea al primer recurso</h3>
             <ul>
-              <li>Usar ChatGPT y GPTs sin hablar en técnico.</li>
+              <li>Usar ChatGPT y GPTs con intención, sin hablar en técnico.</li>
               <li>Crear materiales y variantes con un objetivo claro.</li>
-              <li>Diseñar un primer recurso interactivo.</li>
-              <li>Aprender a revisar lo que devuelve la IA.</li>
+              <li>Diseñar tu primer recurso interactivo.</li>
+              <li>Aprender a revisar y mejorar lo que devuelve la IA.</li>
             </ul>
           </div>
           <div class="module">
             <small>MÓDULO 2 · INTEGRAR</small>
             <h3>Del recurso a tu forma de trabajar</h3>
             <ul>
-              <li>Adaptar herramientas a casos y contextos reales.</li>
-              <li>Crear juegos, apoyos y sistemas de seguimiento.</li>
-              <li>Trabajar privacidad, límites y criterio.</li>
+              <li>Llevar las herramientas a casos y contextos reales.</li>
+              <li>Crear juegos, apoyos y experiencias para familias.</li>
+              <li>Trabajar privacidad, límites, ética y criterio.</li>
               <li>Construir un flujo sostenible para consulta y aula.</li>
             </ul>
           </div>
         </div>
-        <div class="method-row">
+        <div class="method-row reveal">
           <span>Directos con interacción</span>
           <span>Disponible en diferido</span>
           <span>Tutoriales breves</span>
-          <span>Tareas propias</span>
+          <span>Trabajo práctico guiado</span>
           <span>Revisión en grupo</span>
         </div>
+        <p class="takeaway reveal">No te vas con apuntes. Te vas con materiales tuyos, listos para usar el lunes.</p>
         <div class="foot"><span>LOGOPED-IA · APRENDER HACIENDO</span><span>10</span></div>
       </article>
 
+      <!-- 11 · CIERRE -->
       <article class="slide dark">
         <div class="hero">
           <div class="hero-copy">
-            <span class="eyebrow">10 · CIERRE</span>
-            <h1>No quiero que salgas pensando:<br><span class="serif yellow">“qué bonito”.</span></h1>
-            <p class="intro" style="font-size:clamp(20px,2.1vw,31px);font-weight:800;line-height:1.16">Quiero que salgas pensando:<br><span class="mint">“yo puedo aprender a hacer esto”.</span></p>
-            <p class="soft" style="margin-top:24px;max-width:610px">La webinar enseña lo que ya es posible. La formación te acompaña para construirlo con tus objetivos, tus materiales y tu criterio profesional.</p>
-            <a class="closing-link" href="https://colmenia-logoped-ia.fonia.chatgpt.site" target="_blank" rel="noopener" onclick="event.stopPropagation()">Conocer la nueva Colmenia ↗</a>
-            <p class="soft" style="margin-top:20px;font-size:12px">Colegio de Logopedas de Extremadura · José Aserraf Cohén</p>
+            <span class="eyebrow reveal">10 · CIERRE</span>
+            <h1 class="reveal">No quiero que salgas pensando:<br><span class="serif yellow">“qué bonito”.</span></h1>
+            <p class="intro reveal" style="font-size:clamp(20px,2.1vw,31px);font-weight:800;line-height:1.16">Quiero que salgas pensando:<br><span class="mint">“yo puedo aprender a hacer esto”.</span></p>
+            <p class="soft reveal" style="margin-top:24px;max-width:610px">La webinar te enseña lo que ya es posible. La formación te acompaña para construirlo con tus objetivos, tus materiales y tu criterio profesional.</p>
+            <a class="closing-link reveal" href="https://colmenia-logoped-ia.fonia.chatgpt.site" target="_blank" rel="noopener" onclick="event.stopPropagation()">Conocer la nueva Colmenia ↗</a>
+            <p class="soft reveal" style="margin-top:20px;font-size:12px">Colegio de Logopedas de Extremadura · José Aserraf Cohén</p>
           </div>
           <div class="portrait-wrap"><img src="assets/fresh/portrait.png" alt="José Aserraf Cohén"></div>
         </div>
@@ -896,10 +1009,18 @@
       </article>
     </section>
 
+    <aside class="notes" id="notes" hidden aria-live="polite">
+      <div class="notes-head"><span class="notes-time" id="notesTime">0:00</span><span class="notes-title" id="notesTitle"></span></div>
+      <div class="notes-demo" id="notesDemo"></div>
+      <div class="notes-body" id="notesBody"></div>
+      <div class="notes-hint">Tecla N: ocultar notas · ← → cambiar slide · Solo lo ves tú si compartes esta ventana en modo presentador.</div>
+    </aside>
+
     <nav class="nav" aria-label="Navegación de la presentación">
       <button id="prev" aria-label="Slide anterior">‹</button>
       <button class="demo-jump" id="demoJump" aria-label="Ir a la mesa de demostración">Demos</button>
       <span class="counter" id="counter">01 / 11</span>
+      <button class="notes-jump" id="notesJump" aria-label="Notas del ponente">Notas</button>
       <button id="next" aria-label="Slide siguiente">›</button>
     </nav>
   </main>
@@ -911,16 +1032,65 @@
     const stage = document.getElementById('stage');
     let current = 0;
 
+    /* Guion del ponente — 30 minutos. t: minuto objetivo al ENTRAR en el slide. */
+    const NOTES = [
+      { t: '0:00 – 1:30', title: 'Apertura', demo: 'Sin demo. Mira a cámara.',
+        say: 'Preséntate en una frase. “Hoy no vengo a explicarte qué es la IA en abstracto. Vengo a enseñarte cosas que ya funcionan y que tú vas a poder construir.” Promete: 5 demos reales, 30 minutos, cero tecnicismos innecesarios.' },
+      { t: '1:30 – 3:30', title: 'Punto de partida', demo: 'Sin demo. Pausa y complicidad.',
+        say: 'Lee dos o tres de las frases como si fueran tuyas. Pregunta al chat: “¿a quién le suena?”. Cierra: la formación no empieza en la tecnología, empieza en lo que ya sabes hacer como logopeda.' },
+      { t: '3:30 – 4:30', title: 'Mesa de demostración', demo: 'Enséñala 20 s. No abras nada aún.',
+        say: 'Es el menú de la sesión. Di el orden: primero un asistente, luego juegos, luego una experiencia para familias, un material, y Colmenia. FoniaWatch queda de respaldo si sobra tiempo. Anuncia: cada cosa, menos de 90 segundos.' },
+      { t: '4:30 – 8:30', title: 'Asistente con criterio (GPT)', demo: 'ABRIR: Adapta con criterio o Evidence PubMed · 90 s.',
+        say: 'Pega la pregunta del ejemplo en directo. Mientras responde, explica la idea fuerza: no es preguntar más, es preguntar mejor. Señala que separa evidencia, límites y preguntas. Remata: la herramienta busca, tú contrastas y decides. Si falla la red: enseña la captura y cuéntalo.' },
+      { t: '8:30 – 11:30', title: 'Crear material (Rub-IA)', demo: 'ABRIR: Cuaderno Rub-IA · 60–90 s.',
+        say: 'Muestra que es un cuaderno completo, no una ficha suelta. Recorre objetivo → nivel → tipo de ayuda → progresión. Insiste: esto se revisa y se adapta antes de usarlo. Frase: un material que no existía esta mañana.' },
+      { t: '11:30 – 15:30', title: 'Juegos con propósito', demo: 'ABRIR: FonoSuika (60 s) y Detective de Palabras (60 s).',
+        say: 'Entra como invitado en FonoSuika, juega 20 s: fonemas y sílabas que caen. Luego Detective: enseña que eliges fonema/sílaba/campo semántico y nivel. Idea fuerza: el juego no es el premio; el objetivo clínico manda.' },
+      { t: '15:30 – 18:30', title: 'Antes de consultar (familias)', demo: 'ABRIR: “Antes de consultar” · 60 s.',
+        say: 'Cambia el foco: hasta ahora, herramientas para ti; esto es para la familia. Enseña la barra: “no diagnostica, no sustituye una valoración”. Cuenta el flujo: la familia ordena su preocupación y llega mejor a la primera cita. Datos solo en su navegador.' },
+      { t: '18:30 – 21:00', title: 'Ética y privacidad', demo: 'Opcional: semáforo ético 60 s si hay ritmo.',
+        say: 'Baja el tono, sube la seriedad. Tres reglas: no datos identificables, no aceptar sin revisar, la decisión es del profesional. Di claro: la ética no va al final del curso, va dentro de cada práctica.' },
+      { t: '21:00 – 24:30', title: 'Colmenia', demo: 'En pantalla: alterna El Nexo y El Enjambre.',
+        say: 'Deja claro que NO es una academia de vídeos. Enseña El Nexo (todo conectado) y El Enjambre (gente trabajando ahora). Idea fuerza: la formación termina, la comunidad sigue viva y la mejora continúa contigo.' },
+      { t: '24:30 – 28:00', title: 'Formación de Extremadura', demo: 'Sin demo. Señala los dos módulos.',
+        say: 'Dos módulos: CONSTRUIR (de la idea al primer recurso) e INTEGRAR (del recurso a tu forma de trabajar). Nombra la metodología: directos con interacción, diferido, tutoriales, práctica guiada y revisión en grupo. Remata: te vas con materiales tuyos, no con apuntes.' },
+      { t: '28:00 – 30:00', title: 'Cierre', demo: 'Sin demo. Contacto visual.',
+        say: 'No quiero que salgas pensando “qué bonito”, sino “yo puedo aprender a hacer esto”. Invita a conocer Colmenia y a la formación del Colegio, sin presión. Agradece y abre a preguntas.' }
+    ];
+
+    const notesEl = document.getElementById('notes');
+    const notesTime = document.getElementById('notesTime');
+    const notesTitle = document.getElementById('notesTitle');
+    const notesDemo = document.getElementById('notesDemo');
+    const notesBody = document.getElementById('notesBody');
+    const notesJump = document.getElementById('notesJump');
+
+    function renderNotes() {
+      const n = NOTES[current];
+      if (!n) return;
+      notesTime.textContent = n.t;
+      notesTitle.textContent = n.title;
+      notesDemo.textContent = '▶ ' + n.demo;
+      notesBody.innerHTML = n.say;
+    }
+    function toggleNotes() {
+      notesEl.hidden = !notesEl.hidden;
+      notesJump.classList.toggle('on', !notesEl.hidden);
+      if (!notesEl.hidden) renderNotes();
+    }
+
     function show(index) {
       current = (index + slides.length) % slides.length;
       slides.forEach((slide, number) => slide.classList.toggle('active', number === current));
       counter.textContent = `${String(current + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`;
       progress.style.width = `${((current + 1) / slides.length) * 100}%`;
+      if (!notesEl.hidden) renderNotes();
     }
 
     document.getElementById('prev').onclick = () => show(current - 1);
     document.getElementById('next').onclick = () => show(current + 1);
     document.getElementById('demoJump').onclick = () => show(2);
+    notesJump.onclick = toggleNotes;
     document.getElementById('fullscreen').onclick = () => document.documentElement.requestFullscreen?.();
     document.querySelectorAll('.colmenia-tab').forEach((button) => {
       button.addEventListener('click', (event) => {
@@ -946,6 +1116,7 @@
         show(current - 1);
       }
       if (event.key.toLowerCase() === 'd') show(2);
+      if (event.key.toLowerCase() === 'n') toggleNotes();
       if (event.key.toLowerCase() === 'f') document.documentElement.requestFullscreen?.();
       if (event.key === 'Home') show(0);
       if (event.key === 'End') show(slides.length - 1);
