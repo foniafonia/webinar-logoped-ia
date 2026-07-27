@@ -21,6 +21,26 @@ Ese es el puente entre *"qué brutalidad"* y *"yo puedo / me apunto"*.
 
 ---
 
+## Pitch inicial revisado: tensión profesional sin alarmismo
+
+Abre por aquí, con calma y firmeza:
+
+> La IA ya está entrando en logopedia. La pregunta no es si va a llegar, sino cómo va a entrar: si la vamos a usar nosotras con criterio sanitario, o si otros van a decidir por nuestra profesión.
+
+Ideas que deben aparecer en los primeros 3 minutos:
+
+- Somos una profesión profundamente humana y cercana, pero también sanitaria. La cercanía no puede hacernos perder valor profesional.
+- Hay peligro real: datos de pacientes, respuestas inventadas, materiales bonitos pero clínicamente pobres, familias usando herramientas sin orientación.
+- No se trata de sustituir relación terapéutica; se trata de trabajar menos en preparación invisible y más en paciente, familia y toma de decisiones.
+- Hay poco movimiento visible en logopedia comparado con lo rápido que avanza la IA. Si no aprendemos, nos pueden comer desde fuera con soluciones simples para problemas complejos.
+- La clave del curso no es “hacer cosas bonitas”, sino aprender a pedir, revisar, proteger datos, adaptar y transferir a consulta/aula.
+
+Frase de transición a las demos:
+
+> Por eso hoy no os voy a enseñar magia. Os voy a enseñar herramientas reales, con riesgos reales, y cómo una logopeda puede empezar a recuperar tiempo sin entregar su criterio.
+
+---
+
 ## Ruta de demostración (rápida y a prueba de fallos)
 
 | # | Demo | Slide | Tiempo | Enlace |
@@ -56,11 +76,11 @@ Ese es el puente entre *"qué brutalidad"* y *"yo puedo / me apunto"*.
 
 ## Guion slide a slide
 
-**01 · Apertura** — *«No vengo a hablarte de IA. Vengo a enseñártela.»*
-Preséntate en una frase. Promete lo concreto: 5 demos reales, 30 minutos, cero tecnicismos innecesarios. No definas «qué es la IA».
+**01 · Apertura** — *«La IA ya está entrando en logopedia. La pregunta es cómo.»*
+Abre con tensión profesional, no con tecnicismo. Somos una profesión humana y cercana, pero también sanitaria. Si no aprendemos a usar IA con criterio, otros decidirán por nosotras. Promete herramientas reales, riesgos reales y una idea: preparar menos desde cero para estar más con paciente y familia.
 
-**02 · Punto de partida** — *«Seguro que esto ya te ha pasado.»*
-Lee dos o tres frases como si fueran tuyas. Pregunta al chat «¿a quién le suena?». Cierra: la formación empieza en lo que ya sabes como logopeda.
+**02 · Punto de partida** — *«Somos cercanos. Pero no ingenuos.»*
+Lee las cuatro tensiones: valor profesional, riesgo clínico, protección de datos y tiempo invisible. Pregunta al chat cuál pesa más. Cierra: aprender IA no va de ser menos logopeda, sino de proteger mejor la parte sanitaria y humana de la profesión.
 
 **03 · Mesa de demostración** — *«Esto no se cuenta. Se abre.»*
 Es el menú. Anuncia el orden y que cada cosa dura menos de 90 s. FoniaWatch queda marcado como respaldo.
