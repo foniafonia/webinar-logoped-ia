@@ -11,6 +11,14 @@
 
 La tecnología llama la atención, pero **manda el objetivo clínico**. La IA no diagnostica ni decide. La formación no acaba en un vídeo: se practica, se revisa y se mejora.
 
+## El gancho de conversión (dilo 3 veces)
+
+Estos 30 minutos tienen un objetivo: **enganchar para que se apunten al curso**. El argumento que convierte a quien "no sabe de IA" es siempre el mismo, y hay que decirlo en voz alta en la **apertura (01)**, en la **mesa (03)** y en la **formación (10)**:
+
+> **Nada de esto lo ha hecho una empresa de software. Lo ha construido una logopeda, sin escribir una línea de código. La diferencia no fue la tecnología: fue el criterio. Y el criterio se aprende.**
+
+Ese es el puente entre *"qué brutalidad"* y *"yo puedo / me apunto"*.
+
 ---
 
 ## Ruta de demostración (rápida y a prueba de fallos)
