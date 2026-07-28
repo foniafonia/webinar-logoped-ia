@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Kit · Encuesta bonita para familias</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,650;9..144,820&family=Manrope:wght@450;650;800;950&display=swap');
+    :root{--ink:#10211f;--deep:#0b2a28;--green:#2f6d57;--mint:#cdeecf;--lime:#e5f76b;--paper:#fffaf0;--soft:#f1f7ed;--coral:#ff7f5f;--blue:#dcecff;--muted:#60736f;--line:#d9e5dd;--shadow:0 24px 70px rgba(16,33,31,.14)}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 10% 8%,#e5f76b55 0 18%,transparent 34%),linear-gradient(135deg,#f8fbf1,#edf6ed 54%,#fff7e8);color:var(--ink);font-family:Manrope,system-ui,sans-serif}.wrap{width:min(1180px,calc(100% - 34px));margin:auto;padding:24px 0 44px}.top{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:28px}.brand{display:flex;align-items:center;gap:12px;font-weight:950}.mark{width:44px;height:44px;border-radius:14px;background:var(--deep);color:var(--lime);display:grid;place-items:center;box-shadow:var(--shadow)}.back{color:var(--green);font-weight:900;text-decoration:none;border:1px solid var(--line);background:#fff9;border-radius:999px;padding:10px 14px}.hero{display:grid;grid-template-columns:1fr .82fr;gap:28px;align-items:end}.kicker{font-size:12px;text-transform:uppercase;letter-spacing:.14em;color:var(--green);font-weight:950}.hero h1{font:820 clamp(44px,7vw,86px)/.88 Fraunces,serif;letter-spacing:-.06em;margin:14px 0}.hero p{font-size:18px;line-height:1.55;color:#36534e;max-width:760px}.hero-card{background:var(--deep);color:white;border-radius:28px;padding:24px;box-shadow:var(--shadow)}.hero-card b{display:block;font:820 54px/.9 Fraunces,serif;color:var(--lime)}.hero-card span{display:block;margin-top:8px;color:#d5e6e0}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:26px 0 16px}.tab{border:0;border-radius:999px;background:white;color:var(--green);font-weight:950;padding:11px 14px;cursor:pointer;border:1px solid var(--line)}.tab.active{background:var(--deep);color:white}.panel{display:none}.panel.active{display:block}.builder{display:grid;grid-template-columns:.9fr 1.1fr;gap:16px}.card,.phone,.code,.dashboard{background:#ffffffd9;border:1px solid var(--line);border-radius:24px;box-shadow:0 18px 52px rgba(16,33,31,.08)}.card{padding:20px}.card h2,.dashboard h2{font:820 38px/.96 Fraunces,serif;letter-spacing:-.04em;margin:0 0 12px}.card p{color:var(--muted);line-height:1.5}.steps{display:grid;gap:10px;margin-top:16px}.step{display:grid;grid-template-columns:34px 1fr;gap:12px;padding:13px;border-radius:16px;background:var(--soft);border:1px solid #dbe8d8}.step i{width:32px;height:32px;border-radius:50%;background:var(--lime);display:grid;place-items:center;font-style:normal;font-weight:950}.step strong{display:block}.step span{display:block;margin-top:3px;color:var(--muted);font-size:13px;line-height:1.35}.phone{padding:16px;background:var(--deep)}.screen{border-radius:18px;background:var(--paper);min-height:560px;padding:18px;overflow:hidden}.progress{height:6px;background:#dfebe2;border-radius:999px;overflow:hidden;margin-bottom:18px}.progress i{display:block;height:100%;width:20%;background:linear-gradient(90deg,var(--green),var(--coral));transition:.25s}.q{display:none}.q.active{display:block;animation:in .25s ease both}@keyframes in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}.q small{color:var(--green);font-weight:950;letter-spacing:.1em;text-transform:uppercase}.q h3{font:820 34px/.96 Fraunces,serif;letter-spacing:-.04em;margin:9px 0 14px}.q p{color:var(--muted);line-height:1.45}.choices{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:16px}.choice{border:1px solid var(--line);background:white;border-radius:14px;padding:13px;text-align:left;cursor:pointer;font-weight:850;color:#24423e}.choice.active{background:#e8f7d4;border-color:#8eb67d;box-shadow:0 10px 24px #183d2614}.range{margin-top:18px;background:white;border:1px solid var(--line);border-radius:16px;padding:14px}output{display:block;font:820 58px/.9 Fraunces,serif;color:var(--coral)}input[type=range]{width:100%;accent-color:var(--coral)}textarea{width:100%;min-height:150px;border:1px solid var(--line);border-radius:16px;padding:14px;font:15px Manrope;resize:vertical}.nav{display:flex;justify-content:space-between;margin-top:20px;gap:10px}.btn{border:0;border-radius:14px;padding:13px 15px;background:var(--deep);color:white;font-weight:950;cursor:pointer}.btn.light{background:#e6efe7;color:var(--ink)}.done{padding:22px;border-radius:20px;background:linear-gradient(135deg,#102a28,#245c49);color:white}.done h3{color:var(--lime)}.dash-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}.metric{padding:18px;border-radius:18px;background:white;border:1px solid var(--line)}.metric b{font:820 44px/.9 Fraunces,serif;color:var(--coral);display:block}.metric span{font-weight:900;color:#3f5752}.bar{display:grid;grid-template-columns:150px 1fr 48px;gap:10px;align-items:center;margin-top:12px}.track{height:13px;border-radius:999px;background:#e3ece5;overflow:hidden}.fill{height:100%;background:linear-gradient(90deg,var(--green),#9ebe72)}.code{padding:18px;background:#0e2030;color:#e9f4f0}.code h2{font:820 34px/.98 Fraunces,serif;letter-spacing:-.04em;margin:0 0 10px;color:white}.code p{color:#c8d9d4;line-height:1.5}pre{white-space:pre-wrap;background:#091622;border:1px solid #254052;border-radius:16px;padding:16px;min-height:360px;color:#e9f4f0;font:13px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}.copy{background:var(--lime);color:var(--ink);margin-top:10px}.guide{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.guide .card{min-height:260px}.pill{display:inline-flex;padding:8px 10px;border-radius:999px;background:#e8f7d4;color:#2a604f;font-size:12px;font-weight:950;margin-bottom:12px}.warn{margin-top:18px;border:1px dashed #9dbb83;border-radius:18px;background:#fbfff2;padding:16px;color:#3b564f;line-height:1.5}@media(max-width:900px){.hero,.builder,.guide{grid-template-columns:1fr}.choices,.dash-grid{grid-template-columns:1fr}.bar{grid-template-columns:1fr}.hero-card b{font-size:44px}.screen{min-height:520px}.top{align-items:flex-start;flex-direction:column}}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header class="top">
+      <div class="brand"><span class="mark">IA</span><span>Logoped-IA · Kit para comunidad</span></div>
+      <a class="back" href="../index.html">Volver a la webinar</a>
+    </header>
+
+    <section class="hero">
+      <div>
+        <span class="kicker">Encuestas bonitas conectadas</span>
+        <h1>Un Google Form puede parecer una experiencia profesional.</h1>
+        <p>Plantilla para enseñar a la comunidad cómo crear encuestas anónimas, amables y conectadas a Google Forms/Sheets. Ejemplo: satisfacción de familias después de una intervención, taller o bloque de sesiones.</p>
+      </div>
+      <aside class="hero-card"><b>3 capas</b><span>Formulario bonito, conexión a Google Forms y lectura agregada para tomar decisiones.</span></aside>
+    </section>
+
+    <div class="tabs" role="tablist">
+      <button class="tab active" data-tab="demo">Probar plantilla</button>
+      <button class="tab" data-tab="datos">Ver datos demo</button>
+      <button class="tab" data-tab="conectar">Cómo conectarlo</button>
+      <button class="tab" data-tab="prompts">Prompts</button>
+    </div>
+
+    <section class="panel active" id="demo">
+      <div class="builder">
+        <aside class="card">
+          <span class="pill">Caso de uso</span>
+          <h2>Encuesta de satisfacción para familias</h2>
+          <p>Se contesta en un minuto. No pide nombre ni datos clínicos. Pregunta lo justo para mejorar la comunicación, los materiales y el seguimiento.</p>
+          <div class="steps">
+            <div class="step"><i>1</i><div><strong>Experiencia cuidada</strong><span>Una pregunta por pantalla, lenguaje humano y fricción mínima.</span></div></div>
+            <div class="step"><i>2</i><div><strong>Google Forms debajo</strong><span>La familia no ve el formulario feo, pero la respuesta llega a tu hoja.</span></div></div>
+            <div class="step"><i>3</i><div><strong>Resultados agregados</strong><span>El profesional mira patrones, no respuestas aisladas.</span></div></div>
+          </div>
+          <div class="warn"><strong>Importante:</strong> para casos reales, evita nombres, diagnósticos o cualquier dato que identifique a la persona. Mejor preguntar por experiencia, claridad, utilidad y necesidades generales.</div>
+        </aside>
+
+        <section class="phone">
+          <div class="screen">
+            <div class="progress"><i id="bar"></i></div>
+            <div class="q active" data-step="0"><small>01 · punto de partida</small><h3>¿Cómo os habéis sentido acompañados?</h3><p>Marca lo que más se acerque a vuestra experiencia.</p><div class="choices" data-k="acompanamiento"><button class="choice">Muy acompañados</button><button class="choice">Bien, con alguna duda</button><button class="choice">Nos faltó claridad</button><button class="choice">Necesitamos más seguimiento</button></div></div>
+            <div class="q" data-step="1"><small>02 · utilidad</small><h3>¿Qué os resultó más útil?</h3><p>Podéis marcar varias opciones.</p><div class="choices multi" data-k="utilidad"><button class="choice">Materiales para casa</button><button class="choice">Explicaciones claras</button><button class="choice">Ejemplos prácticos</button><button class="choice">Seguimiento y pautas</button></div></div>
+            <div class="q" data-step="2"><small>03 · confianza</small><h3>Del 0 al 100, ¿cuánta confianza tenéis para continuar en casa?</h3><div class="range"><output id="out">68</output><input id="range" type="range" min="0" max="100" value="68" oninput="out.value=this.value"></div></div>
+            <div class="q" data-step="3"><small>04 · mejora</small><h3>¿Qué os ayudaría más ahora?</h3><textarea id="mejora" placeholder="Ej.: vídeos cortos, ejemplos por escrito, más pautas para casa, saber cuándo practicar..."></textarea></div>
+            <div class="q" data-step="4"><div class="done"><small>listo</small><h3>Gracias. Esto ayuda a mejorar sin pedir datos personales.</h3><p>En una versión real, esta respuesta se envía a Google Forms y aparece en la hoja de cálculo del profesional.</p></div></div>
+            <div class="nav"><button class="btn light" id="prev">Volver</button><button class="btn" id="next">Siguiente</button></div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="panel" id="datos">
+      <article class="dashboard card">
+        <span class="pill">Panel demo</span>
+        <h2>Datos agregados que sí ayudan a decidir.</h2>
+        <p>Esto es lo que puedes enseñar a una comunidad: no buscamos fiscalizar familias, sino detectar patrones para mejorar materiales, comunicación y seguimiento.</p>
+        <div class="dash-grid"><div class="metric"><b>24</b><span>respuestas</span></div><div class="metric"><b>74</b><span>confianza media</span></div><div class="metric"><b>68%</b><span>pide más ejemplos</span></div></div>
+        <div class="bar"><strong>Materiales para casa</strong><div class="track"><div class="fill" style="width:78%"></div></div><span>78%</span></div>
+        <div class="bar"><strong>Explicaciones claras</strong><div class="track"><div class="fill" style="width:70%"></div></div><span>70%</span></div>
+        <div class="bar"><strong>Seguimiento y pautas</strong><div class="track"><div class="fill" style="width:62%"></div></div><span>62%</span></div>
+        <div class="bar"><strong>Vídeos breves</strong><div class="track"><div class="fill" style="width:45%"></div></div><span>45%</span></div>
+        <div class="warn"><strong>Lectura clínica:</strong> si muchas familias piden ejemplos y seguimiento, quizá no falta motivación; falta convertir la intervención en instrucciones más visibles y fáciles de repetir en casa.</div>
+      </article>
+    </section>
+
+    <section class="panel" id="conectar">
+      <div class="guide">
+        <article class="card"><span class="pill">Paso 1</span><h2>Crea un Google Form normal</h2><p>Haz las preguntas en Forms como siempre. Usa respuestas cortas, opción múltiple, casillas y escala. No pidas datos identificativos si no son necesarios.</p></article>
+        <article class="card"><span class="pill">Paso 2</span><h2>Obtén URL e IDs entry</h2><p>Abre el formulario, inspecciona el HTML o usa una respuesta pre-rellenada. Necesitas la URL `formResponse` y los campos `entry.123456`.</p></article>
+        <article class="card"><span class="pill">Paso 3</span><h2>Cambia el CONFIG</h2><p>En la plantilla sustituyes `FORM_ACTION` y cada `entryId`. La web bonita envía a Google Forms con `fetch(..., mode: "no-cors")`.</p></article>
+      </div>
+      <div class="warn"><strong>Regla de oro:</strong> si es sanitario o sensible, no preguntes lo que no necesitas. Para satisfacción familiar suele bastar con claridad, utilidad, confianza, necesidades y mejora.</div>
+    </section>
+
+    <section class="panel" id="prompts">
+      <div class="builder">
+        <article class="code">
+          <h2>Prompt para crear cualquier form bonito</h2>
+          <p>Cópialo y cambia el contexto: familias, alumnos, webinar, colegio profesional, seguimiento de talleres o satisfacción de pacientes.</p>
+          <pre id="prompt">Actúa como diseñador pedagógico, UX writer y asesor de privacidad para una herramienta sanitaria.
+
+Quiero transformar un Google Form en una experiencia web bonita, breve y conectada a Google Forms/Sheets.
+
+Contexto:
+- Público: familias de pacientes de logopedia.
+- Objetivo: recoger satisfacción y necesidades de mejora sin pedir datos personales.
+- Tiempo máximo: 1 minuto.
+- Tono: cercano, profesional y no infantil.
+
+Necesito que propongas:
+1. Qué preguntas hacer y cuáles evitar.
+2. Una estructura de 4-6 pantallas.
+3. Textos exactos en español de España.
+4. Opciones multirespuesta cuando tenga sentido.
+5. Una escala 0-100 o 1-5 para confianza/satisfacción.
+6. Qué métricas agregadas mostrar en un panel.
+7. Cómo conectarlo a Google Forms usando FORM_ACTION y entry IDs.
+
+Importante:
+- No pedir nombre, correo ni datos clínicos identificables.
+- Priorizar utilidad real para mejorar la intervención.
+- Explicar cada decisión de diseño.</pre>
+          <button class="btn copy" id="copy">Copiar prompt</button>
+        </article>
+        <article class="card">
+          <span class="pill">Para enseñar a la comunidad</span>
+          <h2>La idea potente</h2>
+          <p>No se trata de “maquillar formularios”. Se trata de aprender un flujo reutilizable:</p>
+          <div class="steps">
+            <div class="step"><i>1</i><div><strong>Necesidad</strong><span>Qué quiero mejorar o decidir.</span></div></div>
+            <div class="step"><i>2</i><div><strong>Preguntas</strong><span>Qué necesito saber sin invadir.</span></div></div>
+            <div class="step"><i>3</i><div><strong>Experiencia</strong><span>Cómo hago que contestar sea fácil.</span></div></div>
+            <div class="step"><i>4</i><div><strong>Datos</strong><span>Cómo leo resultados agregados.</span></div></div>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+  <script>
+    const tabs=[...document.querySelectorAll('.tab')];
+    const panels=[...document.querySelectorAll('.panel')];
+    tabs.forEach(tab=>tab.onclick=()=>{tabs.forEach(t=>t.classList.toggle('active',t===tab));panels.forEach(p=>p.classList.toggle('active',p.id===tab.dataset.tab));});
+    let step=0; const qs=[...document.querySelectorAll('.q')]; const bar=document.getElementById('bar');
+    function showStep(){qs.forEach((q,i)=>q.classList.toggle('active',i===step));bar.style.width=((step+1)/qs.length*100)+'%';prev.style.visibility=step?'visible':'hidden';next.textContent=step===qs.length-1?'Reiniciar demo':'Siguiente';}
+    document.querySelectorAll('.choice').forEach(btn=>btn.onclick=()=>{const group=btn.closest('.choices'); if(group.classList.contains('multi')) btn.classList.toggle('active'); else {group.querySelectorAll('.choice').forEach(b=>b.classList.remove('active')); btn.classList.add('active');}});
+    next.onclick=()=>{if(step===qs.length-1) step=0; else step++; showStep();}; prev.onclick=()=>{step=Math.max(0,step-1); showStep();}; showStep();
+    copy.onclick=async()=>{try{await navigator.clipboard.writeText(prompt.textContent.trim());copy.textContent='Copiado';setTimeout(()=>copy.textContent='Copiar prompt',1300)}catch{copy.textContent='Selecciona el texto'}};
+  </script>
+</body>
+</html>
