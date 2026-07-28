@@ -13,9 +13,9 @@
 <body>
   <main class="wrap">
     <header class="top"><div class="brand"><span class="mark">IA</span><span>Panel terapeuta · seguimiento familiar</span></div><nav class="links"><a class="chip" href="./">Formulario familias</a><a class="chip" href="https://docs.google.com/forms/d/1HsshONL6LlTmAdATTdWiYDsgrQuqi-VOKDV3mi0VVO4/edit#responses" target="_blank" rel="noreferrer">Abrir Google Forms</a><a class="chip" href="https://docs.google.com/spreadsheets/d/1h4hd1P4c_G1Iqc2klORLakvi-lgYpjYz-pg032DqBns/edit?resourcekey=&gid=321978139#gid=321978139" target="_blank" rel="noreferrer">Abrir Sheets</a></nav></header>
-    <section class="hero"><div><span class="kicker">Vista bonita de respuestas</span><h1>Así llegan las familias.</h1><p class="lead">Pega aquí las filas de Google Sheets y el panel las convierte en métricas, prioridades y lectura clínica accionable. Sin nombres, sin datos sensibles, sin perder la humanidad.</p></div><aside class="hero-card"><b>mirar antes</b><span>La IA no sustituye tu criterio: te deja llegar a la sesión sabiendo dónde mirar primero.</span></aside></section>
+    <section class="hero"><div><span class="kicker">Vista bonita de respuestas</span><h1>Así llegan las familias.</h1><p class="lead">El panel intenta cargar automáticamente las respuestas desde Google Sheets. Si Google bloquea la lectura pública, puedes pegar las filas manualmente como respaldo.</p></div><aside class="hero-card"><b>mirar antes</b><span>La IA no sustituye tu criterio: te deja llegar a la sesión sabiendo dónde mirar primero.</span></aside></section>
 
-    <section class="import"><article class="card"><span class="pill">Entrada rápida</span><h2>Pegar respuestas</h2><p class="hint">En Sheets: selecciona las filas de respuestas, copia y pega aquí. Si viene una columna con el bloque “Práctica / Ayuda / Confianza / Valoración / Comentario”, el panel lo interpreta solo.</p><textarea id="paste" placeholder="Pega aquí las filas copiadas desde Google Sheets..."></textarea><button class="btn" id="analyze">Analizar respuestas</button><button class="btn secondary" id="demo">Cargar ejemplo</button></article><article class="panel"><span class="pill">Resumen automático</span><h2 id="readTitle">Todavía sin datos pegados</h2><p class="lead" id="readText" style="font-size:16px">Cuando pegues respuestas, aquí aparecerá una lectura breve: práctica, confianza, necesidades frecuentes y qué conviene preparar para la próxima sesión.</p><div class="empty" id="status">Consejo: no hace falta limpiar el Excel. Copia columnas tal cual y este panel intentará detectar lo importante.</div></article></section>
+    <section class="import"><article class="card"><span class="pill">Entrada rápida</span><h2>Pegar respuestas</h2><p class="hint">Modo respaldo: si la conexión automática queda bloqueada por permisos de Google, selecciona filas en Sheets, copia y pega aquí. El panel interpreta el bloque de respuesta solo.</p><textarea id="paste" placeholder="Pega aquí las filas copiadas desde Google Sheets..."></textarea><button class="btn" id="analyze">Analizar respuestas</button><button class="btn secondary" id="demo">Cargar ejemplo</button></article><article class="panel"><span class="pill">Resumen automático</span><h2 id="readTitle">Todavía sin datos pegados</h2><p class="lead" id="readText" style="font-size:16px">Cuando pegues respuestas, aquí aparecerá una lectura breve: práctica, confianza, necesidades frecuentes y qué conviene preparar para la próxima sesión.</p><div class="empty" id="status">Consejo: no hace falta limpiar el Excel. Copia columnas tal cual y este panel intentará detectar lo importante.</div></article></section>
 
     <section class="layout">
       <aside class="card"><span class="pill">Familias / respuestas</span><h2>Seguimiento recibido</h2><div class="clients" id="clients"></div><div class="empty">Usa códigos internos si algún día añades identificador. Evita nombres completos o datos clínicos identificables.</div></aside>
@@ -27,6 +27,7 @@
     </section>
   </main>
   <script>
+    const SHEET_CSV_URL="https://docs.google.com/spreadsheets/d/1h4hd1P4c_G1Iqc2klORLakvi-lgYpjYz-pg032DqBns/gviz/tq?tqx=out:csv&gid=321978139";
     const demoRows=`27/07/2026 18:31:22\tPráctica: 🌿3 días o más\nAyuda: Material imprimible · Resolver dudas en sesión\nConfianza: 85/100\nValoración: 5/5\nComentario: Ha funcionado bien, necesitamos subir dificultad\nEnviado desde: seguimiento familiar Logoped-IA
 27/07/2026 18:34:10\tPráctica: ☕1 o 2 días\nAyuda: Vídeo corto de ejemplo · Pauta paso a paso\nConfianza: 46/100\nValoración: 3/5\nComentario: Nos cuesta saber si lo hacemos bien
 27/07/2026 18:38:02\tPráctica: ⏳Nos costó encontrar el momento\nAyuda: Resolver dudas en sesión\nConfianza: 34/100\nValoración: 2/5\nComentario: Necesitamos una forma más sencilla para casa`;
@@ -41,7 +42,48 @@
     function rowsEl(rows){document.getElementById('rows').innerHTML=rows.map(d=>`<tr><td>${d.id}<br><small>${d.fecha}</small></td><td>${d.practice}</td><td>${d.confidence||'—'}/100</td><td>${d.rating?d.rating+'/5':'—'}</td><td>${d.need}</td><td>${d.comment}</td></tr>`).join('')}
     function select(i){const d=current[i];document.querySelectorAll('.client').forEach(x=>x.classList.remove('active'));document.querySelector(`.client[data-i="${i}"]`)?.classList.add('active');personTitle.textContent=d?'Interpretación para '+d.id:'Interpretación global';personText.textContent=d?d.text:'Carga respuestas para ver prioridades.';actions.innerHTML=d?`<div class="action"><strong>Preparar</strong><span>${d.need}</span></div><div class="action"><strong>Comenzar por</strong><span>${d.confidence<45?'bajar exigencia y dar seguridad':'preguntar qué funcionó esta semana'}</span></div><div class="action"><strong>Cerrar con</strong><span>una tarea pequeña y muy concreta para casa.</span></div>`:''}
     clients.onclick=e=>{const c=e.target.closest('.client');if(c)select(+c.dataset.i)};
-    analyze.onclick=()=>render(parseRows(paste.value));demo.onclick=()=>{paste.value=demoRows;render(parseRows(demoRows))};render([]);
+    function parseCsv(text){
+      const rows=[]; let row=[], cell='', quoted=false;
+      for(let i=0;i<text.length;i++){
+        const ch=text[i], next=text[i+1];
+        if(ch==='"' && quoted && next==='"'){cell+='"'; i++; continue}
+        if(ch==='"'){quoted=!quoted; continue}
+        if(ch===',' && !quoted){row.push(cell); cell=''; continue}
+        if((ch==='\n'||ch==='\r') && !quoted){if(ch==='\r'&&next==='\n')i++; row.push(cell); rows.push(row); row=[]; cell=''; continue}
+        cell+=ch;
+      }
+      row.push(cell); rows.push(row);
+      return rows.filter(r=>r.some(c=>c.trim()));
+    }
+    function rowsFromCsv(csv){
+      const rows=parseCsv(csv);
+      if(rows.length<2)return [];
+      const headers=rows[0].map(h=>h.trim().toLowerCase());
+      const timeIndex=headers.findIndex(h=>h.includes('marca temporal')||h.includes('timestamp'));
+      const bundleIndex=headers.findIndex(h=>h.includes('comentario antes')||h.includes('respuesta')||h.includes('comment'));
+      return rows.slice(1).map(r=>[r[timeIndex]||'', r[bundleIndex]||r.slice(1).join('\n')].join('\t')).join('\n');
+    }
+    async function loadSheet(){
+      status.textContent='Intentando cargar respuestas desde Google Sheets...';
+      try{
+        const res=await fetch(SHEET_CSV_URL+'&cb='+Date.now(), {cache:'no-store'});
+        if(!res.ok)throw new Error('Google devuelve '+res.status);
+        const csv=await res.text();
+        const raw=rowsFromCsv(csv);
+        const parsed=parseRows(raw);
+        if(!parsed.length)throw new Error('La hoja está accesible, pero no hay respuestas interpretables todavía.');
+        paste.value=raw;
+        render(parsed);
+        status.textContent='Conectado a Google Sheets. Última carga: '+new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+      }catch(e){
+        render([]);
+        status.textContent='No puedo leer la hoja automáticamente porque Google la mantiene privada o no publicada. Usa Abrir Sheets, copia las filas y pégalas aquí. Detalle: '+e.message;
+      }
+    }
+    analyze.onclick=()=>render(parseRows(paste.value));
+    demo.onclick=()=>{paste.value=demoRows;render(parseRows(demoRows))};
+    render([]);
+    loadSheet();
   </script>
 </body>
 </html>
