@@ -52,22 +52,44 @@
         </section>
 
         <section class="step">
-          <div class="done"><small>listo</small><h2>Gracias. Ya tenemos una idea mejor de cómo preparar la sesión.</h2><p>En una versión real, esta respuesta se enviará al formulario/hoja del profesional para verla junto al resto de seguimientos.</p><div class="code" id="summary"></div></div>
+          <div class="done"><small>listo</small><h2>Gracias. Ya tenemos una idea mejor de cómo preparar la sesión.</h2><p>Al enviar, esta respuesta queda preparada para llegar a la hoja del profesional si la conexión está configurada.</p><div class="code" id="summary"></div></div>
         </section>
 
-        <div class="note">Este es un prototipo. Para usarlo en un gabinete real se conecta a Google Forms, Tally, Fillout o una base de datos, evitando datos identificativos. <a href="terapeuta.html" style="color:#2f7259;font-weight:950">Ver cómo lo ve el terapeuta</a>.</div>
+        <div class="note">Si el formulario aún no está conectado, funciona en modo demo. Cuando se configure Google Forms/Sheets, las respuestas quedarán guardadas. <a href="terapeuta.html" style="color:#2f7259;font-weight:950">Ver cómo lo ve el terapeuta</a>.</div>
         <nav class="nav"><button type="button" class="btn secondary" id="prev">Volver</button><button type="button" class="btn" id="next">Siguiente</button></nav>
       </form>
     </section>
   </div>
 
+  <script src="config.js"></script>
   <script>
+    const CONFIG = window.SEGUIMIENTO_CONFIG || {};
     const steps=[...document.querySelectorAll('.step')]; let current=0; const data={}; let rating=0;
     function show(){steps.forEach((s,i)=>s.classList.toggle('active',i===current));bar.style.width=((current+1)/steps.length*100)+'%';prev.style.visibility=current?'visible':'hidden';next.textContent=current===steps.length-2?'Enviar seguimiento':current===steps.length-1?'Reiniciar':'Siguiente';}
     document.querySelectorAll('.choices').forEach(group=>group.onclick=e=>{const b=e.target.closest('.choice'); if(!b)return; if(group.classList.contains('multi')){b.classList.toggle('active'); data[group.dataset.key]=[...group.querySelectorAll('.active')].map(x=>x.textContent.trim());}else{group.querySelectorAll('.choice').forEach(x=>x.classList.remove('active')); b.classList.add('active'); data[group.dataset.key]=b.textContent.trim(); setTimeout(()=>{current++;show()},180);}});
     confianza.oninput=()=>confOut.textContent=confianza.value;
     stars.onclick=e=>{const i=[...stars.children].indexOf(e.target); if(i<0)return; rating=i+1; [...stars.children].forEach((s,n)=>{s.textContent=n<rating?'★':'☆';s.classList.toggle('on',n<rating)});};
-    next.onclick=()=>{if(current===steps.length-2){data.confianza=confianza.value+'/100';data.valoracion=rating?rating+'/5':'sin valorar';data.comentario=comentario.value.trim()||'Sin comentario';summary.innerHTML='<strong>Resumen demo:</strong><br>Práctica: '+(data.practica||'No indicado')+'<br>Ayuda: '+((data.ayuda||[]).join(', ')||'No indicado')+'<br>Confianza: '+data.confianza+'<br>Valoración: '+data.valoracion+'<br>Comentario: '+data.comentario;current++;show();return} if(current===steps.length-1){current=0;show();return} current++;show();};
+    async function enviarRespuesta(){
+      data.confianza=confianza.value+'/100';
+      data.valoracion=rating?rating+'/5':'sin valorar';
+      data.comentario=comentario.value.trim()||'Sin comentario';
+      const resumen='<strong>Resumen:</strong><br>Práctica: '+(data.practica||'No indicado')+'<br>Ayuda: '+((data.ayuda||[]).join(', ')||'No indicado')+'<br>Confianza: '+data.confianza+'<br>Valoración: '+data.valoracion+'<br>Comentario: '+data.comentario;
+      const conectado = CONFIG && !CONFIG.modoDemo && CONFIG.formAction && CONFIG.campos && Object.values(CONFIG.campos).every(Boolean);
+      if(conectado){
+        const fd = new FormData();
+        fd.append(CONFIG.campos.practica, data.practica || 'No indicado');
+        fd.append(CONFIG.campos.ayuda, Array.isArray(data.ayuda) ? data.ayuda.join(' · ') : 'No indicado');
+        fd.append(CONFIG.campos.confianza, data.confianza);
+        fd.append(CONFIG.campos.valoracion, data.valoracion);
+        fd.append(CONFIG.campos.comentario, data.comentario);
+        try { await fetch(CONFIG.formAction, { method:'POST', mode:'no-cors', body:fd }); }
+        catch(e) { console.warn('Envio no verificable por no-cors', e); }
+        summary.innerHTML=resumen+'<br><br><strong>Estado:</strong> enviado al formulario conectado.';
+      } else {
+        summary.innerHTML=resumen+'<br><br><strong>Estado:</strong> modo demo. Falta configurar Google Forms en <code>config.js</code>.';
+      }
+    }
+    next.onclick=async()=>{if(current===steps.length-2){next.textContent='Enviando...';await enviarRespuesta();current++;show();return} if(current===steps.length-1){current=0;show();return} current++;show();};
     prev.onclick=()=>{current=Math.max(0,current-1);show()}; show();
   </script>
 </body>
