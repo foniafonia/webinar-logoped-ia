@@ -15,7 +15,7 @@
     <header class="top"><div class="brand"><span class="mark">IA</span><span>Panel terapeuta · seguimiento familiar</span></div><nav class="links"><a class="chip" href="./">Formulario familias</a><a class="chip" href="https://docs.google.com/forms/d/1HsshONL6LlTmAdATTdWiYDsgrQuqi-VOKDV3mi0VVO4/edit#responses" target="_blank" rel="noreferrer">Abrir Google Forms</a><a class="chip" href="https://docs.google.com/spreadsheets/d/1h4hd1P4c_G1Iqc2klORLakvi-lgYpjYz-pg032DqBns/edit?resourcekey=&gid=321978139#gid=321978139" target="_blank" rel="noreferrer">Abrir Sheets</a></nav></header>
     <section class="hero"><div><span class="kicker">Vista bonita de respuestas</span><h1>Así llegan las familias.</h1><p class="lead">El panel intenta cargar automáticamente las respuestas desde Google Sheets. Si Google bloquea la lectura pública, puedes pegar las filas manualmente como respaldo.</p></div><aside class="hero-card"><b>mirar antes</b><span>La IA no sustituye tu criterio: te deja llegar a la sesión sabiendo dónde mirar primero.</span></aside></section>
 
-    <section class="import"><article class="card"><span class="pill">Entrada rápida</span><h2>Pegar respuestas</h2><p class="hint">Modo respaldo: si la conexión automática queda bloqueada por permisos de Google, selecciona filas en Sheets, copia y pega aquí. El panel interpreta el bloque de respuesta solo.</p><textarea id="paste" placeholder="Pega aquí las filas copiadas desde Google Sheets..."></textarea><button class="btn" id="analyze">Analizar respuestas</button><button class="btn secondary" id="demo">Cargar ejemplo</button></article><article class="panel"><span class="pill">Resumen automático</span><h2 id="readTitle">Todavía sin datos pegados</h2><p class="lead" id="readText" style="font-size:16px">Cuando pegues respuestas, aquí aparecerá una lectura breve: práctica, confianza, necesidades frecuentes y qué conviene preparar para la próxima sesión.</p><div class="empty" id="status">Consejo: no hace falta limpiar el Excel. Copia columnas tal cual y este panel intentará detectar lo importante.</div></article></section>
+    <section class="import"><article class="card"><span class="pill">Entrada rápida</span><h2>Pegar respuestas</h2><p class="hint">Modo respaldo: si la conexión automática queda bloqueada por permisos de Google, selecciona filas en Sheets, copia y pega aquí. El panel interpreta el bloque de respuesta solo.</p><textarea id="paste" placeholder="Pega aquí las filas copiadas desde Google Sheets..."></textarea><button class="btn" id="refresh" type="button">Actualizar desde Sheets</button><button class="btn secondary" id="analyze" type="button">Analizar pegado</button><button class="btn secondary" id="demo" type="button">Cargar ejemplo</button></article><article class="panel"><span class="pill">Resumen automático</span><h2 id="readTitle">Todavía sin datos pegados</h2><p class="lead" id="readText" style="font-size:16px">Cuando pegues respuestas, aquí aparecerá una lectura breve: práctica, confianza, necesidades frecuentes y qué conviene preparar para la próxima sesión.</p><div class="empty" id="status">Conectando con Google Sheets...</div></article></section>
 
     <section class="layout">
       <aside class="card"><span class="pill">Familias / respuestas</span><h2>Seguimiento recibido</h2><div class="clients" id="clients"></div><div class="empty">Usa códigos internos si algún día añades identificador. Evita nombres completos o datos clínicos identificables.</div></aside>
@@ -81,9 +81,11 @@
       }
     }
     analyze.onclick=()=>render(parseRows(paste.value));
+    refresh.onclick=()=>loadSheet();
     demo.onclick=()=>{paste.value=demoRows;render(parseRows(demoRows))};
     render([]);
     loadSheet();
+    setInterval(loadSheet, 30000);
   </script>
 </body>
 </html>
