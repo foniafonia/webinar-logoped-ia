@@ -52,10 +52,10 @@
         </section>
 
         <section class="step">
-          <div class="done"><small>listo</small><h2>Gracias. Ya tenemos una idea mejor de cómo preparar la sesión.</h2><p>Al enviar, esta respuesta queda preparada para llegar a la hoja del profesional si la conexión está configurada.</p><div class="code" id="summary"></div></div>
+          <div class="done"><small>listo</small><h2>Gracias. Ya tenemos una idea mejor de cómo preparar la sesión.</h2><p>La respuesta queda guardada para que el profesional pueda revisar tendencias antes de la sesión.</p><div class="code" id="summary"></div></div>
         </section>
 
-        <div class="note">Si el formulario aún no está conectado, funciona en modo demo. Cuando se configure Google Forms/Sheets, las respuestas quedarán guardadas. <a href="terapeuta.html" style="color:#2f7259;font-weight:950">Ver cómo lo ve el terapeuta</a>.</div>
+        <div class="note">Respuesta anónima orientativa. No escribáis nombres, diagnósticos ni datos personales. <a href="terapeuta.html" style="color:#2f7259;font-weight:950">Ver cómo lo ve el terapeuta</a>.</div>
         <nav class="nav"><button type="button" class="btn secondary" id="prev">Volver</button><button type="button" class="btn" id="next">Siguiente</button></nav>
       </form>
     </section>
@@ -74,14 +74,26 @@
       data.valoracion=rating?rating+'/5':'sin valorar';
       data.comentario=comentario.value.trim()||'Sin comentario';
       const resumen='<strong>Resumen:</strong><br>Práctica: '+(data.practica||'No indicado')+'<br>Ayuda: '+((data.ayuda||[]).join(', ')||'No indicado')+'<br>Confianza: '+data.confianza+'<br>Valoración: '+data.valoracion+'<br>Comentario: '+data.comentario;
-      const conectado = CONFIG && !CONFIG.modoDemo && CONFIG.formAction && CONFIG.campos && Object.values(CONFIG.campos).every(Boolean);
+      const conectado = CONFIG && !CONFIG.modoDemo && CONFIG.formAction && (CONFIG.bundleField || (CONFIG.campos && Object.values(CONFIG.campos).every(Boolean)));
       if(conectado){
         const fd = new FormData();
-        fd.append(CONFIG.campos.practica, data.practica || 'No indicado');
-        fd.append(CONFIG.campos.ayuda, Array.isArray(data.ayuda) ? data.ayuda.join(' · ') : 'No indicado');
-        fd.append(CONFIG.campos.confianza, data.confianza);
-        fd.append(CONFIG.campos.valoracion, data.valoracion);
-        fd.append(CONFIG.campos.comentario, data.comentario);
+        if (CONFIG.bundleField) {
+          const paquete = [
+            'Práctica: '+(data.practica || 'No indicado'),
+            'Ayuda: '+(Array.isArray(data.ayuda) ? data.ayuda.join(' · ') : 'No indicado'),
+            'Confianza: '+data.confianza,
+            'Valoración: '+data.valoracion,
+            'Comentario: '+data.comentario,
+            'Enviado desde: seguimiento familiar Logoped-IA'
+          ].join('\n');
+          fd.append(CONFIG.bundleField, paquete);
+        } else {
+          fd.append(CONFIG.campos.practica, data.practica || 'No indicado');
+          fd.append(CONFIG.campos.ayuda, Array.isArray(data.ayuda) ? data.ayuda.join(' · ') : 'No indicado');
+          fd.append(CONFIG.campos.confianza, data.confianza);
+          fd.append(CONFIG.campos.valoracion, data.valoracion);
+          fd.append(CONFIG.campos.comentario, data.comentario);
+        }
         try { await fetch(CONFIG.formAction, { method:'POST', mode:'no-cors', body:fd }); }
         catch(e) { console.warn('Envio no verificable por no-cors', e); }
         summary.innerHTML=resumen+'<br><br><strong>Estado:</strong> enviado al formulario conectado.';

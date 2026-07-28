@@ -1,11 +1,10 @@
 // Configuracion del seguimiento familiar.
-// 1. Crea un Google Form con estas preguntas.
-// 2. Vinculalo a Google Sheets.
-// 3. Sustituye FORM_ACTION y cada entry.* por los IDs reales del formulario.
+// Google Forms se usa como almacen de respuestas; la landing es la interfaz bonita.
 window.SEGUIMIENTO_CONFIG = {
-  modoDemo: true,
+  modoDemo: false,
   nombreGabinete: "Gabinete de logopedia",
-  formAction: "",
+  formAction: "https://docs.google.com/forms/d/e/1FAIpQLSfAluWjBU2NapMjD7GRefvVTBRx_kUuTk7MvLYFq1A1rygWlg/formResponse",
+  bundleField: "entry.436942604",
   campos: {
     practica: "",
     ayuda: "",
